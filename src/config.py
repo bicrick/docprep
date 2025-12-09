@@ -1,13 +1,14 @@
 """
-Configuration settings for the Data Extraction Tool
+Configuration settings for DocPrep
 """
 
 import os
 from pathlib import Path
 
 # Application metadata
-APP_NAME = "Data Extraction Tool"
+APP_NAME = "DocPrep"
 APP_VERSION = "1.0.0"
+APP_SUBTITLE = "Convert documents to readable formats"
 
 # Supported file extensions
 SUPPORTED_EXTENSIONS = {
@@ -17,6 +18,10 @@ SUPPORTED_EXTENSIONS = {
     'powerpoint': ['.pptx']
 }
 
+# Display text for supported formats
+SUPPORTED_FORMATS_DISPLAY = "PDF • Excel • Word • PowerPoint"
+SUPPORTED_FORMATS_DETAIL = "Supports: PDFs (.pdf), Excel (.xlsx, .xls), Word (.docx), PowerPoint (.pptx)"
+
 # Default settings
 DEFAULT_OUTPUT_SUFFIX = "_extracted"
 
@@ -25,13 +30,19 @@ WINDOW_WIDTH = 800
 WINDOW_HEIGHT = 600
 WINDOW_TITLE = f"{APP_NAME} v{APP_VERSION}"
 
-# Colors (for GUI)
-COLOR_PRIMARY = "#2E5090"
-COLOR_SECONDARY = "#4A7BA7"
-COLOR_ACCENT = "#7FA9C4"
-COLOR_SUCCESS = "#5B9279"
-COLOR_ERROR = "#C85450"
-COLOR_BACKGROUND = "#F8F9FA"
+# Modern minimal color palette
+COLOR_PRIMARY = "#4A90E2"        # Soft blue
+COLOR_SECONDARY = "#7B8794"      # Cool gray
+COLOR_ACCENT = "#5CB3FF"         # Light blue accent
+COLOR_SUCCESS = "#52C577"        # Soft green
+COLOR_WARNING = "#FFB84D"        # Soft orange
+COLOR_ERROR = "#FF6B6B"          # Soft red
+COLOR_BACKGROUND = "#FFFFFF"     # Pure white
+COLOR_SURFACE = "#F7F9FB"        # Very light blue-gray
+COLOR_BORDER = "#E1E8ED"         # Light border
+COLOR_TEXT_PRIMARY = "#2C3E50"   # Dark blue-gray
+COLOR_TEXT_SECONDARY = "#7B8794" # Medium gray
+COLOR_TEXT_TERTIARY = "#A8B2BC"  # Light gray
 
 # Extraction settings
 MAX_IMAGE_SIZE = (2048, 2048)  # Maximum size for extracted images

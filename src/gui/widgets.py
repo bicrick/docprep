@@ -15,14 +15,14 @@ class LogTextWidget(tk.Text):
     def __init__(self, parent, **kwargs):
         super().__init__(parent, **kwargs)
         
-        # Configure tags for different log levels
-        self.tag_config("INFO", foreground="black")
-        self.tag_config("WARNING", foreground="orange")
-        self.tag_config("ERROR", foreground="red")
-        self.tag_config("SUCCESS", foreground="green")
+        # Configure tags for different log levels with modern colors
+        self.tag_config("INFO", foreground="#2C3E50")      # Dark blue-gray
+        self.tag_config("WARNING", foreground="#FFB84D")   # Soft orange
+        self.tag_config("ERROR", foreground="#FF6B6B")     # Soft red
+        self.tag_config("SUCCESS", foreground="#52C577")   # Soft green
         
         # Make read-only
-        self.config(state='disabled')
+        self.config(state='disabled', bg='#FFFFFF', relief=tk.FLAT, borderwidth=1, highlightthickness=1, highlightbackground='#E1E8ED')
     
     def log(self, message: str, level: str = "INFO"):
         """Add a log message"""
@@ -45,8 +45,13 @@ class ProgressFrame(ttk.Frame):
     def __init__(self, parent, **kwargs):
         super().__init__(parent, **kwargs)
         
-        # Status label
-        self.status_label = ttk.Label(self, text="Ready", font=('Arial', 10))
+        # Status label with modern styling
+        self.status_label = ttk.Label(
+            self, 
+            text="Ready", 
+            font=('Arial', 11),
+            foreground='#2C3E50'
+        )
         self.status_label.pack(fill=tk.X, padx=5, pady=(5, 2))
         
         # Progress bar
@@ -57,8 +62,13 @@ class ProgressFrame(ttk.Frame):
         )
         self.progress_bar.pack(fill=tk.X, padx=5, pady=(2, 5))
         
-        # Detail label (for file counts, etc.)
-        self.detail_label = ttk.Label(self, text="", font=('Arial', 9), foreground='gray')
+        # Detail label with modern colors
+        self.detail_label = ttk.Label(
+            self, 
+            text="", 
+            font=('Arial', 9), 
+            foreground='#7B8794'
+        )
         self.detail_label.pack(fill=tk.X, padx=5)
         
         self.reset()
@@ -102,32 +112,49 @@ class ProgressFrame(ttk.Frame):
 class DropZone(tk.Frame):
     """Drag-and-drop zone for folder selection"""
     
-    def __init__(self, parent, callback=None, **kwargs):
+    def __init__(self, parent, callback=None, subtitle="", **kwargs):
         super().__init__(parent, **kwargs)
         
         self.callback = callback
         self.folder_path = None
+        self.subtitle_text = subtitle
         
-        # Configure appearance
+        # Configure appearance with modern colors
         self.config(
-            bg='#F0F0F0',
-            relief=tk.RAISED,
-            borderwidth=2
+            bg='#F7F9FB',  # Light surface color
+            relief=tk.SOLID,
+            borderwidth=2,
+            highlightthickness=0,
+            highlightbackground='#E1E8ED'
         )
+        self['bd'] = 2
+        self['highlightbackground'] = '#E1E8ED'
+        self['highlightcolor'] = '#E1E8ED'
         
         # Main label
         self.label = tk.Label(
             self,
             text="Drag & Drop Folder Here\n\nor\n\nClick to Browse",
-            font=('Arial', 14),
-            bg='#F0F0F0',
-            fg='#666666'
+            font=('Arial', 16),
+            bg='#F7F9FB',
+            fg='#2C3E50'
         )
-        self.label.pack(expand=True, fill=tk.BOTH, padx=20, pady=20)
+        self.label.pack(expand=True, fill=tk.BOTH, padx=30, pady=(30, 10))
+        
+        # Subtitle label for supported formats
+        self.subtitle = tk.Label(
+            self,
+            text=subtitle,
+            font=('Arial', 10),
+            bg='#F7F9FB',
+            fg='#7B8794'
+        )
+        self.subtitle.pack(padx=30, pady=(0, 30))
         
         # Bind click event
         self.bind('<Button-1>', self._on_click)
         self.label.bind('<Button-1>', self._on_click)
+        self.subtitle.bind('<Button-1>', self._on_click)
         
         # Try to set up drag-and-drop
         self._setup_dnd()
@@ -175,13 +202,15 @@ class DropZone(tk.Frame):
     
     def _on_drag_enter(self, event):
         """Visual feedback when dragging over"""
-        self.config(bg='#E0E0FF', relief=tk.SUNKEN)
-        self.label.config(bg='#E0E0FF', fg='#000000')
+        self.config(bg='#E8F4FD')  # Light blue highlight
+        self.label.config(bg='#E8F4FD', fg='#4A90E2')
+        self.subtitle.config(bg='#E8F4FD', fg='#4A90E2')
     
     def _on_drag_leave(self, event):
         """Reset appearance when drag leaves"""
-        self.config(bg='#F0F0F0', relief=tk.RAISED)
-        self.label.config(bg='#F0F0F0', fg='#666666')
+        self.config(bg='#F7F9FB')
+        self.label.config(bg='#F7F9FB', fg='#2C3E50')
+        self.subtitle.config(bg='#F7F9FB', fg='#7B8794')
     
     def set_folder(self, path: str):
         """Set the selected folder"""
@@ -197,9 +226,12 @@ class DropZone(tk.Frame):
         folder_name = os.path.basename(path)
         self.label.config(
             text=f"Selected Folder:\n\n{folder_name}\n\n{path}",
-            font=('Arial', 11),
-            fg='#000000'
+            font=('Arial', 12),
+            fg='#2C3E50'
         )
+        
+        # Hide subtitle when folder is selected
+        self.subtitle.config(text="")
         
         # Call callback if provided
         if self.callback:
@@ -210,27 +242,33 @@ class DropZone(tk.Frame):
         self.folder_path = None
         self.label.config(
             text="Drag & Drop Folder Here\n\nor\n\nClick to Browse",
-            font=('Arial', 14),
-            fg='#666666'
+            font=('Arial', 16),
+            fg='#2C3E50'
         )
+        # Restore subtitle
+        self.subtitle.config(text=self.subtitle_text)
     
     def disable(self):
         """Disable the drop zone"""
         # Unbind events
         self.unbind('<Button-1>')
         self.label.unbind('<Button-1>')
+        self.subtitle.unbind('<Button-1>')
         
         # Visual feedback - grayed out
-        self.config(bg='#E0E0E0', relief=tk.FLAT)
-        self.label.config(bg='#E0E0E0', fg='#999999')
+        self.config(bg='#F0F0F0')
+        self.label.config(bg='#F0F0F0', fg='#A8B2BC')
+        self.subtitle.config(bg='#F0F0F0', fg='#A8B2BC')
     
     def enable(self):
         """Enable the drop zone"""
         # Rebind events
         self.bind('<Button-1>', self._on_click)
         self.label.bind('<Button-1>', self._on_click)
+        self.subtitle.bind('<Button-1>', self._on_click)
         
         # Restore normal appearance
-        self.config(bg='#F0F0F0', relief=tk.RAISED)
-        self.label.config(bg='#F0F0F0', fg='#666666')
+        self.config(bg='#F7F9FB')
+        self.label.config(bg='#F7F9FB', fg='#2C3E50')
+        self.subtitle.config(bg='#F7F9FB', fg='#7B8794')
 

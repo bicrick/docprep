@@ -9,7 +9,11 @@ import threading
 import logging
 
 from gui.widgets import DropZone, ProgressFrame, LogTextWidget
-from config import WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE, DEFAULT_OUTPUT_SUFFIX
+from config import (
+    WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE, DEFAULT_OUTPUT_SUFFIX,
+    APP_SUBTITLE, SUPPORTED_FORMATS_DISPLAY, SUPPORTED_FORMATS_DETAIL,
+    COLOR_PRIMARY, COLOR_BACKGROUND, COLOR_TEXT_PRIMARY, COLOR_TEXT_SECONDARY
+)
 from utils.file_scanner import FileScanner, ExtractionManager
 from utils.report import ReportGenerator
 from extractors.excel import ExcelExtractor
@@ -37,6 +41,7 @@ class MainWindow:
         
         self.root.title(WINDOW_TITLE)
         self.root.geometry(f"{WINDOW_WIDTH}x{WINDOW_HEIGHT}")
+        self.root.configure(bg=COLOR_BACKGROUND)
         
         # State variables
         self.input_folder = None
@@ -52,38 +57,84 @@ class MainWindow:
     
     def _setup_gui(self):
         """Setup all GUI components"""
-        # Main container
-        main_frame = ttk.Frame(self.root, padding="10")
+        # Main container with background color
+        main_frame = tk.Frame(self.root, bg=COLOR_BACKGROUND, padx=20, pady=20)
         main_frame.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
         
         self.root.columnconfigure(0, weight=1)
         self.root.rowconfigure(0, weight=1)
         main_frame.columnconfigure(0, weight=1)
         
-        # Title
-        title_label = ttk.Label(
-            main_frame,
-            text="Data Extraction Tool",
-            font=('Arial', 16, 'bold')
-        )
-        title_label.grid(row=0, column=0, pady=(0, 10))
+        # Header section
+        header_frame = tk.Frame(main_frame, bg=COLOR_BACKGROUND)
+        header_frame.grid(row=0, column=0, pady=(0, 15))
         
-        # Drop zone
+        # Title
+        title_label = tk.Label(
+            header_frame,
+            text="DocPrep",
+            font=('Arial', 20, 'bold'),
+            bg=COLOR_BACKGROUND,
+            fg=COLOR_PRIMARY
+        )
+        title_label.pack()
+        
+        # Subtitle
+        subtitle_label = tk.Label(
+            header_frame,
+            text=APP_SUBTITLE,
+            font=('Arial', 11),
+            bg=COLOR_BACKGROUND,
+            fg=COLOR_TEXT_SECONDARY
+        )
+        subtitle_label.pack(pady=(2, 0))
+        
+        # Instructions section
+        instructions_frame = tk.Frame(main_frame, bg=COLOR_BACKGROUND)
+        instructions_frame.grid(row=1, column=0, pady=(0, 10))
+        
+        instructions_label = tk.Label(
+            instructions_frame,
+            text="Select a folder to extract data from all documents inside",
+            font=('Arial', 10),
+            bg=COLOR_BACKGROUND,
+            fg=COLOR_TEXT_SECONDARY
+        )
+        instructions_label.pack()
+        
+        formats_label = tk.Label(
+            instructions_frame,
+            text=SUPPORTED_FORMATS_DETAIL,
+            font=('Arial', 9),
+            bg=COLOR_BACKGROUND,
+            fg=COLOR_TEXT_SECONDARY
+        )
+        formats_label.pack(pady=(2, 0))
+        
+        # Drop zone with subtitle
         self.drop_zone = DropZone(
             main_frame,
             callback=self._on_folder_selected,
-            height=150
+            subtitle=SUPPORTED_FORMATS_DISPLAY,
+            height=200
         )
-        self.drop_zone.grid(row=1, column=0, sticky=(tk.W, tk.E), pady=10)
+        self.drop_zone.grid(row=2, column=0, sticky=(tk.W, tk.E), pady=15)
         
         # Output folder selection
-        output_frame = ttk.Frame(main_frame)
-        output_frame.grid(row=2, column=0, sticky=(tk.W, tk.E), pady=5)
+        output_frame = tk.Frame(main_frame, bg=COLOR_BACKGROUND)
+        output_frame.grid(row=3, column=0, sticky=(tk.W, tk.E), pady=10)
         output_frame.columnconfigure(1, weight=1)
         
-        ttk.Label(output_frame, text="Output:").grid(row=0, column=0, padx=(0, 5))
+        output_label = tk.Label(
+            output_frame,
+            text="Output:",
+            font=('Arial', 10),
+            bg=COLOR_BACKGROUND,
+            fg=COLOR_TEXT_PRIMARY
+        )
+        output_label.grid(row=0, column=0, padx=(0, 10))
         
-        self.output_entry = ttk.Entry(output_frame)
+        self.output_entry = ttk.Entry(output_frame, font=('Arial', 10))
         self.output_entry.grid(row=0, column=1, sticky=(tk.W, tk.E), padx=5)
         self.output_entry.insert(0, "(Auto-generated)")
         self.output_entry.config(state='readonly')
@@ -93,28 +144,41 @@ class MainWindow:
             text="Browse...",
             command=self._browse_output
         )
-        self.output_btn.grid(row=0, column=2)
+        self.output_btn.grid(row=0, column=2, padx=(5, 0))
         
         # Options frame
-        options_frame = ttk.LabelFrame(main_frame, text="Options", padding="5")
-        options_frame.grid(row=3, column=0, sticky=(tk.W, tk.E), pady=5)
+        options_frame = tk.Frame(main_frame, bg=COLOR_BACKGROUND)
+        options_frame.grid(row=4, column=0, sticky=(tk.W, tk.E), pady=10)
         
         self.open_after_var = tk.BooleanVar(value=True)
-        ttk.Checkbutton(
+        tk.Checkbutton(
             options_frame,
             text="Open output folder when complete",
-            variable=self.open_after_var
+            variable=self.open_after_var,
+            font=('Arial', 10),
+            bg=COLOR_BACKGROUND,
+            fg=COLOR_TEXT_PRIMARY,
+            activebackground=COLOR_BACKGROUND,
+            activeforeground=COLOR_TEXT_PRIMARY,
+            selectcolor=COLOR_BACKGROUND,
+            highlightthickness=0
         ).pack(anchor=tk.W)
         
         # Action buttons
-        button_frame = ttk.Frame(main_frame)
-        button_frame.grid(row=4, column=0, pady=10)
+        button_frame = tk.Frame(main_frame, bg=COLOR_BACKGROUND)
+        button_frame.grid(row=5, column=0, pady=15)
+        
+        # Create style for buttons
+        style = ttk.Style()
+        style.configure('Primary.TButton', font=('Arial', 11))
+        style.configure('Secondary.TButton', font=('Arial', 11))
         
         self.extract_btn = ttk.Button(
             button_frame,
             text="Start Extraction",
             command=self._start_extraction,
-            state='disabled'
+            state='disabled',
+            style='Primary.TButton'
         )
         self.extract_btn.pack(side=tk.LEFT, padx=5)
         
@@ -122,32 +186,45 @@ class MainWindow:
             button_frame,
             text="Cancel",
             command=self._cancel_extraction,
-            state='disabled'
+            state='disabled',
+            style='Secondary.TButton'
         )
         self.cancel_btn.pack(side=tk.LEFT, padx=5)
         
         # Progress frame
         self.progress_frame = ProgressFrame(main_frame)
-        self.progress_frame.grid(row=5, column=0, sticky=(tk.W, tk.E), pady=5)
+        self.progress_frame.grid(row=6, column=0, sticky=(tk.W, tk.E), pady=10)
+        self.progress_frame.configure(style='Card.TFrame')
         
         # Log area
-        log_frame = ttk.LabelFrame(main_frame, text="Log", padding="5")
-        log_frame.grid(row=6, column=0, sticky=(tk.W, tk.E, tk.N, tk.S), pady=5)
+        log_frame = tk.Frame(main_frame, bg=COLOR_BACKGROUND)
+        log_frame.grid(row=7, column=0, sticky=(tk.W, tk.E, tk.N, tk.S), pady=(10, 0))
         log_frame.columnconfigure(0, weight=1)
         log_frame.rowconfigure(0, weight=1)
         
-        main_frame.rowconfigure(6, weight=1)
+        main_frame.rowconfigure(7, weight=1)
+        
+        # Log label
+        log_label = tk.Label(
+            log_frame,
+            text="Activity Log",
+            font=('Arial', 11, 'bold'),
+            bg=COLOR_BACKGROUND,
+            fg=COLOR_TEXT_PRIMARY
+        )
+        log_label.grid(row=0, column=0, columnspan=2, sticky=tk.W, pady=(0, 5))
         
         # Log text with scrollbar
         log_scroll = ttk.Scrollbar(log_frame)
-        log_scroll.grid(row=0, column=1, sticky=(tk.N, tk.S))
+        log_scroll.grid(row=1, column=1, sticky=(tk.N, tk.S))
         
         self.log_text = LogTextWidget(
             log_frame,
             height=10,
-            yscrollcommand=log_scroll.set
+            yscrollcommand=log_scroll.set,
+            font=('Arial', 9)
         )
-        self.log_text.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
+        self.log_text.grid(row=1, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
         log_scroll.config(command=self.log_text.yview)
     
     def _setup_logging(self):
@@ -369,8 +446,8 @@ class MainWindow:
     
     def run(self):
         """Start the GUI event loop"""
-        logger.info("Starting Data Extraction Tool")
-        self.log_text.log("Welcome to Data Extraction Tool", "SUCCESS")
-        self.log_text.log("Drag and drop a folder or click to browse", "INFO")
+        logger.info("Starting DocPrep")
+        self.log_text.log("Welcome to DocPrep", "SUCCESS")
+        self.log_text.log("Ready to extract data from your documents", "INFO")
         self.root.mainloop()
 
