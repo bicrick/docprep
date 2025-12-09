@@ -1,92 +1,48 @@
-# Data Extraction Tool
+# DocPrep
 
-A cross-platform desktop application for extracting data from various document formats into readable formats.
+Extract your business documents as plain text for use in Cursor.
 
-## Features
+## Supported Formats
 
-- **Excel Files**: Extract sheets to CSV and embedded charts to PNG
-- **PDF Files**: Extract text and embedded images
-- **Word Documents**: Extract text and embedded images
-- **PowerPoint**: Extract slide text, notes, and charts
-- **Drag-and-Drop Interface**: Simple, user-friendly GUI
-- **Folder Mirroring**: Maintains original folder structure in output
-
-## Supported File Types
-
-- Excel: `.xlsx`, `.xls`
-- PDF: `.pdf`
-- Word: `.docx`
-- PowerPoint: `.pptx`
+- PDF (.pdf)
+- Excel (.xlsx, .xls)
+- Word (.docx)
+- PowerPoint (.pptx)
 
 ## Installation
 
-### For Development
-
-1. Install Python 3.8 or higher
-2. Install dependencies:
 ```bash
+conda create -n data-extraction-tool python=3.11
+conda activate data-extraction-tool
 pip install -r requirements.txt
-```
-
-3. Run the application:
-```bash
-python src/main.py
-```
-
-### For End Users
-
-Download the appropriate installer for your platform:
-- **Mac**: `DataExtractor.app`
-- **Windows**: `DataExtractor.exe`
-
-## Building Executables
-
-### Mac
-```bash
-pyinstaller build_mac.spec
-```
-
-### Windows
-```bash
-pyinstaller build_windows.spec
 ```
 
 ## Usage
 
-1. Launch the application
-2. Drag and drop a folder onto the window (or click Browse)
-3. Select output location (optional)
-4. Click "Start Extraction"
-5. Wait for completion and review the summary
-
-## Output Structure
-
-The tool creates a mirrored folder structure with extracted data:
-
-```
-Input_Folder/
-  Subfolder/
-    document.xlsx
-    report.pdf
-
-Output_Folder_extracted/
-  Subfolder/
-    document/
-      sheet1.csv
-      sheet2.csv
-      chart1.png
-    report.txt
-    report_images/
-      image1.png
+```bash
+python src/main.py
 ```
 
-## Development
+1. Click **Get Started**
+2. Drop a folder or click to browse
+3. Click **Start Extraction**
+4. Open the output folder when complete
 
-- `src/main.py` - Application entry point
-- `src/gui/` - GUI components
-- `src/extractors/` - Document extraction modules
-- `src/utils/` - Utility functions
+## Output
 
-## License
+The tool creates a mirrored folder structure with extracted content:
 
-Proprietary - For internal use only
+```
+YourFolder_extracted/
+  document.csv        # Excel sheets as CSV
+  report.txt          # PDF/Word text content
+  presentation.txt    # PowerPoint slides
+  images/             # Embedded images
+```
+
+## Building
+
+```bash
+pyinstaller build_mac.spec    # Mac
+pyinstaller build_windows.spec # Windows
+```

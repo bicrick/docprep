@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DocPrep</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Custom Title Bar -->
+    <header class="title-bar">
+        <div class="window-controls">
+            <button class="window-btn close" id="btnClose" title="Close"></button>
+            <button class="window-btn minimize" id="btnMinimize" title="Minimize"></button>
+            <button class="window-btn maximize" id="btnMaximize" title="Fullscreen"></button>
+        </div>
+        <div class="title-text">DocPrep</div>
+        <div class="title-spacer"></div>
+    </header>
+    
+    <div class="app">
+        <!-- Slide 0: Welcome -->
+        <section class="slide slide-welcome active" id="slide-welcome">
+            <div class="slide-content">
+                <div class="welcome-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                </div>
+                <h1 class="welcome-title">DocPrep</h1>
+                <p class="welcome-description">
+                    Extract your business documents as plain text for use in Cursor
+                </p>
+                <div class="welcome-formats">
+                    <span class="format-badge">PDF</span>
+                    <span class="format-badge">Excel</span>
+                    <span class="format-badge">Word</span>
+                    <span class="format-badge">PowerPoint</span>
+                </div>
+                <button class="btn btn-primary btn-large" id="btnGetStarted">
+                    Get Started
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                </button>
+            </div>
+        </section>
+
+        <!-- Slide 1: Drop Zone -->
+        <section class="slide slide-drop" id="slide-drop">
+            <div class="slide-content">
+                <h2 class="slide-title">Select a folder</h2>
+                <p class="slide-subtitle">Choose the folder containing your documents</p>
+                
+                <div class="drop-zone" id="dropZone">
+                    <div class="drop-zone-inner">
+                        <div class="drop-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <path d="M3 15v4c0 1.1.9 2 2 2h14a2 2 0 0 0 2-2v-4M17 8l-5-5-5 5M12 3v12"/>
+                            </svg>
+                        </div>
+                        <h3 class="drop-title">Drop your folder here</h3>
+                        <p class="drop-subtitle">or click to browse</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 2: Ready to Start -->
+        <section class="slide slide-ready" id="slide-ready">
+            <div class="slide-content">
+                <div class="ready-header">
+                    <div class="check-circle">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20 6L9 17l-5-5"/>
+                        </svg>
+                    </div>
+                    <h2>Ready to extract</h2>
+                </div>
+                
+                <div class="folder-card">
+                    <div class="folder-icon">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M10 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-8l-2-2z"/>
+                        </svg>
+                    </div>
+                    <div class="folder-info">
+                        <p class="folder-name" id="folderName">Selected Folder</p>
+                        <p class="folder-path" id="folderPath">/path/to/folder</p>
+                    </div>
+                </div>
+                
+                <div class="file-preview" id="filePreview">
+                    <div class="preview-stat">
+                        <span class="stat-number" id="fileCount">0</span>
+                        <span class="stat-label">files found</span>
+                    </div>
+                </div>
+                
+                <div class="action-buttons">
+                    <button class="btn btn-secondary" id="btnBack">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M19 12H5M12 19l-7-7 7-7"/>
+                        </svg>
+                        Back
+                    </button>
+                    <button class="btn btn-primary" id="btnStart">
+                        Start Extraction
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M5 12h14M12 5l7 7-7 7"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 3: Progress -->
+        <section class="slide slide-progress" id="slide-progress">
+            <div class="slide-content">
+                <div class="progress-header">
+                    <div class="spinner"></div>
+                    <h2>Extracting documents</h2>
+                </div>
+                
+                <div class="progress-container">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                    <div class="progress-stats">
+                        <span class="progress-percent" id="progressPercent">0%</span>
+                        <span class="progress-count" id="progressCount">0 / 0 files</span>
+                    </div>
+                </div>
+                
+                <div class="current-file">
+                    <p class="current-file-label">Currently processing:</p>
+                    <p class="current-file-name" id="currentFileName">Waiting...</p>
+                </div>
+                
+                <button class="btn btn-cancel" id="btnCancel">Cancel</button>
+            </div>
+        </section>
+
+        <!-- Slide 4: Complete -->
+        <section class="slide slide-complete" id="slide-complete">
+            <div class="slide-content">
+                <div class="complete-header">
+                    <div class="success-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                            <path d="M22 4L12 14.01l-3-3"/>
+                        </svg>
+                    </div>
+                    <h2>Extraction Complete</h2>
+                    <p class="complete-subtitle">Your documents have been processed successfully</p>
+                </div>
+                
+                <div class="results-grid">
+                    <div class="result-card">
+                        <span class="result-number" id="resultProcessed">0</span>
+                        <span class="result-label">Files Processed</span>
+                    </div>
+                    <div class="result-card">
+                        <span class="result-number" id="resultExtracted">0</span>
+                        <span class="result-label">Files Extracted</span>
+                    </div>
+                    <div class="result-card result-warning" id="resultWarningsCard" style="display: none;">
+                        <span class="result-number" id="resultWarnings">0</span>
+                        <span class="result-label">Warnings</span>
+                    </div>
+                    <div class="result-card result-error" id="resultErrorsCard" style="display: none;">
+                        <span class="result-number" id="resultErrors">0</span>
+                        <span class="result-label">Errors</span>
+                    </div>
+                </div>
+                
+                <div class="action-buttons">
+                    <button class="btn btn-secondary" id="btnNewExtraction">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+                            <path d="M3 3v5h5"/>
+                        </svg>
+                        New Extraction
+                    </button>
+                    <button class="btn btn-primary" id="btnOpenFolder">
+                        Open Output Folder
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                            <polyline points="15 3 21 3 21 9"/>
+                            <line x1="10" y1="14" x2="21" y2="3"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </section>
+    </div>
+    
+    <script src="app.js"></script>
+</body>
+</html>
+
