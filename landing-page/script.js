@@ -288,10 +288,101 @@ function initActiveNavLink() {
 }
 
 // ============================================
+// Polka Dot Background Generator
+// ============================================
+
+function createPolkaDots() {
+    const container = document.createElement('div');
+    container.className = 'polka-dots';
+    
+    const config = {
+        count: 20,
+        minSize: 60,
+        maxSize: 400,
+        minOpacity: 0.03,
+        maxOpacity: 0.07,
+        // Ring distribution - dots avoid center
+        centerX: 50,
+        centerY: 50,
+        minRadius: 25,  // % from center - inner ring boundary
+        maxRadius: 55,  // % from center - outer ring boundary
+        padding: 10     // px padding between dots
+    };
+    
+    const placedDots = []; // Track placed dots for collision detection
+    
+    // Check if a new dot overlaps with any existing dot
+    function checkOverlap(x, y, size) {
+        const viewportWidth = window.innerWidth;
+        const viewportHeight = window.innerHeight;
+        const newX = (x / 100) * viewportWidth;
+        const newY = (y / 100) * viewportHeight;
+        const newRadius = size / 2;
+        
+        for (const dot of placedDots) {
+            const existingX = (dot.x / 100) * viewportWidth;
+            const existingY = (dot.y / 100) * viewportHeight;
+            const existingRadius = dot.size / 2;
+            
+            const distance = Math.sqrt(
+                Math.pow(newX - existingX, 2) + Math.pow(newY - existingY, 2)
+            );
+            
+            const minDistance = newRadius + existingRadius + config.padding;
+            
+            if (distance < minDistance) {
+                return true; // Overlap detected
+            }
+        }
+        return false;
+    }
+    
+    let attempts = 0;
+    const maxAttempts = 500; // Prevent infinite loop
+    
+    while (placedDots.length < config.count && attempts < maxAttempts) {
+        attempts++;
+        
+        // Generate position in ring pattern
+        const angle = Math.random() * Math.PI * 2;
+        const radius = config.minRadius + Math.random() * (config.maxRadius - config.minRadius);
+        const x = config.centerX + Math.cos(angle) * radius;
+        const y = config.centerY + Math.sin(angle) * radius;
+        
+        const size = config.minSize + Math.random() * (config.maxSize - config.minSize);
+        
+        // Check for overlap
+        if (checkOverlap(x, y, size)) {
+            continue; // Try again
+        }
+        
+        const opacity = config.minOpacity + Math.random() * (config.maxOpacity - config.minOpacity);
+        
+        const dot = document.createElement('div');
+        dot.className = 'polka-dot';
+        
+        dot.style.cssText = `
+            left: ${x}%;
+            top: ${y}%;
+            width: ${size}px;
+            height: ${size}px;
+            background: rgba(255, 255, 255, ${opacity});
+            transform: translate(-50%, -50%);
+        `;
+        
+        container.appendChild(dot);
+        placedDots.push({ x, y, size });
+    }
+    
+    document.body.insertBefore(container, document.body.firstChild);
+}
+
+// ============================================
 // Initialize on DOM Load
 // ============================================
 
 document.addEventListener('DOMContentLoaded', () => {
+    createPolkaDots();
     initSmoothScroll();
     initScrollAnimations();
     initDownloadButtons();
