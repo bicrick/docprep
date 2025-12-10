@@ -12,7 +12,8 @@ const state = {
     folderPath: null,
     folderName: null,
     fileCount: 0,
-    isExtracting: false
+    isExtracting: false,
+    extractPptxImages: false
 };
 
 // ============================================
@@ -22,6 +23,7 @@ const state = {
 function showSlide(slideName) {
     const slides = document.querySelectorAll('.slide');
     const targetSlide = document.getElementById(`slide-${slideName}`);
+    const footer = document.getElementById('appFooter');
     
     if (!targetSlide) return;
     
@@ -42,6 +44,15 @@ function showSlide(slideName) {
     setTimeout(() => {
         targetSlide.classList.add('active');
     }, 100);
+    
+    // Show/hide footer (hidden on welcome screen only)
+    if (footer) {
+        if (slideName === 'welcome') {
+            footer.classList.add('hidden');
+        } else {
+            footer.classList.remove('hidden');
+        }
+    }
     
     state.currentSlide = slideName;
 }
@@ -158,6 +169,10 @@ function initButtons() {
     document.getElementById('btnStart').addEventListener('click', async () => {
         if (!state.folderPath || state.isExtracting) return;
         
+        // Read toggle state
+        const pptxToggle = document.getElementById('pptxImagesToggle');
+        state.extractPptxImages = pptxToggle ? pptxToggle.checked : false;
+        
         state.isExtracting = true;
         showSlide('progress');
         
@@ -165,9 +180,9 @@ function initButtons() {
         updateProgress(0, 1);
         document.getElementById('currentFileName').textContent = 'Starting...';
         
-        // Start extraction via Python
+        // Start extraction via Python with options
         if (window.pywebview) {
-            await window.pywebview.api.start_extraction();
+            await window.pywebview.api.start_extraction(state.extractPptxImages);
         }
     });
     
@@ -183,7 +198,7 @@ function initButtons() {
     // New extraction button
     document.getElementById('btnNewExtraction').addEventListener('click', () => {
         resetState();
-        showSlide('welcome');
+        showSlide('drop');
     });
     
     // Open folder button
@@ -199,6 +214,13 @@ function resetState() {
     state.folderName = null;
     state.fileCount = 0;
     state.isExtracting = false;
+    state.extractPptxImages = false;
+    
+    // Reset toggle UI
+    const pptxToggle = document.getElementById('pptxImagesToggle');
+    if (pptxToggle) {
+        pptxToggle.checked = false;
+    }
 }
 
 // ============================================
@@ -268,6 +290,12 @@ function showError(message) {
 document.addEventListener('DOMContentLoaded', () => {
     initDropZone();
     initButtons();
+    
+    // Hide footer initially (welcome screen)
+    const footer = document.getElementById('appFooter');
+    if (footer) {
+        footer.classList.add('hidden');
+    }
     
     // Show welcome slide first
     showSlide('welcome');

@@ -163,6 +163,33 @@ body {
 }
 
 /* ============================================
+   Persistent App Footer
+   ============================================ */
+
+.app-footer {
+    position: fixed;
+    bottom: var(--space-lg);
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 100;
+    opacity: 1;
+    transition: opacity var(--duration-normal) var(--ease-out);
+}
+
+.app-footer.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.footer-logo {
+    font-family: var(--font-serif);
+    font-weight: 600;
+    font-size: 1rem;
+    color: var(--text-tertiary);
+    letter-spacing: -0.02em;
+}
+
+/* ============================================
    Welcome Screen
    ============================================ */
 
@@ -389,6 +416,66 @@ body {
     color: var(--text-secondary);
     font-size: 0.85rem;
     margin-top: var(--space-sm);
+}
+
+/* ============================================
+   Options Toggle
+   ============================================ */
+
+.options-section {
+    width: 100%;
+    margin-bottom: var(--space-lg);
+    padding: var(--space-md);
+    background: var(--bg-card);
+    border-radius: var(--radius-md);
+}
+
+.toggle-option {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    cursor: pointer;
+    user-select: none;
+}
+
+.toggle-option input[type="checkbox"] {
+    display: none;
+}
+
+.toggle-switch {
+    position: relative;
+    width: 44px;
+    height: 24px;
+    background: var(--border-subtle);
+    border-radius: var(--radius-full);
+    transition: background var(--duration-fast) var(--ease-out);
+    flex-shrink: 0;
+}
+
+.toggle-switch::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 20px;
+    height: 20px;
+    background: white;
+    border-radius: var(--radius-full);
+    transition: transform var(--duration-fast) var(--ease-out);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+}
+
+.toggle-option input[type="checkbox"]:checked + .toggle-switch {
+    background: var(--accent-primary);
+}
+
+.toggle-option input[type="checkbox"]:checked + .toggle-switch::after {
+    transform: translateX(20px);
+}
+
+.toggle-label {
+    font-size: 0.9rem;
+    color: var(--text-primary);
 }
 
 /* ============================================

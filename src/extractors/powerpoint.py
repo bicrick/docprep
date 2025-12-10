@@ -16,9 +16,10 @@ class PowerPointExtractor(BaseExtractor):
     
     SUPPORTED_EXTENSIONS = ['.pptx']
     
-    def __init__(self, output_base_path: Path):
+    def __init__(self, output_base_path: Path, extract_images: bool = False):
         super().__init__(output_base_path)
         self.pptx_available = self._check_pptx()
+        self.extract_images = extract_images
     
     def _check_pptx(self) -> bool:
         """Check if python-pptx is available"""
@@ -84,14 +85,17 @@ class PowerPointExtractor(BaseExtractor):
             else:
                 result.add_warning("No text content found in presentation")
             
-            # Extract images and charts
-            image_count = self._extract_images(prs, images_dir, result)
-            
-            if image_count > 0:
-                result.metadata['images_extracted'] = image_count
-                logger.info(f"Extracted {image_count} images/charts")
+            # Extract images and charts (only if enabled)
+            if self.extract_images:
+                image_count = self._extract_images(prs, images_dir, result)
+                
+                if image_count > 0:
+                    result.metadata['images_extracted'] = image_count
+                    logger.info(f"Extracted {image_count} images/charts")
+                else:
+                    logger.info("No images found in presentation")
             else:
-                logger.info("No images found in presentation")
+                logger.info("Image extraction disabled for PowerPoint")
             
             if len(result.extracted_files) > 0:
                 result.success = True

@@ -126,6 +126,78 @@ if platform.system() == 'Windows':
     sys.stderr = FilteredStderr(sys.stderr)
 
 
+def detect_system_theme() -> str:
+    """
+    Detect the system's color scheme (dark or light mode).
+    Returns 'dark' or 'light'.
+    
+    Uses platform-specific APIs:
+    - macOS: AppKit NSAppearance
+    - Windows: Registry (AppsUseLightTheme)
+    - Linux: GTK settings or environment variables
+    """
+    system = platform.system()
+    
+    if system == 'Darwin':  # macOS
+        try:
+            from AppKit import NSAppearance, NSApplication
+            app = NSApplication.sharedApplication()
+            appearance = app.effectiveAppearance()
+            # Check if dark mode is active
+            if appearance:
+                appearance_name = appearance.name()
+                if appearance_name and 'Dark' in appearance_name:
+                    return 'dark'
+            return 'light'
+        except ImportError:
+            # Fallback: check environment variable
+            import os
+            if os.environ.get('APPLE_SSD_APPEARANCE') == 'Dark':
+                return 'dark'
+            return 'light'
+        except Exception:
+            logger.warning("Failed to detect macOS theme, defaulting to light")
+            return 'light'
+    
+    elif system == 'Windows':
+        try:
+            import winreg
+            key_path = r"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize"
+            key = winreg.OpenKey(winreg.HKEY_CURRENT_USER, key_path)
+            # AppsUseLightTheme: 0 = dark mode, 1 = light mode
+            value, _ = winreg.QueryValueEx(key, "AppsUseLightTheme")
+            winreg.CloseKey(key)
+            return 'light' if value == 1 else 'dark'
+        except (ImportError, FileNotFoundError, OSError):
+            logger.warning("Failed to detect Windows theme, defaulting to light")
+            return 'light'
+    
+    else:  # Linux
+        try:
+            # Try GTK settings first
+            result = subprocess.run(
+                ['gsettings', 'get', 'org.gnome.desktop.interface', 'gtk-theme'],
+                capture_output=True,
+                text=True,
+                timeout=1
+            )
+            if result.returncode == 0:
+                theme = result.stdout.strip().lower()
+                if 'dark' in theme:
+                    return 'dark'
+        except (subprocess.TimeoutExpired, FileNotFoundError, subprocess.SubprocessError):
+            pass
+        
+        # Fallback: check environment variable
+        import os
+        color_scheme = os.environ.get('GTK_THEME', '').lower()
+        if 'dark' in color_scheme:
+            return 'dark'
+        
+        # Default to light mode
+        return 'light'
+
+
 class DocPrepAPI:
     """
     JavaScript API exposed to the webview frontend.
@@ -140,6 +212,7 @@ class DocPrepAPI:
         self.extraction_manager: Optional[ExtractionManager] = None
         self.extraction_thread: Optional[threading.Thread] = None
         self.scanner: Optional[FileScanner] = None
+        self.extract_pptx_images: bool = False
     
     def set_window(self, window: webview.Window):
         """Set the webview window reference"""
@@ -229,14 +302,20 @@ class DocPrepAPI:
             'file_count': scan_results['supported_count']
         }
     
-    def start_extraction(self) -> None:
+    def start_extraction(self, extract_pptx_images: bool = False) -> None:
         """
         Start the extraction process in a background thread.
         Progress updates are pushed to JavaScript via evaluate_js.
+        
+        Args:
+            extract_pptx_images: Whether to extract images from PowerPoint files (default False)
         """
         if not self.input_folder or not self.scanner:
             self._call_js('showError', 'No folder selected')
             return
+        
+        # Store extraction options
+        self.extract_pptx_images = extract_pptx_images
         
         # Start extraction in background thread
         self.extraction_thread = threading.Thread(
@@ -256,7 +335,7 @@ class DocPrepAPI:
                 ExcelExtractor(self.output_folder),
                 PDFExtractor(self.output_folder),
                 WordExtractor(self.output_folder),
-                PowerPointExtractor(self.output_folder)
+                PowerPointExtractor(self.output_folder, extract_images=self.extract_pptx_images)
             ]
             
             # Create extraction manager
@@ -436,8 +515,12 @@ class WebviewApp:
         web_dir = current_dir / 'web'
         html_path = web_dir / 'index.html'
         
+        # Detect system theme and set background color accordingly
+        theme = detect_system_theme()
+        bg_color = '#1e3a5a' if theme == 'dark' else '#ffffff'
+        
         # Create the webview window with native frame
-        # Set background color to match dark mode to prevent white flash on load
+        # Set background color to match system theme to prevent color flash on load
         self.window = webview.create_window(
             title='docprep',
             url=str(html_path),
@@ -445,7 +528,7 @@ class WebviewApp:
             height=WINDOW_HEIGHT,
             min_size=(600, 500),
             js_api=self.api,
-            background_color='#1e3a5a'
+            background_color=bg_color
         )
         
         # Set window reference in API
