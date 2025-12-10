@@ -485,11 +485,17 @@ body {
 .action-buttons {
     display: flex;
     gap: var(--space-sm);
+    justify-content: center;
+    align-items: center;
     width: 100%;
 }
 
+.action-buttons .btn-back-link {
+    margin-top: 0;
+    flex: 0 0 auto;
+}
+
 .btn {
-    flex: 1;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -502,6 +508,10 @@ body {
     border-radius: var(--radius-full);
     cursor: pointer;
     transition: all var(--duration-fast) var(--ease-out);
+}
+
+.action-buttons .btn {
+    flex: 0 0 auto;
 }
 
 .btn svg {
@@ -535,6 +545,10 @@ body {
 .btn-large {
     padding: var(--space-md) var(--space-xl);
     font-size: 0.95rem;
+}
+
+.action-buttons .btn-large {
+    flex: 0 0 auto;
 }
 
 .btn-cancel {
@@ -1024,7 +1038,7 @@ body {
     align-items: center;
     gap: var(--space-sm);
     padding: var(--space-md) var(--space-lg);
-    background: var(--success-light);
+    background: var(--bg-card);
     border-radius: var(--radius-md);
     margin-bottom: var(--space-xl);
 }
@@ -1032,7 +1046,7 @@ body {
 .security-icon {
     width: 20px;
     height: 20px;
-    color: var(--success);
+    color: var(--text-secondary);
     flex-shrink: 0;
 }
 
