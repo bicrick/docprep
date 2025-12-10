@@ -119,14 +119,24 @@ async function handleFolderSelected(folderData) {
 // ============================================
 
 function initButtons() {
-    // Get Started button
+    // Get Started button -> go to intro
     document.getElementById('btnGetStarted').addEventListener('click', () => {
+        showSlide('intro');
+    });
+    
+    // Continue button (from intro slide) -> go to drop
+    document.getElementById('btnContinue').addEventListener('click', () => {
         showSlide('drop');
     });
     
-    // Back to welcome button (from drop slide)
-    document.getElementById('btnBackToWelcome').addEventListener('click', () => {
+    // Back to welcome button (from intro slide)
+    document.getElementById('btnBackToWelcomeFromIntro').addEventListener('click', () => {
         showSlide('welcome');
+    });
+    
+    // Back to intro button (from drop slide)
+    document.getElementById('btnBackToWelcome').addEventListener('click', () => {
+        showSlide('intro');
     });
     
     // Back button (from ready slide)

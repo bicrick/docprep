@@ -32,7 +32,152 @@
             </div>
         </section>
 
-        <!-- Slide 1: Drop Zone -->
+        <!-- Slide 1: Introduction -->
+        <section class="slide slide-intro" id="slide-intro">
+            <div class="slide-content intro-content">
+                <h2 class="intro-title">How it works</h2>
+                <p class="intro-subtitle">DocPrep extracts clean, structured data from your documents</p>
+                
+                <div class="tree-comparison">
+                    <!-- Before Tree -->
+                    <div class="tree-panel tree-before">
+                        <div class="tree-label">Your Files</div>
+                        <div class="finder-list">
+                            <div class="finder-row folder">
+                                <svg class="icon icon-folder" viewBox="0 0 24 24" fill="currentColor"><path d="M10 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-8l-2-2z"/></svg>
+                                <span>Project Files</span>
+                            </div>
+                            <div class="finder-row folder indent-1">
+                                <svg class="icon icon-folder" viewBox="0 0 24 24" fill="currentColor"><path d="M10 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-8l-2-2z"/></svg>
+                                <span>Financials</span>
+                            </div>
+                            <div class="finder-row file indent-2">
+                                <svg class="icon icon-excel" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" fill="#217346"/><path d="M7 7l4 5-4 5M12 7h5M12 12h5M12 17h5" stroke="white" stroke-width="1.5" fill="none"/></svg>
+                                <span>Q1_Report.xlsx</span>
+                            </div>
+                            <div class="finder-row file indent-2">
+                                <svg class="icon icon-excel" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" fill="#217346"/><path d="M7 7l4 5-4 5M12 7h5M12 12h5M12 17h5" stroke="white" stroke-width="1.5" fill="none"/></svg>
+                                <span>Q2_Report.xlsx</span>
+                            </div>
+                            <div class="finder-row file indent-2">
+                                <svg class="icon icon-excel" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" fill="#217346"/><path d="M7 7l4 5-4 5M12 7h5M12 12h5M12 17h5" stroke="white" stroke-width="1.5" fill="none"/></svg>
+                                <span>Budget_2024.xls</span>
+                            </div>
+                            <div class="finder-row folder indent-1">
+                                <svg class="icon icon-folder" viewBox="0 0 24 24" fill="currentColor"><path d="M10 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-8l-2-2z"/></svg>
+                                <span>Contracts</span>
+                            </div>
+                            <div class="finder-row file indent-2">
+                                <svg class="icon icon-word" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" fill="#2b579a"/><path d="M7 8l2 8 2-6 2 6 2-8" stroke="white" stroke-width="1.5" fill="none"/></svg>
+                                <span>NDA_v1.docx</span>
+                            </div>
+                            <div class="finder-row file indent-2">
+                                <svg class="icon icon-word" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" fill="#2b579a"/><path d="M7 8l2 8 2-6 2 6 2-8" stroke="white" stroke-width="1.5" fill="none"/></svg>
+                                <span>Agreement_FINAL.docx</span>
+                            </div>
+                            <div class="finder-row file indent-2">
+                                <svg class="icon icon-pdf" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" fill="#d63031"/><text x="12" y="15" text-anchor="middle" fill="white" font-size="7" font-weight="bold">PDF</text></svg>
+                                <span>Terms.pdf</span>
+                            </div>
+                            <div class="finder-row folder indent-1">
+                                <svg class="icon icon-folder" viewBox="0 0 24 24" fill="currentColor"><path d="M10 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-8l-2-2z"/></svg>
+                                <span>Presentations</span>
+                            </div>
+                            <div class="finder-row file indent-2">
+                                <svg class="icon icon-pptx" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" fill="#d24726"/><circle cx="10" cy="12" r="4" stroke="white" stroke-width="1.5" fill="none"/><path d="M10 8v8M14 12h4" stroke="white" stroke-width="1.5"/></svg>
+                                <span>Sales_Deck.pptx</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Arrow -->
+                    <div class="tree-arrow">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M5 12h14M12 5l7 7-7 7"/>
+                        </svg>
+                    </div>
+                    
+                    <!-- After Tree -->
+                    <div class="tree-panel tree-after">
+                        <div class="tree-label">Extracted Output</div>
+                        <div class="finder-list">
+                            <div class="finder-row folder">
+                                <svg class="icon icon-folder" viewBox="0 0 24 24" fill="currentColor"><path d="M10 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-8l-2-2z"/></svg>
+                                <span>Project Files_extracted</span>
+                            </div>
+                            <div class="finder-row folder indent-1">
+                                <svg class="icon icon-folder" viewBox="0 0 24 24" fill="currentColor"><path d="M10 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-8l-2-2z"/></svg>
+                                <span>Financials</span>
+                            </div>
+                            <div class="finder-row folder indent-2">
+                                <svg class="icon icon-folder" viewBox="0 0 24 24" fill="currentColor"><path d="M10 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-8l-2-2z"/></svg>
+                                <span>q1_report</span>
+                            </div>
+                            <div class="finder-row file indent-3">
+                                <svg class="icon icon-csv" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" fill="#217346"/><path d="M7 8h10M7 12h10M7 16h10" stroke="white" stroke-width="1.5"/></svg>
+                                <span>sheet1.csv</span>
+                            </div>
+                            <div class="finder-row folder indent-2">
+                                <svg class="icon icon-folder" viewBox="0 0 24 24" fill="currentColor"><path d="M10 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-8l-2-2z"/></svg>
+                                <span>q2_report</span>
+                            </div>
+                            <div class="finder-row file indent-3">
+                                <svg class="icon icon-csv" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" fill="#217346"/><path d="M7 8h10M7 12h10M7 16h10" stroke="white" stroke-width="1.5"/></svg>
+                                <span>sheet1.csv</span>
+                            </div>
+                            <div class="finder-row folder indent-2">
+                                <svg class="icon icon-folder" viewBox="0 0 24 24" fill="currentColor"><path d="M10 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-8l-2-2z"/></svg>
+                                <span>budget_2024</span>
+                            </div>
+                            <div class="finder-row file indent-3">
+                                <svg class="icon icon-csv" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" fill="#217346"/><path d="M7 8h10M7 12h10M7 16h10" stroke="white" stroke-width="1.5"/></svg>
+                                <span>sheet1.csv</span>
+                            </div>
+                            <div class="finder-row folder indent-1">
+                                <svg class="icon icon-folder" viewBox="0 0 24 24" fill="currentColor"><path d="M10 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-8l-2-2z"/></svg>
+                                <span>Contracts</span>
+                            </div>
+                            <div class="finder-row file indent-2">
+                                <svg class="icon icon-txt" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" fill="#6b7280"/><path d="M7 8h10M7 12h7M7 16h9" stroke="white" stroke-width="1.5"/></svg>
+                                <span>nda_v1.txt</span>
+                            </div>
+                            <div class="finder-row file indent-2">
+                                <svg class="icon icon-txt" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" fill="#6b7280"/><path d="M7 8h10M7 12h7M7 16h9" stroke="white" stroke-width="1.5"/></svg>
+                                <span>agreement_final.txt</span>
+                            </div>
+                            <div class="finder-row file indent-2">
+                                <svg class="icon icon-txt" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" fill="#6b7280"/><path d="M7 8h10M7 12h7M7 16h9" stroke="white" stroke-width="1.5"/></svg>
+                                <span>terms.txt</span>
+                            </div>
+                            <div class="finder-row folder indent-1">
+                                <svg class="icon icon-folder" viewBox="0 0 24 24" fill="currentColor"><path d="M10 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-8l-2-2z"/></svg>
+                                <span>Presentations</span>
+                            </div>
+                            <div class="finder-row file indent-2">
+                                <svg class="icon icon-txt" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" fill="#6b7280"/><path d="M7 8h10M7 12h7M7 16h9" stroke="white" stroke-width="1.5"/></svg>
+                                <span>sales_deck.txt</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <button class="btn btn-primary btn-large" id="btnContinue">
+                    Continue
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                </button>
+                
+                <button class="btn-back-link" id="btnBackToWelcomeFromIntro">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 12H5M12 19l-7-7 7-7"/>
+                    </svg>
+                    Back
+                </button>
+            </div>
+        </section>
+
+        <!-- Slide 2: Drop Zone -->
         <section class="slide slide-drop" id="slide-drop">
             <div class="slide-content">
                 <h2 class="slide-title">Select a folder</h2>

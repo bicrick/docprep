@@ -26,8 +26,8 @@ SUPPORTED_FORMATS_DETAIL = "Supports: PDFs (.pdf), Excel (.xlsx, .xls), Word (.d
 DEFAULT_OUTPUT_SUFFIX = "_extracted"
 
 # GUI Settings
-WINDOW_WIDTH = 800
-WINDOW_HEIGHT = 600
+WINDOW_WIDTH = 1100
+WINDOW_HEIGHT = 850
 WINDOW_TITLE = f"{APP_NAME} v{APP_VERSION}"
 
 # Modern minimal color palette
