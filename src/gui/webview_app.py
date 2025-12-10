@@ -522,7 +522,7 @@ class WebviewApp:
         # Create the webview window with native frame
         # Set background color to match system theme to prevent color flash on load
         self.window = webview.create_window(
-            title='docprep',
+            title='',
             url=str(html_path),
             width=WINDOW_WIDTH,
             height=WINDOW_HEIGHT,
