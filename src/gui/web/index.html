@@ -4,6 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DocPrep</title>
+    <!-- Inline critical styles to prevent white flash on load -->
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            /* Light mode default */
+            background-color: #ffffff;
+        }
+        @media (prefers-color-scheme: dark) {
+            html, body {
+                background-color: #1e3a5a;
+            }
+        }
+    </style>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>

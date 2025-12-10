@@ -269,13 +269,15 @@ class WebviewApp:
         html_path = web_dir / 'index.html'
         
         # Create the webview window with native frame
+        # Set background color to match dark mode to prevent white flash on load
         self.window = webview.create_window(
             title='docprep',
             url=str(html_path),
             width=WINDOW_WIDTH,
             height=WINDOW_HEIGHT,
             min_size=(600, 500),
-            js_api=self.api
+            js_api=self.api,
+            background_color='#1e3a5a'
         )
         
         # Set window reference in API
