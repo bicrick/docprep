@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import Optional
 
 from extractors.base import BaseExtractor, ExtractionResult
+from utils.office_converter import OfficeConverter
 
 logger = logging.getLogger(__name__)
 
@@ -20,6 +21,7 @@ class PowerPointExtractor(BaseExtractor):
         super().__init__(output_base_path)
         self.pptx_available = self._check_pptx()
         self.extract_images = extract_images
+        self.converter = OfficeConverter()
     
     def _check_pptx(self) -> bool:
         """Check if python-pptx is available"""
@@ -53,8 +55,6 @@ class PowerPointExtractor(BaseExtractor):
         
         try:
             import pptx
-            from PIL import Image
-            import io
             
             logger.info(f"Extracting PowerPoint file: {filepath.name}")
             
@@ -65,7 +65,6 @@ class PowerPointExtractor(BaseExtractor):
             
             # Create subdirectory for images
             file_safe_name = self.sanitize_filename(filepath.name)
-            images_dir = output_dir / f"{file_safe_name}_images"
             
             # Open presentation
             prs = pptx.Presentation(filepath)
@@ -85,18 +84,33 @@ class PowerPointExtractor(BaseExtractor):
             else:
                 result.add_warning("No text content found in presentation")
             
-            # Extract images and charts (only if enabled)
+            # Extract slide images (snapshots)
             if self.extract_images:
-                image_count = self._extract_images(prs, images_dir, result)
+                # Use LibreOffice converter for full slide screenshots
+                images_dir = output_dir / f"{file_safe_name}_slides"
                 
-                if image_count > 0:
-                    result.metadata['images_extracted'] = image_count
-                    logger.info(f"Extracted {image_count} images/charts")
+                # Check if LibreOffice is available
+                if self.converter.soffice_path:
+                    logger.info("Using LibreOffice for slide image extraction")
+                    generated_files = self.converter.convert_to_png(filepath, images_dir)
+                    
+                    if generated_files:
+                        image_count = len(generated_files)
+                        for img in generated_files:
+                            result.add_file(img)
+                        result.metadata['slide_images_extracted'] = image_count
+                        logger.info(f"Extracted {image_count} slide images via LibreOffice")
+                    else:
+                        logger.warning("LibreOffice conversion failed or produced no output")
+                        result.add_warning("Slide image extraction failed")
                 else:
-                    logger.info("No images found in presentation")
+                    logger.warning("LibreOffice not found - skipping slide image extraction")
+                    result.add_warning("LibreOffice not found - cannot generate slide screenshots")
             else:
-                logger.info("Image extraction disabled for PowerPoint")
-            
+                 # We always want slide screenshots now, so if disabled by config, we log it.
+                 # But previously I removed the 'else' block which kept "Image extraction disabled" message.
+                 # Re-adding minimal logging if needed, or simply pass.
+                 logger.info("Image extraction disabled for PowerPoint")
             if len(result.extracted_files) > 0:
                 result.success = True
                 logger.info(f"Successfully extracted data from {filepath.name}")
@@ -146,61 +160,3 @@ class PowerPointExtractor(BaseExtractor):
             logger.error(f"Error extracting text: {e}")
             result.add_warning(f"Text extraction error: {e}")
             return ""
-    
-    def _extract_images(self, prs, output_dir: Path, result: ExtractionResult) -> int:
-        """Extract all images and charts from PowerPoint presentation"""
-        try:
-            from PIL import Image
-            import io
-            
-            image_count = 0
-            
-            for slide_idx, slide in enumerate(prs.slides, 1):
-                for shape_idx, shape in enumerate(slide.shapes, 1):
-                    try:
-                        # Check if shape is a picture
-                        if hasattr(shape, "image"):
-                            # Ensure output directory exists
-                            if not self.ensure_output_dir(output_dir):
-                                result.add_warning(f"Failed to create images directory: {output_dir}")
-                                continue
-                            
-                            # Get image data
-                            image = shape.image
-                            image_bytes = image.blob
-                            
-                            # Determine extension
-                            ext = image.ext
-                            if not ext:
-                                ext = 'png'
-                            
-                            # Create filename
-                            image_count += 1
-                            img_filename = f"slide{slide_idx}_shape{shape_idx}.{ext}"
-                            img_path = output_dir / img_filename
-                            
-                            # Save image
-                            with open(img_path, 'wb') as f:
-                                f.write(image_bytes)
-                            
-                            result.add_file(img_path)
-                            logger.debug(f"Extracted image from slide {slide_idx}: {img_filename}")
-                        
-                        # Check if shape contains a chart
-                        elif hasattr(shape, "chart"):
-                            # Charts are complex objects - we can extract their data
-                            # but rendering them is more complex
-                            logger.debug(f"Found chart in slide {slide_idx}, shape {shape_idx}")
-                            result.metadata.setdefault('charts_found', 0)
-                            result.metadata['charts_found'] += 1
-                        
-                    except Exception as e:
-                        logger.warning(f"Failed to extract image/chart from slide {slide_idx}, shape {shape_idx}: {e}")
-            
-            return image_count
-            
-        except Exception as e:
-            logger.error(f"Error extracting images: {e}")
-            result.add_warning(f"Image extraction error: {e}")
-            return 0
-

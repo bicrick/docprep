@@ -14,14 +14,25 @@ from pathlib import Path
 
 block_cipher = None
 
+# Bundle LibreOffice folder if it exists
+# Typically C:\Program Files\LibreOffice
+libreoffice_path = r'C:\Program Files\LibreOffice'
+datas = [
+    # Web assets for pywebview UI
+    ('src/gui/web', 'gui/web'),
+]
+
+if os.path.exists(libreoffice_path):
+    print(f"Bundling LibreOffice from {libreoffice_path}")
+    datas.append((libreoffice_path, 'LibreOffice'))
+else:
+    print(f"WARNING: LibreOffice not found at {libreoffice_path} - App will not include it")
+
 a = Analysis(
     ['src/main.py'],
     pathex=['src'],  # Include src directory for local module imports
     binaries=[],
-    datas=[
-        # Web assets for pywebview UI
-        ('src/gui/web', 'gui/web'),
-    ],
+    datas=datas,
     hiddenimports=[
         # Local modules from src/
         'config',
@@ -31,6 +42,7 @@ a = Analysis(
         'utils',
         'utils.file_scanner',
         'utils.report',
+        'utils.office_converter',
         'extractors',
         'extractors.base',
         'extractors.excel',
@@ -136,4 +148,3 @@ exe = EXE(
     entitlements_file=None,
     icon='icons/docprep.ico',  # Windows icon
 )
-

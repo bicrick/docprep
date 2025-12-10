@@ -3,29 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DocPrep</title>
+    <title>DocPrep - Make your documents AI-ready</title>
     <!-- Inline critical styles to prevent white flash on load -->
     <style>
         html, body {
             margin: 0;
             padding: 0;
             height: 100%;
-            /* Light mode default */
-            background-color: #ffffff;
-        }
-        @media (prefers-color-scheme: dark) {
-            html, body {
-                background-color: #1e3a5a;
-            }
+            /* Dark mode default */
+            background-color: #1e3a5a;
         }
     </style>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="app">
-        <!-- Slide 0: Welcome -->
-        <section class="slide slide-welcome active" id="slide-welcome">
-            <div class="slide-content">
+    <!-- Hero Navigation -->
+    <nav class="hero-nav">
+        <a href="#hero" class="nav-link">Home</a>
+        <a href="#tutorial" class="nav-link">How it works</a>
+        <a href="#use-case" class="nav-link">Use Case</a>
+        <a href="#download" class="nav-link">Download</a>
+    </nav>
+    
+    <div class="landing-page">
+        <!-- Section 1: Hero/Welcome -->
+        <section class="landing-section section-hero" id="hero">
+            <div class="section-content">
                 <div class="welcome-logo">
                     <span class="logo-text">docprep</span>
                 </div>
@@ -33,10 +36,10 @@
                     Make your documents AI-ready. Extract clean text from complex file formats.
                 </p>
                 <div class="welcome-formats">
-                    <img src="pdf-logo.svg" alt="PDF" class="format-logo">
-                    <img src="excel-logo.svg" alt="Excel" class="format-logo">
-                    <img src="word-logo.svg" alt="Word" class="format-logo">
-                    <img src="powerpoint-logo.svg" alt="PowerPoint" class="format-logo">
+                    <img src="assets/pdf-logo.svg" alt="PDF" class="format-logo">
+                    <img src="assets/excel-logo.svg" alt="Excel" class="format-logo">
+                    <img src="assets/word-logo.svg" alt="Word" class="format-logo">
+                    <img src="assets/powerpoint-logo.svg" alt="PowerPoint" class="format-logo">
                 </div>
                 <button class="btn btn-primary btn-large" id="btnGetStarted">
                     Get Started
@@ -47,9 +50,9 @@
             </div>
         </section>
 
-        <!-- Slide 1: Introduction -->
-        <section class="slide slide-intro" id="slide-intro">
-            <div class="slide-content intro-content">
+        <!-- Section 2: Tutorial - How it works -->
+        <section class="landing-section section-tutorial" id="tutorial">
+            <div class="section-content intro-content">
                 <h2 class="intro-title">How it works</h2>
                 <p class="intro-subtitle">DocPrep extracts clean, structured data from your documents</p>
                 
@@ -105,11 +108,19 @@
                         </div>
                     </div>
                     
-                    <!-- Arrow -->
-                    <div class="tree-arrow">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M5 12h14M12 5l7 7-7 7"/>
-                        </svg>
+                    <!-- Center Column -->
+                    <div class="tree-center">
+                        <div class="tree-arrow">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M5 12h14M12 5l7 7-7 7"/>
+                            </svg>
+                        </div>
+                        <div class="progress-wheel">
+                            <svg viewBox="0 0 40 40">
+                                <circle class="wheel-track" cx="20" cy="20" r="18" fill="none" stroke-width="3"></circle>
+                                <circle class="wheel-fill" cx="20" cy="20" r="18" fill="none" stroke-width="3"></circle>
+                            </svg>
+                        </div>
                     </div>
                     
                     <!-- After Tree -->
@@ -175,27 +186,12 @@
                         </div>
                     </div>
                 </div>
-                
-                <div class="action-buttons">
-                    <button class="btn-back-link" id="btnBackToWelcomeFromIntro">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M19 12H5M12 19l-7-7 7-7"/>
-                        </svg>
-                        Back
-                    </button>
-                    <button class="btn btn-primary btn-large" id="btnContinue">
-                        Continue
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M5 12h14M12 5l7 7-7 7"/>
-                        </svg>
-                    </button>
-                </div>
             </div>
         </section>
 
-        <!-- Slide 2: Tutorial -->
-        <section class="slide slide-tutorial" id="slide-tutorial">
-            <div class="slide-content tutorial-content">
+        <!-- Section 3: Use Case - AI-Ready Data -->
+        <section class="landing-section section-use-case" id="use-case">
+            <div class="section-content tutorial-content">
                 <h2 class="tutorial-title">AI-Ready Data</h2>
                 <p class="tutorial-subtitle">Open your extracted folder in an AI-integrated IDE of your choice</p>
                 
@@ -205,11 +201,11 @@
                         <span class="ide-name">Cursor</span>
                     </a>
                     <a href="https://windsurf.com/" class="ide-card" target="_blank">
-                        <img src="windsurf-icon.svg" alt="Windsurf" class="ide-logo">
+                        <img src="assets/windsurf-icon.svg" alt="Windsurf" class="ide-logo">
                         <span class="ide-name">Windsurf</span>
                     </a>
                     <a href="https://antigravity.google/" class="ide-card" target="_blank">
-                        <img src="antigravity-logo.svg" alt="Google Antigravity" class="ide-logo">
+                        <img src="assets/antigravity-logo.svg" alt="Google Antigravity" class="ide-logo">
                         <span class="ide-name">Antigravity</span>
                     </a>
                 </div>
@@ -223,202 +219,58 @@
                     </svg>
                     <p class="security-text">All processing happens locally on your device. Your documents never leave your computer.</p>
                 </div>
-                
-                <div class="action-buttons">
-                    <button class="btn-back-link" id="btnBackToIntro">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M19 12H5M12 19l-7-7 7-7"/>
-                        </svg>
-                        Back
-                    </button>
-                    <button class="btn btn-primary btn-large" id="btnContinueToUpload">
-                        Continue
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M5 12h14M12 5l7 7-7 7"/>
-                        </svg>
-                    </button>
-                </div>
             </div>
         </section>
 
-        <!-- Slide 3: Drop Zone -->
-        <section class="slide slide-drop" id="slide-drop">
-            <div class="slide-content">
-                <h2 class="slide-title">Select a folder</h2>
-                <p class="slide-subtitle">Choose the folder containing your documents</p>
+        <!-- Section 4: Download -->
+        <section class="landing-section section-download" id="download">
+            <div class="section-content download-content">
+                <h2 class="download-title"><span class="docprep-logo-text">docprep</span></h2>
+                <p class="download-subtitle">Get started on your platform</p>
                 
-                <div class="drop-zone" id="dropZone">
-                    <div class="drop-zone-inner">
-                        <div class="drop-icon">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                                <path d="M3 15v4c0 1.1.9 2 2 2h14a2 2 0 0 0 2-2v-4M17 8l-5-5-5 5M12 3v12"/>
+                <div class="download-grid">
+                    <a href="#" class="download-card" id="download-mac">
+                        <div class="download-icon">
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
                             </svg>
                         </div>
-                        <h3 class="drop-title">Drop your folder here</h3>
-                        <p class="drop-subtitle">or click to browse</p>
-                    </div>
-                </div>
-                
-                <button class="btn-back-link" id="btnBackToWelcome">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M19 12H5M12 19l-7-7 7-7"/>
-                    </svg>
-                    Back
-                </button>
-            </div>
-        </section>
-
-        <!-- Slide 2: Ready to Start -->
-        <section class="slide slide-ready" id="slide-ready">
-            <div class="slide-content">
-                <div class="ready-header">
-                    <div class="check-circle">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M20 6L9 17l-5-5"/>
-                        </svg>
-                    </div>
-                    <h2>Ready to extract</h2>
-                </div>
-                
-                <div class="folder-card">
-                    <div class="folder-icon">
-                        <svg viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M10 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-8l-2-2z"/>
-                        </svg>
-                    </div>
-                    <div class="folder-info">
-                        <p class="folder-name" id="folderName">Selected Folder</p>
-                        <p class="folder-path" id="folderPath">/path/to/folder</p>
-                    </div>
-                </div>
-                
-                <div class="file-preview" id="filePreview">
-                    <div class="preview-stat">
-                        <span class="stat-number" id="fileCount">0</span>
-                        <span class="stat-label">files found</span>
-                    </div>
-                </div>
-                
-                <div class="options-section">
-                    <label class="toggle-option">
-                        <input type="checkbox" id="pptxImagesToggle">
-                        <span class="toggle-switch"></span>
-                        <span class="toggle-label">Extract images from PowerPoint files</span>
-                    </label>
-                </div>
-                
-                <div class="action-buttons">
-                    <button class="btn btn-secondary" id="btnBack">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M19 12H5M12 19l-7-7 7-7"/>
-                        </svg>
-                        Back
-                    </button>
-                    <button class="btn btn-primary" id="btnStart">
-                        Start Extraction
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <div class="download-info">
+                            <h3 class="download-platform">macOS</h3>
+                            <p class="download-description">Download for Mac (.app via DMG)</p>
+                        </div>
+                        <svg class="download-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M5 12h14M12 5l7 7-7 7"/>
                         </svg>
-                    </button>
+                    </a>
+                    
+                    <a href="#" class="download-card" id="download-windows">
+                        <div class="download-icon">
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M3 3h8.5v8.5H3V3zm9.5 0H21v8.5h-8.5V3zM3 12.5h8.5V21H3v-8.5zm9.5 0H21V21h-8.5v-8.5z"/>
+                            </svg>
+                        </div>
+                        <div class="download-info">
+                            <h3 class="download-platform">Windows</h3>
+                            <p class="download-description">Download for Windows (.exe)</p>
+                        </div>
+                        <svg class="download-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M5 12h14M12 5l7 7-7 7"/>
+                        </svg>
+                    </a>
                 </div>
             </div>
         </section>
 
-        <!-- Slide 3: Progress -->
-        <section class="slide slide-progress" id="slide-progress">
-            <div class="slide-content">
-                <div class="progress-header">
-                    <div class="spinner"></div>
-                    <h2>Extracting documents</h2>
-                </div>
-                
-                <div class="progress-container">
-                    <div class="progress-bar">
-                        <div class="progress-fill" id="progressFill"></div>
-                    </div>
-                    <div class="progress-stats">
-                        <span class="progress-percent" id="progressPercent">0%</span>
-                        <span class="progress-count" id="progressCount">0 / 0 files</span>
-                    </div>
-                </div>
-                
-                <div class="current-file">
-                    <p class="current-file-label">Currently processing:</p>
-                    <p class="current-file-name" id="currentFileName">Waiting...</p>
-                </div>
-                
-                <button class="btn btn-cancel" id="btnCancel">Cancel</button>
+        <!-- Section 5: Footer -->
+        <section class="landing-section section-footer" id="footer">
+            <div class="section-content footer-content">
+                <p class="footer-text">Created by Patrick Brown 2025</p>
             </div>
         </section>
-
-        <!-- Slide 4: Complete -->
-        <section class="slide slide-complete" id="slide-complete">
-            <div class="slide-content">
-                <div class="complete-header">
-                    <div class="success-icon">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-                            <path d="M22 4L12 14.01l-3-3"/>
-                        </svg>
-                    </div>
-                    <h2>Extraction Complete</h2>
-                    <p class="complete-subtitle">Your documents have been processed successfully</p>
-                </div>
-                
-                <div class="results-list">
-                    <div class="result-row result-row-primary">
-                        <div class="result-row-content">
-                            <span class="result-label">Files Processed</span>
-                            <span class="result-number" id="resultProcessed">0</span>
-                        </div>
-                    </div>
-                    <div class="result-row result-row-secondary">
-                        <div class="result-row-content">
-                            <span class="result-label">Files Extracted</span>
-                            <span class="result-number" id="resultExtracted">0</span>
-                        </div>
-                    </div>
-                    <div class="result-row result-row-warning" id="resultWarningsCard" style="display: none;">
-                        <div class="result-row-content">
-                            <span class="result-label">Warnings</span>
-                            <span class="result-number" id="resultWarnings">0</span>
-                        </div>
-                    </div>
-                    <div class="result-row result-row-error" id="resultErrorsCard" style="display: none;">
-                        <div class="result-row-content">
-                            <span class="result-label">Errors</span>
-                            <span class="result-number" id="resultErrors">0</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="action-buttons">
-                    <button class="btn btn-secondary" id="btnNewExtraction">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
-                            <path d="M3 3v5h5"/>
-                        </svg>
-                        New Extraction
-                    </button>
-                    <button class="btn btn-primary" id="btnOpenFolder">
-                        Open Output Folder
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
-                            <polyline points="15 3 21 3 21 9"/>
-                            <line x1="10" y1="14" x2="21" y2="3"/>
-                        </svg>
-                    </button>
-                </div>
-            </div>
-        </section>
-
-        <!-- Persistent Footer (hidden on welcome screen) -->
-        <footer class="app-footer" id="appFooter">
-            <span class="footer-logo">docprep</span>
-        </footer>
     </div>
     
-    <script src="app.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
 
