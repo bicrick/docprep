@@ -38,6 +38,8 @@ Thumbs.db
 
 # PyInstaller
 *.spec
+!build_mac.spec
+!build_windows.spec
 build/
 dist/
 
