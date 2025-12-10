@@ -40,9 +40,50 @@ YourFolder_extracted/
   images/             # Embedded images
 ```
 
-## Building
+## Building Standalone Executables
+
+The app can be built as a standalone executable that runs without Python installed.
+
+### Prerequisites
 
 ```bash
-pyinstaller build_mac.spec    # Mac
-pyinstaller build_windows.spec # Windows
+pip install pyinstaller
 ```
+
+### 1. Generate Icons
+
+First, generate the app icons from the source PNG:
+
+```bash
+python build_icons.py
+```
+
+This creates:
+- `icons/docprep.icns` (Mac)
+- `icons/docprep.ico` (Windows)
+
+### 2. Build for Mac
+
+Run on a Mac:
+
+```bash
+pyinstaller build_mac.spec
+```
+
+Output: `dist/DocPrep.app` - Double-click to run, or drag to Applications folder.
+
+### 3. Build for Windows
+
+Run on Windows:
+
+```bash
+pyinstaller build_windows.spec
+```
+
+Output: `dist/DocPrep.exe` - Double-click to run.
+
+### Notes
+
+- You must build on each target platform (cannot cross-compile)
+- The executable bundles Python and all dependencies (~100-200MB)
+- Users do not need Python installed to run the app

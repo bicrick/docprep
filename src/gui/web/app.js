@@ -124,7 +124,12 @@ function initButtons() {
         showSlide('drop');
     });
     
-    // Back button
+    // Back to welcome button (from drop slide)
+    document.getElementById('btnBackToWelcome').addEventListener('click', () => {
+        showSlide('welcome');
+    });
+    
+    // Back button (from ready slide)
     document.getElementById('btnBack').addEventListener('click', () => {
         showSlide('drop');
     });
