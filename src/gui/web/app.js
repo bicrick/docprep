@@ -124,9 +124,9 @@ function initButtons() {
         showSlide('intro');
     });
     
-    // Continue button (from intro slide) -> go to drop
+    // Continue button (from intro slide) -> go to tutorial
     document.getElementById('btnContinue').addEventListener('click', () => {
-        showSlide('drop');
+        showSlide('tutorial');
     });
     
     // Back to welcome button (from intro slide)
@@ -134,9 +134,19 @@ function initButtons() {
         showSlide('welcome');
     });
     
-    // Back to intro button (from drop slide)
-    document.getElementById('btnBackToWelcome').addEventListener('click', () => {
+    // Continue button (from tutorial slide) -> go to drop
+    document.getElementById('btnContinueToUpload').addEventListener('click', () => {
+        showSlide('drop');
+    });
+    
+    // Back to intro button (from tutorial slide)
+    document.getElementById('btnBackToIntro').addEventListener('click', () => {
         showSlide('intro');
+    });
+    
+    // Back to tutorial button (from drop slide)
+    document.getElementById('btnBackToWelcome').addEventListener('click', () => {
+        showSlide('tutorial');
     });
     
     // Back button (from ready slide)

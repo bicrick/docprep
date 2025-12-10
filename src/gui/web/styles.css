@@ -690,7 +690,7 @@ body {
     align-items: flex-start;
     justify-content: center;
     gap: var(--space-xl);
-    margin-bottom: var(--space-md);
+    margin-bottom: var(--space-lg);
     width: 100%;
     flex-shrink: 0;
 }
@@ -857,6 +857,103 @@ body {
         opacity: 0.6;
         transform: translateX(0);
     }
+}
+
+/* ============================================
+   Slide: Tutorial (AI-Ready Data)
+   ============================================ */
+
+.slide-tutorial .slide-content {
+    max-width: 700px;
+}
+
+.tutorial-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.tutorial-title {
+    font-family: var(--font-sans);
+    font-weight: 600;
+    font-size: 1.5rem;
+    color: var(--text-primary);
+    margin-bottom: var(--space-xs);
+}
+
+.tutorial-subtitle {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    margin-bottom: var(--space-xl);
+    text-align: center;
+}
+
+.ide-grid {
+    display: flex;
+    gap: var(--space-lg);
+    margin-bottom: var(--space-xl);
+}
+
+.ide-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: var(--space-lg);
+    background: var(--bg-card);
+    border-radius: var(--radius-md);
+    text-decoration: none;
+    transition: all var(--duration-fast) var(--ease-out);
+    min-width: 120px;
+}
+
+.ide-card:hover {
+    background: var(--bg-card-hover);
+    transform: translateY(-2px);
+}
+
+.ide-logo {
+    width: 48px;
+    height: 48px;
+    object-fit: contain;
+}
+
+.ide-name {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.tutorial-description {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    text-align: center;
+    margin-bottom: var(--space-lg);
+    max-width: 500px;
+}
+
+.security-notice {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: var(--space-md) var(--space-lg);
+    background: var(--success-light);
+    border-radius: var(--radius-md);
+    margin-bottom: var(--space-xl);
+}
+
+.security-icon {
+    width: 20px;
+    height: 20px;
+    color: var(--success);
+    flex-shrink: 0;
+}
+
+.security-text {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin: 0;
+    line-height: 1.4;
 }
 
 /* ============================================
