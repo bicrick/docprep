@@ -1,9 +1,9 @@
 /* ============================================
-   DocPrep - Clean Light UI
+   docprep - Adaptive Light/Dark UI
    ============================================ */
 
 :root {
-    /* Color Palette - Clean white with blue accents */
+    /* Color Palette - Light Mode (default) */
     --bg-primary: #ffffff;
     --bg-secondary: #f8fafc;
     --bg-card: #f1f5f9;
@@ -45,6 +45,35 @@
     --duration-slow: 500ms;
 }
 
+/* ============================================
+   Dark Mode - Auto-detected from system
+   ============================================ */
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --bg-primary: #0f172a;
+        --bg-secondary: #1e293b;
+        --bg-card: #334155;
+        --bg-card-hover: #475569;
+        
+        --accent-primary: #3b82f6;
+        --accent-secondary: #60a5fa;
+        --accent-light: #1e3a5f;
+        
+        --success: #22c55e;
+        --success-light: #14532d;
+        --warning: #f59e0b;
+        --error: #ef4444;
+        
+        --text-primary: #f1f5f9;
+        --text-secondary: #cbd5e1;
+        --text-muted: #64748b;
+        
+        --border-subtle: #334155;
+        --border-accent: #3b82f6;
+    }
+}
+
 /* Reset & Base */
 *, *::before, *::after {
     box-sizing: border-box;
@@ -66,75 +95,11 @@ body {
     -moz-osx-font-smoothing: grayscale;
 }
 
-/* ============================================
-   Custom Title Bar
-   ============================================ */
-
-.title-bar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 38px;
-    background: var(--bg-primary);
-    border-bottom: 1px solid var(--border-subtle);
-    display: flex;
-    align-items: center;
-    padding: 0 12px;
-    -webkit-app-region: drag;
-    z-index: 1000;
-}
-
-.window-controls {
-    display: flex;
-    gap: 8px;
-    -webkit-app-region: no-drag;
-}
-
-.window-btn {
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    border: none;
-    cursor: pointer;
-    transition: opacity 0.15s;
-}
-
-.window-btn:hover {
-    opacity: 0.8;
-}
-
-.window-btn.close {
-    background: #ff5f57;
-}
-
-.window-btn.minimize {
-    background: #febc2e;
-}
-
-.window-btn.maximize {
-    background: #28c840;
-}
-
-.title-text {
-    flex: 1;
-    text-align: center;
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--text-secondary);
-    pointer-events: none;
-}
-
-.title-spacer {
-    width: 52px;
-}
-
 /* App Container */
 .app {
     position: relative;
     width: 100%;
-    height: calc(100% - 38px);
-    margin-top: 38px;
+    height: 100%;
     overflow: hidden;
     background: var(--bg-primary);
 }
@@ -194,24 +159,16 @@ body {
    Slide 0: Welcome
    ============================================ */
 
-.welcome-icon {
-    width: 72px;
-    height: 72px;
+.welcome-logo {
+    width: 200px;
+    height: 200px;
     margin: 0 auto var(--space-lg);
-    color: var(--accent-primary);
 }
 
-.welcome-icon svg {
+.welcome-logo img {
     width: 100%;
     height: 100%;
-}
-
-.welcome-title {
-    font-size: 2.5rem;
-    font-weight: 700;
-    letter-spacing: -0.03em;
-    color: var(--accent-primary);
-    margin-bottom: var(--space-md);
+    object-fit: contain;
 }
 
 .welcome-description {
@@ -725,5 +682,10 @@ body {
 
 ::-webkit-scrollbar-thumb:hover {
     background: var(--text-muted);
+}
+
+/* Color scheme hint for native elements */
+html {
+    color-scheme: light dark;
 }
 

@@ -237,7 +237,19 @@ class DocPrepAPI:
     def close_window(self) -> None:
         """Close the window"""
         if self.window:
+            # Use a small delay to ensure the JS call completes before destroying
+            threading.Thread(target=self._do_close, daemon=True).start()
+    
+    def _do_close(self) -> None:
+        """Actually close the window (called from thread)"""
+        import time
+        time.sleep(0.05)  # Small delay to let JS complete
+        if self.window:
             self.window.destroy()
+    
+    def get_platform(self) -> str:
+        """Return the current platform name"""
+        return platform.system()
 
 
 class WebviewApp:
@@ -256,17 +268,14 @@ class WebviewApp:
         web_dir = current_dir / 'web'
         html_path = web_dir / 'index.html'
         
-        # Create the webview window (frameless for custom title bar)
+        # Create the webview window with native frame
         self.window = webview.create_window(
-            title=f'{APP_NAME} v{APP_VERSION}',
+            title='docprep',
             url=str(html_path),
             width=WINDOW_WIDTH,
             height=WINDOW_HEIGHT,
             min_size=(600, 500),
-            js_api=self.api,
-            background_color='#ffffff',
-            frameless=True,
-            easy_drag=False
+            js_api=self.api
         )
         
         # Set window reference in API

@@ -235,36 +235,12 @@ function showError(message) {
     showSlide('drop');
 }
 
-// ============================================
-// Window Controls
-// ============================================
-
-function initWindowControls() {
-    document.getElementById('btnClose').addEventListener('click', async () => {
-        if (window.pywebview) {
-            await window.pywebview.api.close_window();
-        }
-    });
-    
-    document.getElementById('btnMinimize').addEventListener('click', async () => {
-        if (window.pywebview) {
-            await window.pywebview.api.minimize_window();
-        }
-    });
-    
-    document.getElementById('btnMaximize').addEventListener('click', async () => {
-        if (window.pywebview) {
-            await window.pywebview.api.toggle_fullscreen();
-        }
-    });
-}
 
 // ============================================
 // Initialization
 // ============================================
 
 document.addEventListener('DOMContentLoaded', () => {
-    initWindowControls();
     initDropZone();
     initButtons();
     
