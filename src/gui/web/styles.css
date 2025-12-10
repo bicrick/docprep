@@ -19,7 +19,8 @@
     
     --success: #2a5a4a;
     --success-light: #e8f2ef;
-    --warning: #8a6a3a;
+    --warning: #8a7a2a;
+    --warning-secondary: #8a7a2a;
     --error: #8a3a3a;
     
     --text-primary: #1e3a5a;
@@ -73,7 +74,8 @@
         
         --success: #7aaa9a;
         --success-light: #2a4a4e;
-        --warning: #d8b87a;
+        --warning: #b89a4a;
+        --warning-secondary: #b89a4a;
         --error: #d88a8a;
         
         --text-primary: #ffffff;
@@ -99,7 +101,8 @@ html.dark {
     
     --success: #7aaa9a;
     --success-light: #2a4a4e;
-    --warning: #d8b87a;
+    --warning: #c89a5a;
+    --warning-secondary: #a87a4a;
     --error: #d88a8a;
     
     --text-primary: #ffffff;
@@ -124,7 +127,8 @@ html.light {
     
     --success: #2a5a4a;
     --success-light: #e8f2ef;
-    --warning: #8a6a3a;
+    --warning: #8a7a2a;
+    --warning-secondary: #8a7a2a;
     --error: #8a3a3a;
     
     --text-primary: #1e3a5a;
@@ -779,14 +783,7 @@ body {
 }
 
 .success-icon {
-    width: 64px;
-    height: 64px;
-    margin: 0 auto var(--space-md);
-    background: var(--success);
-    border-radius: var(--radius-full);
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: none;
 }
 
 .success-icon svg {
@@ -823,7 +820,7 @@ body {
 }
 
 .result-row-primary {
-    background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
+    background: var(--accent-primary);
     color: white;
     box-shadow: 0 4px 12px rgba(30, 58, 90, 0.15);
 }
@@ -834,13 +831,13 @@ body {
 }
 
 .result-row-warning {
-    background: linear-gradient(135deg, var(--warning) 0%, #a67a4a 100%);
+    background: var(--warning);
     color: white;
-    box-shadow: 0 4px 12px rgba(138, 106, 58, 0.15);
+    box-shadow: 0 4px 12px rgba(138, 122, 42, 0.25);
 }
 
 .result-row-error {
-    background: linear-gradient(135deg, var(--error) 0%, #aa4a4a 100%);
+    background: var(--error);
     color: white;
     box-shadow: 0 4px 12px rgba(138, 58, 58, 0.15);
 }

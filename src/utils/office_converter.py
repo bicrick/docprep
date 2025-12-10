@@ -67,7 +67,10 @@ class OfficeConverter:
     def convert_to_png(self, input_path: Path, output_dir: Path) -> List[Path]:
         """
         Convert presentation slides to PNG images.
-        Uses LibreOffice headless mode.
+        Uses PPTX -> PDF -> PNG approach:
+        1. Convert PPTX to PDF using LibreOffice (reliable)
+        2. Convert PDF pages to PNG using PyMuPDF (fitz)
+        This avoids LibreOffice's unreliable PageRange filter for PNG export.
         """
         if not self.soffice_path:
             logger.warning("LibreOffice not found. Cannot perform conversion.")
@@ -77,46 +80,86 @@ class OfficeConverter:
         output_dir = Path(output_dir).absolute()
         output_dir.mkdir(parents=True, exist_ok=True)
 
-        logger.info(f"Converting {input_path.name} to PNG using LibreOffice...")
+        logger.info(f"Converting {input_path.name} to PNG via PDF intermediate format...")
 
-        # Command: soffice --headless --convert-to 'png:impress_png_Export:{"ExportOnlyBackground":false,"PageRange":"1-"}' --outdir <out> <in>
-        # Note: The filter options JSON is specific to LibreOffice 7.4+ for multi-page export
-        # If older versions are used, this might only export the first page.
+        import tempfile
         
-        cmd = [
-            self.soffice_path,
-            '--headless',
-            '--convert-to', 
-            'png:impress_png_Export:{"ExportOnlyBackground":false,"PageRange":"1-"}',
-            '--outdir', str(output_dir),
-            str(input_path)
-        ]
-
         try:
-            # Run conversion
-            # Capture output for debugging
-            result = subprocess.run(
-                cmd, 
-                capture_output=True, 
-                text=True, 
-                check=True
+            # Step 1: Convert PPTX to PDF using LibreOffice
+            temp_dir = Path(tempfile.mkdtemp(prefix="pptx_to_pdf_"))
+            pdf_path = temp_dir / f"{input_path.stem}.pdf"
+            
+            cmd_pdf = [
+                self.soffice_path,
+                '--headless',
+                '--convert-to', 'pdf',
+                '--outdir', str(temp_dir),
+                str(input_path)
+            ]
+            
+            result_pdf = subprocess.run(
+                cmd_pdf,
+                capture_output=True,
+                text=True,
+                check=True,
+                timeout=60
             )
-            logger.debug(f"LibreOffice Output: {result.stdout}")
             
-            # LibreOffice often names files like 'filename.png' (first slide) or 'filename_Page_1.png'
-            # We need to collect what was generated
-            generated_files = sorted(list(output_dir.glob("*.png")))
+            if not pdf_path.exists():
+                # LibreOffice might name it differently
+                pdf_files = list(temp_dir.glob("*.pdf"))
+                if pdf_files:
+                    pdf_path = pdf_files[0]
+                else:
+                    logger.error("PDF conversion failed - no PDF file generated")
+                    return []
             
-            # Filter to only files that match the input basename (approximate match)
-            # This is to avoid picking up old files if the dir wasn't empty
+            logger.info(f"Successfully converted to PDF: {pdf_path.name}")
+            
+            # Step 2: Convert PDF pages to PNG using PyMuPDF (fitz)
+            try:
+                import fitz  # PyMuPDF
+            except ImportError:
+                logger.error("PyMuPDF (fitz) not available - cannot convert PDF to PNG")
+                return []
+            
+            doc = fitz.open(pdf_path)
+            num_pages = len(doc)
             base_name = input_path.stem
-            relevant_files = [f for f in generated_files if base_name in f.name]
+            generated_files = []
             
-            logger.info(f"Generated {len(relevant_files)} slide images.")
-            return relevant_files
-
+            logger.info(f"Converting {num_pages} PDF pages to PNG images...")
+            
+            # Render each page as PNG with high quality
+            zoom = 2.0  # 2x zoom for better quality (200% resolution)
+            mat = fitz.Matrix(zoom, zoom)
+            
+            for page_num in range(num_pages):
+                page = doc[page_num]
+                
+                # Render page to pixmap (image)
+                pix = page.get_pixmap(matrix=mat)
+                
+                # Save as PNG
+                output_file = output_dir / f"{base_name}_slide_{page_num + 1}.png"
+                pix.save(str(output_file))
+                generated_files.append(output_file)
+                
+                logger.debug(f"Converted page {page_num + 1}/{num_pages} to PNG")
+            
+            doc.close()
+            
+            # Clean up temp directory
+            try:
+                shutil.rmtree(temp_dir, ignore_errors=True)
+            except:
+                pass
+            
+            logger.info(f"Successfully generated {len(generated_files)} PNG images from {num_pages} slides.")
+            return sorted(generated_files)
+            
         except subprocess.CalledProcessError as e:
-            logger.error(f"LibreOffice conversion failed: {e.stderr}")
+            logger.error(f"LibreOffice PDF conversion failed: {e.stderr}")
             return []
         except Exception as e:
             logger.error(f"Unexpected error during conversion: {e}")
