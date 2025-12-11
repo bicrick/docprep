@@ -620,9 +620,35 @@ body {
     color: var(--bg-primary);
 }
 
+/* Dark mode override for primary button */
+@media (prefers-color-scheme: dark) {
+    .btn-primary {
+        background: var(--accent-secondary);
+        color: var(--bg-primary);
+    }
+}
+
+html.dark .btn-primary {
+    background: var(--accent-secondary);
+    color: var(--bg-primary);
+}
+
 .btn-primary:hover {
     background: var(--accent-secondary);
     transform: translateY(-1px);
+}
+
+/* Dark mode override for primary button hover */
+@media (prefers-color-scheme: dark) {
+    .btn-primary:hover {
+        background: var(--text-primary);
+        color: var(--bg-primary);
+    }
+}
+
+html.dark .btn-primary:hover {
+    background: var(--text-primary);
+    color: var(--bg-primary);
 }
 
 .btn-primary:active {
@@ -655,9 +681,26 @@ body {
     margin-top: var(--space-lg);
 }
 
+.action-buttons .btn-cancel {
+    margin-top: 0;
+}
+
 .btn-cancel:hover {
     color: var(--error);
     border-color: var(--error);
+}
+
+/* Skip button - styled like cancel but without the cancel hover effect */
+.btn-skip {
+    background: transparent;
+    color: var(--text-primary);
+    border: 1px solid var(--border-subtle);
+    padding: var(--space-sm) var(--space-lg);
+}
+
+.btn-skip:hover {
+    background: var(--bg-card);
+    border-color: var(--text-muted);
 }
 
 .btn-back-link {
@@ -755,6 +798,7 @@ body {
     background: var(--bg-card);
     border-radius: var(--radius-md);
     width: 100%;
+    margin-bottom: var(--space-lg);
 }
 
 .current-file-label {
@@ -819,6 +863,7 @@ body {
     transition: all var(--duration-fast) var(--ease-out);
 }
 
+/* Light mode result rows */
 .result-row-primary {
     background: var(--accent-primary);
     color: white;
@@ -827,19 +872,72 @@ body {
 
 .result-row-secondary {
     background: var(--bg-card);
-    border: 2px solid var(--border-subtle);
+    border: 1px solid var(--border-subtle);
 }
 
 .result-row-warning {
-    background: var(--warning);
+    background: #c89a3a;
     color: white;
-    box-shadow: 0 4px 12px rgba(138, 122, 42, 0.25);
+    box-shadow: 0 4px 12px rgba(200, 154, 58, 0.25);
 }
 
 .result-row-error {
     background: var(--error);
     color: white;
     box-shadow: 0 4px 12px rgba(138, 58, 58, 0.15);
+}
+
+/* Dark mode result rows */
+@media (prefers-color-scheme: dark) {
+    .result-row-primary {
+        background: var(--bg-card-hover);
+        color: var(--text-primary);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+    
+    .result-row-secondary {
+        background: var(--bg-card);
+        border: 1px solid var(--border-subtle);
+    }
+    
+    .result-row-warning {
+        background: #b89a4a;
+        color: white;
+    }
+}
+
+html.dark .result-row-primary {
+    background: var(--bg-card-hover);
+    color: var(--text-primary);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+html.dark .result-row-secondary {
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+}
+
+html.dark .result-row-warning {
+    background: #b89a4a;
+    color: white;
+}
+
+/* Explicit light mode overrides */
+html.light .result-row-primary {
+    background: var(--accent-primary);
+    color: white;
+    box-shadow: 0 4px 12px rgba(30, 58, 90, 0.2);
+}
+
+html.light .result-row-secondary {
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+}
+
+html.light .result-row-warning {
+    background: #c89a3a;
+    color: white;
+    box-shadow: 0 4px 12px rgba(200, 154, 58, 0.25);
 }
 
 .result-row-content {
@@ -857,14 +955,34 @@ body {
     letter-spacing: 0.05em;
 }
 
-.result-row-primary .result-label,
-.result-row-warning .result-label,
-.result-row-error .result-label {
+/* Default label colors */
+.result-row-primary .result-label {
     color: rgba(255, 255, 255, 0.9);
 }
 
 .result-row-secondary .result-label {
     color: var(--text-secondary);
+}
+
+.result-row-warning .result-label,
+.result-row-error .result-label {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+/* Dark mode label overrides */
+html.dark .result-row-primary .result-label {
+    color: var(--text-secondary);
+}
+
+@media (prefers-color-scheme: dark) {
+    .result-row-primary .result-label {
+        color: var(--text-secondary);
+    }
+}
+
+/* Light mode label overrides */
+html.light .result-row-primary .result-label {
+    color: rgba(255, 255, 255, 0.9);
 }
 
 .result-number {
@@ -874,13 +992,37 @@ body {
     line-height: 1;
 }
 
-.result-row-primary .result-number,
+/* Default number colors */
+.result-row-primary .result-number {
+    color: white;
+}
+
+.result-row-secondary .result-number {
+    color: var(--accent-primary);
+}
+
 .result-row-warning .result-number,
 .result-row-error .result-number {
     color: white;
 }
 
-.result-row-secondary .result-number {
+/* Dark mode number overrides */
+html.dark .result-row-primary .result-number {
+    color: var(--text-primary);
+}
+
+@media (prefers-color-scheme: dark) {
+    .result-row-primary .result-number {
+        color: var(--text-primary);
+    }
+}
+
+/* Light mode number overrides */
+html.light .result-row-primary .result-number {
+    color: white;
+}
+
+html.light .result-row-secondary .result-number {
     color: var(--accent-primary);
 }
 

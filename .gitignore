@@ -50,3 +50,7 @@ dist/
 # Test outputs
 test_output/
 *_extracted/
+
+# Workspace files
+docprep.code-workspace
+

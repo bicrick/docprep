@@ -7,5 +7,7 @@
 			"path": "../docprep-site"
 		}
 	],
-	"settings": {}
+	"settings": {
+		"liveServer.settings.multiRootWorkspaceName": "docprep-site"
+	}
 }

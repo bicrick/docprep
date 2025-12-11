@@ -196,6 +196,15 @@ function initButtons() {
         }
     });
     
+    // Skip button
+    document.getElementById('btnSkip').addEventListener('click', async () => {
+        if (window.pywebview) {
+            await window.pywebview.api.skip_extraction();
+        }
+        // Don't reset state.isExtracting here - let the extraction thread finish
+        // and show the summary page with current progress
+    });
+    
     // Cancel button
     document.getElementById('btnCancel').addEventListener('click', async () => {
         if (window.pywebview) {

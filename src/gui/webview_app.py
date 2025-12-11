@@ -348,8 +348,8 @@ class DocPrepAPI:
                 file_callback=self._on_file_start
             )
             
-            # Check if cancelled
-            if extraction_summary.get('cancelled'):
+            # Check if cancelled (but not skipped - skip shows summary)
+            if extraction_summary.get('cancelled') and not extraction_summary.get('skipped'):
                 self._call_js('showCancelled')
                 return
             
@@ -369,9 +369,16 @@ class DocPrepAPI:
                 self.extraction_manager.results
             )
             
-            # Show completion
+            # Show completion (or summary if skipped)
+            # If skipped, use processed_count (actual files processed) instead of total_processed
+            if extraction_summary.get('skipped'):
+                # When skipped, show actual processed count, not total
+                processed_count = extraction_summary.get('processed_count', extraction_summary['successful'] + extraction_summary['failed'])
+            else:
+                processed_count = extraction_summary['total_processed']
+            
             results = {
-                'processed': extraction_summary['total_processed'],
+                'processed': processed_count,
                 'extracted': extraction_summary['total_files_extracted'],
                 'warnings': extraction_summary['warnings'],
                 'errors': extraction_summary['failed']
@@ -450,6 +457,12 @@ class DocPrepAPI:
         if self.extraction_manager:
             self.extraction_manager.cancel()
             logger.info("Extraction cancellation requested")
+    
+    def skip_extraction(self) -> None:
+        """Skip remaining files and show summary with current progress"""
+        if self.extraction_manager:
+            self.extraction_manager.skip()
+            logger.info("Extraction skip requested - will show summary with current progress")
     
     def open_output_folder(self) -> None:
         """Open the output folder in the system file explorer"""

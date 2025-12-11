@@ -127,6 +127,7 @@ class ExtractionManager:
         self.results = []
         self.current_file = None
         self.cancelled = False
+        self.skipped = False
     
     def extract_all(self, 
                    output_base: Path,
@@ -206,7 +207,9 @@ class ExtractionManager:
             'failed': failed,
             'warnings': warnings,
             'total_files_extracted': total_files_extracted,
-            'cancelled': self.cancelled
+            'cancelled': self.cancelled,
+            'skipped': self.skipped,
+            'processed_count': successful + failed  # Actual number of files processed
         }
         
         logger.info(f"Extraction complete: {successful} successful, {failed} failed")
@@ -224,4 +227,10 @@ class ExtractionManager:
         """Cancel the extraction process"""
         self.cancelled = True
         logger.info("Cancellation requested")
+    
+    def skip(self):
+        """Skip remaining files and show summary with current progress"""
+        self.cancelled = True
+        self.skipped = True
+        logger.info("Skip requested - will show summary with current progress")
 
