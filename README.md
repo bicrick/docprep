@@ -1,89 +1,59 @@
 # DocPrep
 
-Extract your business documents as plain text for use in Cursor.
+Document extraction tool with web UI.
 
-## Supported Formats
+## Development Setup
 
-- PDF (.pdf)
-- Excel (.xlsx, .xls)
-- Word (.docx)
-- PowerPoint (.pptx)
-
-## Installation
+### 1. Create Conda Environment
 
 ```bash
 conda create -n data-extraction-tool python=3.11
 conda activate data-extraction-tool
+```
+
+### 2. Install Python Dependencies
+
+```bash
 pip install -r requirements.txt
 ```
 
-## Usage
+### 3. Install Frontend Dependencies
+
+```bash
+cd src/gui/web
+npm install
+cd ../../..
+```
+
+## Running the App
+
+### Development Mode (with hot reload)
+
+Terminal 1 - Start Vite dev server:
+
+```bash
+cd src/gui/web
+npm run dev
+```
+
+Terminal 2 - Run Python app in dev mode:
+
+```bash
+python src/main.py --dev
+```
+
+### Production Mode (with built files)
+
+Build the frontend:
+
+```bash
+cd src/gui/web
+npm run build
+cd ../../..
+```
+
+Run the app:
 
 ```bash
 python src/main.py
 ```
-
-1. Click **Get Started**
-2. Drop a folder or click to browse
-3. Click **Start Extraction**
-4. Open the output folder when complete
-
-## Output
-
-The tool creates a mirrored folder structure with extracted content:
-
-```
-YourFolder_extracted/
-  document.csv        # Excel sheets as CSV
-  report.txt          # PDF/Word text content
-  presentation.txt    # PowerPoint slides
-  images/             # Embedded images
-```
-
-## Building Standalone Executables
-
-The app can be built as a standalone executable that runs without Python installed.
-
-### Prerequisites
-
-```bash
-pip install pyinstaller
-```
-
-### 1. Generate Icons
-
-First, generate the app icons from the source PNG:
-
-```bash
-python build_icons.py
-```
-
-This creates:
-- `icons/docprep.icns` (Mac)
-- `icons/docprep.ico` (Windows)
-
-### 2. Build for Mac
-
-Run on a Mac:
-
-```bash
-pyinstaller build_mac.spec
-```
-
-Output: `dist/DocPrep.app` - Double-click to run, or drag to Applications folder.
-
-### 3. Build for Windows
-
-Run on Windows:
-
-```bash
-pyinstaller build_windows.spec
-```
-
-Output: `dist/DocPrep.exe` - Double-click to run.
-
-### Notes
-
-- You must build on each target platform (cannot cross-compile)
-- The executable bundles Python and all dependencies (~100-200MB)
-- Users do not need Python installed to run the app

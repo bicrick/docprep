@@ -39,6 +39,9 @@ export function Ready() {
                     <input type="checkbox" id="pptxImagesToggle">
                     <span class="toggle-switch"></span>
                     <span class="toggle-label">Extract images from PowerPoint files</span>
+                    <span class="info-icon" data-tooltip="We have detected LibreOffice installed on your computer. Use this to get more in-depth extractions for slides.">
+                        ${icons.info}
+                    </span>
                 </label>
             </div>
             

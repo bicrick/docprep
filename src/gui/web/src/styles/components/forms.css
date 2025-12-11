@@ -16,6 +16,7 @@
     gap: var(--space-md);
     cursor: pointer;
     user-select: none;
+    position: relative;
 }
 
 .toggle-option input[type="checkbox"] {
@@ -56,5 +57,68 @@
 .toggle-label {
     font-size: 0.9rem;
     color: var(--text-primary);
+    flex: 1;
+}
+
+/* Info Icon with Tooltip */
+.info-icon {
+    width: 18px;
+    height: 18px;
+    color: var(--text-secondary);
+    cursor: help;
+    flex-shrink: 0;
+    position: relative;
+    transition: color var(--duration-fast) var(--ease-out);
+}
+
+.info-icon:hover {
+    color: var(--accent-primary);
+}
+
+.info-icon svg {
+    width: 100%;
+    height: 100%;
+}
+
+/* Tooltip */
+.info-icon::before {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 8px 12px;
+    background: var(--bg-elevated);
+    color: var(--text-primary);
+    font-size: 0.8rem;
+    line-height: 1.4;
+    border-radius: var(--radius-sm);
+    white-space: normal;
+    width: 240px;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--duration-fast) var(--ease-out);
+    z-index: 1000;
+}
+
+.info-icon::after {
+    content: '';
+    position: absolute;
+    bottom: calc(100% + 2px);
+    left: 50%;
+    transform: translateX(-50%);
+    border: 6px solid transparent;
+    border-top-color: var(--bg-elevated);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--duration-fast) var(--ease-out);
+    z-index: 1000;
+}
+
+.info-icon:hover::before,
+.info-icon:hover::after {
+    opacity: 1;
 }
 
