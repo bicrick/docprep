@@ -1,0 +1,28 @@
+/* ============================================
+   Complete Screen
+   ============================================ */
+
+.complete-header {
+    margin-bottom: var(--space-xl);
+}
+
+.success-icon {
+    display: none;
+}
+
+.success-icon svg {
+    width: 32px;
+    height: 32px;
+    color: white;
+}
+
+.complete-header h2 {
+    font-size: 1.75rem;
+    margin-bottom: var(--space-xs);
+}
+
+.complete-subtitle {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+

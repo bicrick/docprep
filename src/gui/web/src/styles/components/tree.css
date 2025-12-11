@@ -1,0 +1,60 @@
+/* ============================================
+   Finder-style File Tree
+   ============================================ */
+
+.finder-list {
+    font-family: var(--font-sans);
+    font-size: 0.8rem;
+    line-height: 1.4;
+    flex: 1;
+    overflow: visible;
+}
+
+.finder-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.3rem 0.5rem;
+    border-radius: var(--radius-sm);
+    color: var(--text-primary);
+    transition: background var(--duration-fast) var(--ease-out);
+}
+
+.finder-row:hover {
+    background: var(--bg-card);
+}
+
+.finder-row.folder {
+    font-weight: 500;
+}
+
+.finder-row.folder .icon-folder {
+    color: #f5a623;
+}
+
+.finder-row span {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Indentation */
+.finder-row.indent-1 {
+    padding-left: 1.5rem;
+}
+
+.finder-row.indent-2 {
+    padding-left: 2.75rem;
+}
+
+.finder-row.indent-3 {
+    padding-left: 4rem;
+}
+
+/* Icons */
+.finder-row .icon {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+}
+

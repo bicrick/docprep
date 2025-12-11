@@ -1,0 +1,111 @@
+/* ============================================
+   App Container & Layout
+   ============================================ */
+
+.app {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: transparent;
+}
+
+/* ============================================
+   Slides
+   ============================================ */
+
+.slide {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-xl);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(20px);
+    transition: 
+        opacity var(--duration-slow) var(--ease-out),
+        transform var(--duration-slow) var(--ease-out),
+        visibility 0s linear var(--duration-slow);
+}
+
+.slide.active {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+    transition: 
+        opacity var(--duration-slow) var(--ease-out),
+        transform var(--duration-slow) var(--ease-out),
+        visibility 0s linear 0s;
+}
+
+.slide.exit-left {
+    opacity: 0;
+    transform: translateY(-20px);
+}
+
+.slide-content {
+    width: 100%;
+    max-width: 440px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+/* ============================================
+   Persistent App Footer
+   ============================================ */
+
+.app-footer {
+    position: fixed;
+    bottom: var(--space-lg);
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 100;
+    opacity: 1;
+    transition: opacity var(--duration-normal) var(--ease-out);
+}
+
+.app-footer.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.footer-logo {
+    font-family: var(--font-serif);
+    font-weight: 600;
+    font-size: 1rem;
+    color: var(--text-tertiary);
+    letter-spacing: -0.02em;
+}
+
+/* ============================================
+   Headings
+   ============================================ */
+
+.slide-title,
+.ready-header h2,
+.progress-header h2,
+.complete-header h2,
+.drop-title {
+    font-family: var(--font-sans);
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.slide-title {
+    font-size: 1.75rem;
+    margin-bottom: var(--space-sm);
+}
+
+.slide-subtitle {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    margin-bottom: var(--space-xl);
+}
+

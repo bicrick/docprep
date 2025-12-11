@@ -5,9 +5,12 @@
 		},
 		{
 			"path": "../docprep-site"
+		},
+		{
+			"path": "../docprep-logo"
 		}
 	],
 	"settings": {
-		"liveServer.settings.multiRootWorkspaceName": "docprep-site"
+		"liveServer.settings.multiRootWorkspaceName": "docprep-logo"
 	}
 }

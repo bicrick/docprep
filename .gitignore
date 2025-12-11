@@ -25,6 +25,11 @@ venv/
 env/
 ENV/
 
+# Node.js (web frontend)
+node_modules/
+src/gui/web/dist/
+
+
 # IDE
 .vscode/
 .idea/

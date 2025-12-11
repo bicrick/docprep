@@ -515,6 +515,11 @@ class DocPrepAPI:
 class WebviewApp:
     """Main application class for the PyWebview-based GUI"""
     
+    # Set to True during development to use Vite dev server (npm run dev)
+    # Set to False for production to use built files (npm run build)
+    DEV_MODE = False
+    DEV_SERVER_URL = 'http://localhost:5173'
+    
     def __init__(self):
         self.api = DocPrepAPI()
         self.window: Optional[webview.Window] = None
@@ -526,7 +531,24 @@ class WebviewApp:
         # Get the path to the web assets
         current_dir = Path(__file__).parent
         web_dir = current_dir / 'web'
-        html_path = web_dir / 'index.html'
+        
+        # Choose URL based on mode
+        if self.DEV_MODE:
+            # Development mode: use Vite dev server for hot reload
+            # Run "npm run dev" in src/gui/web first
+            url = self.DEV_SERVER_URL
+            logger.info(f"Running in DEV mode - connecting to {url}")
+        else:
+            # Production mode: use built files from dist/
+            dist_dir = web_dir / 'dist'
+            if dist_dir.exists():
+                html_path = dist_dir / 'index.html'
+                logger.info(f"Running in PRODUCTION mode - using {html_path}")
+            else:
+                # Fallback to old index.html if dist not built
+                html_path = web_dir / 'index.html'
+                logger.warning(f"dist/ not found, falling back to {html_path}")
+            url = str(html_path)
         
         # Detect system theme and set background color accordingly
         theme = detect_system_theme()
@@ -536,7 +558,7 @@ class WebviewApp:
         # Set background color to match system theme to prevent color flash on load
         self.window = webview.create_window(
             title='',
-            url=str(html_path),
+            url=url,
             width=WINDOW_WIDTH,
             height=WINDOW_HEIGHT,
             min_size=(600, 500),

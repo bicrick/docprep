@@ -1,0 +1,45 @@
+/* ============================================
+   Welcome Screen
+   ============================================ */
+
+.welcome-logo {
+    margin-bottom: var(--space-lg);
+}
+
+/* Text-based logo */
+.logo-text {
+    font-family: var(--font-serif);
+    font-weight: 600;
+    font-size: 3.5rem;
+    color: var(--accent-primary);
+    letter-spacing: -0.02em;
+}
+
+.welcome-description {
+    font-size: 1rem;
+    color: var(--text-secondary);
+    max-width: 300px;
+    line-height: 1.7;
+    margin-bottom: var(--space-xl);
+}
+
+.welcome-formats {
+    display: flex;
+    gap: var(--space-md);
+    justify-content: center;
+    align-items: center;
+    margin-bottom: var(--space-2xl);
+}
+
+.format-logo {
+    width: 36px;
+    height: 36px;
+    object-fit: contain;
+    opacity: 0.85;
+    transition: opacity var(--duration-fast) var(--ease-out);
+}
+
+.format-logo:hover {
+    opacity: 1;
+}
+

@@ -1,0 +1,29 @@
+/* ============================================
+   Ready Screen
+   ============================================ */
+
+.ready-header {
+    margin-bottom: var(--space-xl);
+}
+
+.check-circle {
+    width: 48px;
+    height: 48px;
+    margin: 0 auto var(--space-md);
+    background: var(--accent-primary);
+    border-radius: var(--radius-full);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.check-circle svg {
+    width: 24px;
+    height: 24px;
+    color: white;
+}
+
+.ready-header h2 {
+    font-size: 1.5rem;
+}
+

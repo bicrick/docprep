@@ -1,0 +1,160 @@
+/* ============================================
+   Polka Dot Background
+   ============================================ */
+
+.polka-dots {
+    position: fixed;
+    top: -5%;
+    left: -5%;
+    width: 110%;
+    height: 110%;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: opacity 1s ease-out;
+    animation: dotFloat 20s ease-in-out infinite;
+}
+
+.polka-dots.visible {
+    opacity: 1;
+}
+
+.polka-dot {
+    position: absolute;
+    border-radius: 50%;
+}
+
+@keyframes dotFloat {
+    0%, 100% {
+        transform: translate(0, 0);
+    }
+    25% {
+        transform: translate(1%, 0.5%);
+    }
+    50% {
+        transform: translate(0.5%, 1%);
+    }
+    75% {
+        transform: translate(-0.5%, 0.5%);
+    }
+}
+
+/* ============================================
+   Animations - Gentle
+   ============================================ */
+
+.fade-in {
+    animation: fadeIn var(--duration-slow) var(--ease-out);
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Staggered animations */
+.slide.active .slide-content > * {
+    animation: fadeSlideUp 0.5s var(--ease-out) both;
+}
+
+.slide.active .slide-content > *:nth-child(1) { animation-delay: 0.05s; }
+.slide.active .slide-content > *:nth-child(2) { animation-delay: 0.1s; }
+.slide.active .slide-content > *:nth-child(3) { animation-delay: 0.15s; }
+.slide.active .slide-content > *:nth-child(4) { animation-delay: 0.2s; }
+.slide.active .slide-content > *:nth-child(5) { animation-delay: 0.25s; }
+
+@keyframes fadeSlideUp {
+    from {
+        opacity: 0;
+        transform: translateY(15px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ============================================
+   Theme Toggle Button
+   ============================================ */
+
+.theme-toggle {
+    position: fixed;
+    top: var(--space-lg);
+    right: var(--space-lg);
+    z-index: 1000;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-full);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--duration-fast) var(--ease-out);
+    color: var(--text-primary);
+}
+
+.theme-toggle:hover {
+    background: var(--bg-card-hover);
+    border-color: var(--accent-primary);
+    transform: scale(1.05);
+}
+
+.theme-toggle:active {
+    transform: scale(0.95);
+}
+
+.theme-toggle:focus-visible {
+    outline: 2px solid var(--accent-primary);
+    outline-offset: 2px;
+}
+
+.theme-icon {
+    width: 20px;
+    height: 20px;
+    position: absolute;
+    transition: opacity var(--duration-fast) var(--ease-out), transform var(--duration-fast) var(--ease-out);
+}
+
+.sun-icon {
+    opacity: 0;
+    transform: rotate(90deg);
+}
+
+.moon-icon {
+    opacity: 1;
+    transform: rotate(0deg);
+}
+
+/* Show sun icon in dark mode, moon icon in light mode */
+html.dark .sun-icon {
+    opacity: 1;
+    transform: rotate(0deg);
+}
+
+html.dark .moon-icon {
+    opacity: 0;
+    transform: rotate(-90deg);
+}
+
+/* When light class is explicitly set, show moon icon */
+html.light .sun-icon {
+    opacity: 0;
+    transform: rotate(90deg);
+}
+
+html.light .moon-icon {
+    opacity: 1;
+    transform: rotate(0deg);
+}
+

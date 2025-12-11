@@ -1,0 +1,53 @@
+/* ============================================
+   Drop Zone
+   ============================================ */
+
+.drop-zone {
+    width: 100%;
+    padding: var(--space-2xl) var(--space-xl);
+    background: var(--bg-secondary);
+    border: 2px dashed var(--border-subtle);
+    border-radius: var(--radius-lg);
+    cursor: pointer;
+    transition: all var(--duration-normal) var(--ease-out);
+}
+
+.drop-zone:hover {
+    border-color: var(--accent-primary);
+    background: var(--accent-light);
+}
+
+.drop-zone.drag-over {
+    border-color: var(--accent-primary);
+    border-style: solid;
+    background: var(--accent-light);
+    transform: scale(1.02);
+}
+
+.drop-zone-inner {
+    position: relative;
+}
+
+.drop-icon {
+    width: 48px;
+    height: 48px;
+    margin: 0 auto var(--space-md);
+    color: var(--accent-primary);
+    opacity: 0.8;
+}
+
+.drop-icon svg {
+    width: 100%;
+    height: 100%;
+}
+
+.drop-title {
+    font-size: 1.25rem;
+    margin-bottom: var(--space-xs);
+}
+
+.drop-subtitle {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
