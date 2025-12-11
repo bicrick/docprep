@@ -6,6 +6,9 @@ Build with: pyinstaller build_windows.spec
 Prerequisites:
   1. Run: python build_icons.py (to generate icons/docprep.ico)
   2. Run: pip install pyinstaller
+
+Note: LibreOffice is an optional system dependency for PowerPoint slide image extraction.
+      Users can install it separately from https://www.libreoffice.org if needed.
 """
 
 import sys
@@ -14,19 +17,10 @@ from pathlib import Path
 
 block_cipher = None
 
-# Bundle LibreOffice folder if it exists
-# Typically C:\Program Files\LibreOffice
-libreoffice_path = r'C:\Program Files\LibreOffice'
 datas = [
     # Web assets for pywebview UI
     ('src/gui/web', 'gui/web'),
 ]
-
-if os.path.exists(libreoffice_path):
-    print(f"Bundling LibreOffice from {libreoffice_path}")
-    datas.append((libreoffice_path, 'LibreOffice'))
-else:
-    print(f"WARNING: LibreOffice not found at {libreoffice_path} - App will not include it")
 
 a = Analysis(
     ['src/main.py'],

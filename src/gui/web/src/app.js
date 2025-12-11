@@ -13,7 +13,8 @@ const state = {
     folderName: null,
     fileCount: 0,
     isExtracting: false,
-    extractPptxImages: false
+    extractPptxImages: false,
+    libreOfficeAvailable: false
 };
 
 // ============================================
@@ -131,6 +132,11 @@ async function handleFolderSelected(folderData) {
     
     // Transition to ready slide
     showSlide('ready');
+    
+    // Update PPTX toggle visibility after slide transition
+    setTimeout(() => {
+        updatePptxImagesToggleVisibility();
+    }, 150);
 }
 
 // ============================================
@@ -491,11 +497,14 @@ function initThemeToggle() {
 // Initialization
 // ============================================
 
-export function initApp() {
+export async function initApp() {
     initThemeToggle();
     createPolkaDots();
     initDropZone();
     initButtons();
+    
+    // Check if LibreOffice is available for PPTX image extraction
+    await checkLibreOfficeAvailable();
     
     // Hide footer initially (welcome screen)
     const footer = document.getElementById('appFooter');
@@ -505,6 +514,27 @@ export function initApp() {
     
     // Show welcome slide first
     showSlide('welcome');
+}
+
+async function checkLibreOfficeAvailable() {
+    if (window.pywebview) {
+        try {
+            state.libreOfficeAvailable = await window.pywebview.api.check_libreoffice_available();
+        } catch (e) {
+            console.warn('Failed to check LibreOffice availability:', e);
+            state.libreOfficeAvailable = false;
+        }
+    }
+    
+    // Update UI based on availability
+    updatePptxImagesToggleVisibility();
+}
+
+function updatePptxImagesToggleVisibility() {
+    const optionsSection = document.getElementById('pptxOptionsSection');
+    if (optionsSection) {
+        optionsSection.style.display = state.libreOfficeAvailable ? 'block' : 'none';
+    }
 }
 
 // Expose functions for Python to call

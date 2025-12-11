@@ -34,7 +34,7 @@ export function Ready() {
                 </div>
             </div>
             
-            <div class="options-section">
+            <div class="options-section" id="pptxOptionsSection">
                 <label class="toggle-option">
                     <input type="checkbox" id="pptxImagesToggle">
                     <span class="toggle-switch"></span>

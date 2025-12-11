@@ -5,7 +5,6 @@ PyMuPDF>=1.23.0
 python-docx>=1.0.0
 python-pptx>=0.6.21
 Pillow>=10.0.0
-cairosvg>=2.7.0
 tkinterdnd2>=0.3.0
 pywebview>=4.0.0
 pyinstaller>=6.0.0

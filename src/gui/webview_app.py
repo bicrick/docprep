@@ -510,6 +510,12 @@ class DocPrepAPI:
     def get_platform(self) -> str:
         """Return the current platform name"""
         return platform.system()
+    
+    def check_libreoffice_available(self) -> bool:
+        """Check if LibreOffice is available on the system"""
+        from utils.office_converter import OfficeConverter
+        converter = OfficeConverter()
+        return converter.soffice_path is not None
 
 
 class WebviewApp:
