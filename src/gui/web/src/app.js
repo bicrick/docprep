@@ -11,10 +11,16 @@ const state = {
     currentSlide: 'welcome',
     folderPath: null,
     folderName: null,
+    parentPath: null,
+    siblingNames: [],
     fileCount: 0,
     isExtracting: false,
     extractPptxImages: false,
-    libreOfficeAvailable: false
+    libreOfficeAvailable: false,
+    outputFolderName: '',
+    outputFolderPath: '',  // Full path to output folder
+    outputNameValid: true,
+    outputNameError: ''
 };
 
 // ============================================
@@ -123,7 +129,17 @@ function initDropZone() {
 async function handleFolderSelected(folderData) {
     state.folderPath = folderData.path;
     state.folderName = folderData.name;
+    state.parentPath = folderData.parent_path;
+    state.siblingNames = folderData.sibling_names || [];
     state.fileCount = folderData.file_count;
+    
+    // Set default output folder name and full path
+    const defaultOutputName = folderData.name + '_extracted';
+    state.outputFolderName = defaultOutputName;
+    const separator = state.parentPath.includes('\\') ? '\\' : '/';
+    state.outputFolderPath = state.parentPath + separator + defaultOutputName;
+    state.outputNameValid = true;
+    state.outputNameError = '';
     
     // Update UI
     document.getElementById('folderName').textContent = folderData.name;
@@ -133,10 +149,121 @@ async function handleFolderSelected(folderData) {
     // Transition to ready slide
     showSlide('ready');
     
-    // Update PPTX toggle visibility after slide transition
+    // Update output name input and PPTX toggle visibility after slide transition
     setTimeout(() => {
         updatePptxImagesToggleVisibility();
+        initOutputNameInput();
     }, 150);
+}
+
+function initOutputNameInput() {
+    const input = document.getElementById('outputFolderName');
+    
+    if (!input) return;
+    
+    // Set initial value
+    input.value = state.outputFolderName;
+    updateOutputPathPreview();
+    
+    // Remove any existing listeners by cloning
+    const newInput = input.cloneNode(true);
+    input.parentNode.replaceChild(newInput, input);
+    
+    // Add input handler to new element
+    newInput.addEventListener('input', (e) => {
+        const value = e.target.value.trim();
+        state.outputFolderName = value;
+        validateOutputName();
+        updateOutputPathPreview();
+        updateStartButtonState();
+    });
+    
+    // Initialize browse button
+    initBrowseButton();
+}
+
+function initBrowseButton() {
+    const browseBtn = document.getElementById('btnBrowseOutput');
+    if (!browseBtn) return;
+    
+    // Remove existing listeners by cloning
+    const newBtn = browseBtn.cloneNode(true);
+    browseBtn.parentNode.replaceChild(newBtn, browseBtn);
+    
+    newBtn.addEventListener('click', async () => {
+        if (window.pywebview) {
+            const result = await window.pywebview.api.browse_output_folder();
+            if (result) {
+                // The selected folder becomes the parent where output will be created
+                // Keep the current folder name - user can continue editing it
+                state.parentPath = result.parent_path;
+                state.siblingNames = result.children_names || [];
+                
+                // Validate and update UI (path preview will update with new parent)
+                validateOutputName();
+                updateOutputPathPreview();
+                updateStartButtonState();
+            }
+        }
+    });
+}
+
+function validateOutputName() {
+    const name = state.outputFolderName;
+    const input = document.getElementById('outputFolderName');
+    const errorEl = document.getElementById('outputNameError');
+    
+    // Reset state
+    state.outputNameValid = true;
+    state.outputNameError = '';
+    
+    // Check if empty
+    if (!name || name.length === 0) {
+        state.outputNameValid = false;
+        state.outputNameError = 'Please enter a folder name';
+    }
+    // Check for invalid characters
+    else if (/[<>:"/\\|?*]/.test(name)) {
+        state.outputNameValid = false;
+        state.outputNameError = 'Name contains invalid characters';
+    }
+    // Check if same as original folder
+    else if (name === state.folderName) {
+        state.outputNameValid = false;
+        state.outputNameError = 'Cannot use the same name as the source folder';
+    }
+    // Check if folder already exists in parent directory
+    else if (state.siblingNames.includes(name)) {
+        state.outputNameValid = false;
+        state.outputNameError = 'A folder with this name already exists';
+    }
+    
+    // Update UI
+    if (input) {
+        input.classList.toggle('error', !state.outputNameValid);
+    }
+    if (errorEl) {
+        errorEl.textContent = state.outputNameError;
+    }
+    
+    return state.outputNameValid;
+}
+
+function updateOutputPathPreview() {
+    const pathPreview = document.getElementById('outputFolderPath');
+    if (pathPreview && state.parentPath) {
+        const separator = state.parentPath.includes('\\') ? '\\' : '/';
+        const outputPath = state.parentPath + separator + (state.outputFolderName || '...');
+        state.outputFolderPath = outputPath;
+        pathPreview.textContent = outputPath;
+    }
+}
+
+function updateStartButtonState() {
+    const startBtn = document.getElementById('btnStart');
+    if (startBtn) {
+        startBtn.disabled = !state.outputNameValid || !state.outputFolderName;
+    }
 }
 
 // ============================================
@@ -183,6 +310,9 @@ function initButtons() {
     document.getElementById('btnStart')?.addEventListener('click', async () => {
         if (!state.folderPath || state.isExtracting) return;
         
+        // Validate output name one more time
+        if (!validateOutputName()) return;
+        
         // Read toggle state
         const pptxToggle = document.getElementById('pptxImagesToggle');
         state.extractPptxImages = pptxToggle ? pptxToggle.checked : false;
@@ -194,9 +324,9 @@ function initButtons() {
         updateProgress(0, 1);
         document.getElementById('currentFileName').textContent = 'Starting...';
         
-        // Start extraction via Python with options
+        // Start extraction via Python with options and custom output path
         if (window.pywebview) {
-            await window.pywebview.api.start_extraction(state.extractPptxImages);
+            await window.pywebview.api.start_extraction(state.extractPptxImages, state.outputFolderPath);
         }
     });
     
@@ -233,9 +363,15 @@ function initButtons() {
 function resetState() {
     state.folderPath = null;
     state.folderName = null;
+    state.parentPath = null;
+    state.siblingNames = [];
     state.fileCount = 0;
     state.isExtracting = false;
     state.extractPptxImages = false;
+    state.outputFolderName = '';
+    state.outputFolderPath = '';
+    state.outputNameValid = true;
+    state.outputNameError = '';
     
     // Reset toggle UI
     const pptxToggle = document.getElementById('pptxImagesToggle');

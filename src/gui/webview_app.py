@@ -282,6 +282,44 @@ class DocPrepAPI:
         
         return None
     
+    def browse_output_folder(self) -> Optional[Dict]:
+        """
+        Open native folder selection dialog for output folder location.
+        The selected folder becomes the PARENT where the output folder will be created.
+        Returns folder info with parent_path and children_names (for validation).
+        """
+        window = self._get_window()
+        if not window:
+            return None
+        
+        # Start from the current parent path if available
+        start_dir = str(self.input_folder.parent) if self.input_folder else ''
+        
+        result = window.create_file_dialog(
+            webview.FOLDER_DIALOG,
+            directory=start_dir,
+            allow_multiple=False
+        )
+        
+        if result and len(result) > 0:
+            selected_folder = Path(result[0])
+            
+            # The selected folder becomes the parent where output will be created
+            # Get children names of the selected folder for validation
+            children_names = []
+            try:
+                for item in selected_folder.iterdir():
+                    children_names.append(item.name)
+            except (PermissionError, OSError):
+                pass
+            
+            return {
+                'parent_path': str(selected_folder),
+                'children_names': children_names
+            }
+        
+        return None
+    
     def _get_folder_info(self, folder_path: str) -> Dict:
         """
         Get folder information including supported file count.
@@ -296,19 +334,32 @@ class DocPrepAPI:
         # Set default output folder
         self.output_folder = Path(str(path) + DEFAULT_OUTPUT_SUFFIX)
         
+        # Get sibling folder/file names in the parent directory for validation
+        parent_path = path.parent
+        sibling_names = []
+        try:
+            for item in parent_path.iterdir():
+                sibling_names.append(item.name)
+        except (PermissionError, OSError):
+            # If we can't read the parent directory, just continue
+            pass
+        
         return {
             'path': str(path),
             'name': path.name,
+            'parent_path': str(parent_path),
+            'sibling_names': sibling_names,
             'file_count': scan_results['supported_count']
         }
     
-    def start_extraction(self, extract_pptx_images: bool = False) -> None:
+    def start_extraction(self, extract_pptx_images: bool = False, output_folder_path: str = None) -> None:
         """
         Start the extraction process in a background thread.
         Progress updates are pushed to JavaScript via evaluate_js.
         
         Args:
             extract_pptx_images: Whether to extract images from PowerPoint files (default False)
+            output_folder_path: Full path for the output folder (optional)
         """
         if not self.input_folder or not self.scanner:
             self._call_js('showError', 'No folder selected')
@@ -316,6 +367,12 @@ class DocPrepAPI:
         
         # Store extraction options
         self.extract_pptx_images = extract_pptx_images
+        
+        # Set output folder with custom path if provided
+        if output_folder_path:
+            self.output_folder = Path(output_folder_path)
+        else:
+            self.output_folder = Path(str(self.input_folder) + DEFAULT_OUTPUT_SUFFIX)
         
         # Start extraction in background thread
         self.extraction_thread = threading.Thread(

@@ -3,27 +3,213 @@
    ============================================ */
 
 .ready-header {
-    margin-bottom: var(--space-xl);
-}
-
-.check-circle {
-    width: 48px;
-    height: 48px;
-    margin: 0 auto var(--space-md);
-    background: var(--accent-primary);
-    border-radius: var(--radius-full);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.check-circle svg {
-    width: 24px;
-    height: 24px;
-    color: var(--bg-primary);
+    margin-bottom: var(--space-lg);
 }
 
 .ready-header h2 {
     font-size: 1.5rem;
+}
+
+/* Folder Cards Container - Vertical Layout */
+.folder-cards-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-md);
+    width: 100%;
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Down Arrow between cards */
+.folder-arrow-down {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-tertiary);
+    transform: rotate(90deg);
+    padding: var(--space-xs) 0;
+}
+
+.folder-arrow-down svg {
+    width: 20px;
+    height: 20px;
+}
+
+/* Individual Folder Cards */
+.slide-ready .folder-card {
+    position: relative;
+    width: 100%;
+    max-width: 100%;
+    padding: 0;
+    margin-bottom: 0;
+    background: transparent;
+    border: none;
+    display: block;
+}
+
+.slide-ready .folder-card-label {
+    position: absolute;
+    top: -10px;
+    left: 16px;
+    padding: 2px 10px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-radius: var(--radius-sm);
+    z-index: 1;
+}
+
+.slide-ready .folder-card-source .folder-card-label {
+    background: var(--bg-card, #e5e7eb);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color, var(--border-subtle));
+}
+
+.slide-ready .folder-card-destination .folder-card-label {
+    background: var(--accent-primary);
+    color: var(--bg-primary);
+}
+
+.slide-ready .folder-card-content {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-md);
+    padding: var(--space-md) var(--space-lg);
+    padding-top: calc(var(--space-md) + 6px);
+    background: var(--bg-secondary, var(--bg-card));
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border-color, var(--border-subtle));
+}
+
+.slide-ready .folder-card-destination .folder-card-content {
+    border-color: var(--accent-primary);
+}
+
+.slide-ready .folder-icon-new {
+    color: var(--accent-primary);
+}
+
+.slide-ready .folder-info {
+    min-width: 0;
+    flex: 1;
+    overflow: hidden;
+}
+
+.slide-ready .folder-name {
+    font-weight: 500;
+    font-size: 0.95rem;
+    margin-bottom: 4px;
+    word-break: break-word;
+    white-space: normal;
+    overflow: visible;
+}
+
+.slide-ready .folder-path {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+    word-break: break-word;
+    white-space: normal;
+    overflow: visible;
+    line-height: 1.4;
+}
+
+/* Output Input Row with Browse Button */
+.slide-ready .output-input-row {
+    display: flex;
+    gap: var(--space-sm);
+    width: 100%;
+    align-items: center;
+}
+
+.slide-ready .output-name-input {
+    flex: 1;
+    min-width: 0;
+    padding: 8px 12px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--text-primary);
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color, var(--border-subtle));
+    border-radius: var(--radius-md);
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.slide-ready .output-name-input:focus {
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 0 3px rgba(var(--accent-primary-rgb, 30, 58, 90), 0.1);
+}
+
+.slide-ready .output-name-input::placeholder {
+    color: var(--text-tertiary);
+}
+
+.slide-ready .output-name-input.error {
+    border-color: var(--color-error, #e74c3c);
+    background: rgba(231, 76, 60, 0.05);
+}
+
+.slide-ready .output-name-input.error:focus {
+    box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.1);
+}
+
+/* Browse Button */
+.slide-ready .browse-btn {
+    padding: 8px 14px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--text-primary);
+    background: var(--bg-card);
+    border: 1px solid var(--border-color, var(--border-subtle));
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.slide-ready .browse-btn:hover {
+    background: var(--bg-card-hover, var(--bg-secondary));
+    border-color: var(--accent-primary);
+    color: var(--text-primary);
+}
+
+.slide-ready .output-name-error {
+    font-size: 0.75rem;
+    color: var(--color-error, #e74c3c);
+    min-height: 1em;
+    line-height: 1.2;
+    margin-top: 4px;
+}
+
+/* Folder Path Preview */
+.slide-ready .folder-path-preview {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+    word-break: break-word;
+    margin-top: 6px;
+    line-height: 1.4;
+}
+
+/* Safe Notice - Grey/Muted */
+.safe-notice {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-xs) var(--space-md);
+    margin-bottom: var(--space-md);
+    background: transparent;
+    border-radius: var(--radius-md);
+}
+
+.safe-notice-text {
+    font-size: 0.75rem;
+    color: var(--text-tertiary);
+    white-space: nowrap;
 }
 
