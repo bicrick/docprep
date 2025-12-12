@@ -1,11 +1,15 @@
 # -*- mode: python ; coding: utf-8 -*-
 """
 PyInstaller spec file for Mac build
-Build with: pyinstaller build_mac.spec
+
+Build from build_scripts directory:
+  cd build_scripts && pyinstaller --clean -y build_mac.spec
 
 Prerequisites:
-  1. Run: python build_icons.py (to generate icons/docprep.icns)
-  2. Run: pip install pyinstaller
+  1. Build web assets: cd ../src/gui/web && npm install && npm run build
+  2. Activate conda env with dependencies: conda activate data-extraction-tool
+
+Output: dist/docprep.app
 
 Note: LibreOffice is an optional system dependency for PowerPoint slide image extraction.
       Users can install it separately from https://www.libreoffice.org if needed.
@@ -19,12 +23,12 @@ block_cipher = None
 
 datas = [
     # Web assets for pywebview UI
-    ('src/gui/web', 'gui/web'),
+    ('../src/gui/web', 'gui/web'),
 ]
 
 a = Analysis(
-    ['src/main.py'],
-    pathex=['src'],  # Include src directory for local module imports
+    ['../src/main.py'],
+    pathex=['../src'],  # Include src directory for local module imports
     binaries=[],
     datas=datas,
     hiddenimports=[
@@ -77,7 +81,6 @@ a = Analysis(
         'openpyxl.drawing.image',
         'et_xmlfile',
         'xlrd',
-        'xlrd.xlsx',
         
         # PDF processing
         'fitz',
@@ -125,7 +128,7 @@ exe = EXE(
     a.scripts,
     [],
     exclude_binaries=True,
-    name='DocPrep',
+    name='docprep',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
@@ -146,19 +149,19 @@ coll = COLLECT(
     strip=False,
     upx=True,
     upx_exclude=[],
-    name='DocPrep',
+    name='docprep',
 )
 
 app = BUNDLE(
     coll,
-    name='DocPrep.app',
-    icon='icons/docprep.icns',
+    name='docprep.app',
+    icon='icons/AppIcon.icns',
     bundle_identifier='com.docprep.app',
     info_plist={
         'NSHighResolutionCapable': 'True',
         'CFBundleShortVersionString': '1.0.0',
         'CFBundleVersion': '1.0.0',
-        'CFBundleDisplayName': 'DocPrep',
+        'CFBundleDisplayName': 'docprep',
         'NSHumanReadableCopyright': 'Copyright 2024',
     },
 )

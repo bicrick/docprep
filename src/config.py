@@ -53,6 +53,10 @@ PRESERVE_FORMATTING = False  # For text extraction
 LOG_LEVEL = "INFO"
 LOG_FORMAT = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 
+# Update checking
+# Set this to your GitHub Pages URL: https://<username>.github.io/<repo>/updates.json
+UPDATE_URL = "https://raw.githubusercontent.com/YOUR_USERNAME/docprep-app/main/docs/updates.json"
+
 # File naming
 SANITIZE_FILENAMES = True
 MAX_FILENAME_LENGTH = 200

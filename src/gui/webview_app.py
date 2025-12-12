@@ -516,6 +516,24 @@ class DocPrepAPI:
         from utils.office_converter import OfficeConverter
         converter = OfficeConverter()
         return converter.soffice_path is not None
+    
+    def check_for_updates(self) -> Optional[Dict]:
+        """
+        Check for available updates.
+        
+        Returns:
+            Dictionary with update info if available, None otherwise.
+            Keys: version, download_url, release_notes, is_newer
+        """
+        from config import APP_VERSION, UPDATE_URL
+        from utils.update_checker import get_update_info_dict
+        
+        return get_update_info_dict(APP_VERSION, UPDATE_URL)
+    
+    def open_download_url(self, url: str) -> None:
+        """Open a URL in the default browser (for downloading updates)"""
+        import webbrowser
+        webbrowser.open(url)
 
 
 class WebviewApp:
@@ -535,8 +553,15 @@ class WebviewApp:
         logger.info(f"Starting {APP_NAME} v{APP_VERSION}")
         
         # Get the path to the web assets
-        current_dir = Path(__file__).parent
-        web_dir = current_dir / 'web'
+        # Handle both development and PyInstaller frozen app scenarios
+        if getattr(sys, 'frozen', False):
+            # Running as PyInstaller bundle
+            base_path = Path(sys._MEIPASS)
+            web_dir = base_path / 'gui' / 'web'
+        else:
+            # Running as normal Python script
+            current_dir = Path(__file__).parent
+            web_dir = current_dir / 'web'
         
         # Choose URL based on mode
         if self.DEV_MODE:

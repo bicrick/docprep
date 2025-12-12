@@ -1,0 +1,88 @@
+/* ============================================
+   Update Notice Component
+   ============================================ */
+
+.update-notice {
+    position: fixed;
+    top: var(--space-md);
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: slideDown 0.3s var(--ease-out);
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateX(-50%) translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+}
+
+.update-notice-content {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: var(--space-sm) var(--space-md);
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-full);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    font-size: 0.875rem;
+}
+
+.update-notice-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--success);
+}
+
+.update-notice-text {
+    color: var(--text-secondary);
+}
+
+.update-notice-text span {
+    color: var(--text-primary);
+    font-weight: 500;
+}
+
+.update-notice-btn {
+    padding: var(--space-xs) var(--space-md);
+    background: var(--accent-primary);
+    color: var(--bg-primary);
+    border: none;
+    border-radius: var(--radius-full);
+    font-size: 0.8125rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: opacity var(--duration-fast) var(--ease-out);
+}
+
+.update-notice-btn:hover {
+    opacity: 0.9;
+}
+
+.update-notice-dismiss {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-xs);
+    background: transparent;
+    border: none;
+    border-radius: var(--radius-full);
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: color var(--duration-fast) var(--ease-out);
+}
+
+.update-notice-dismiss:hover {
+    color: var(--text-secondary);
+}
+

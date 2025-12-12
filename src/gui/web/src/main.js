@@ -10,6 +10,7 @@ import './styles/index.css';
 import { Welcome, Intro, Tutorial, DropZone, Ready, Progress, Complete } from './slides/index.js';
 import { ThemeToggle } from './components/ThemeToggle.js';
 import { Footer } from './components/Footer.js';
+import { UpdateNotice, initUpdateNotice } from './components/UpdateNotice.js';
 
 // Import app logic
 import { initApp } from './app.js';
@@ -32,6 +33,7 @@ function renderApp() {
         ${Complete()}
         ${Footer()}
         ${ThemeToggle()}
+        ${UpdateNotice()}
     `;
 }
 
@@ -39,5 +41,6 @@ function renderApp() {
 document.addEventListener('DOMContentLoaded', () => {
     renderApp();
     initApp();
+    initUpdateNotice();
 });
 

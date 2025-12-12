@@ -18,6 +18,7 @@
 @import './components/progress.css';
 @import './components/drop-zone.css';
 @import './components/tree.css';
+@import './components/update-notice.css';
 
 /* Slide-specific styles */
 @import './slides/welcome.css';

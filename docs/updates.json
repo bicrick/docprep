@@ -1,0 +1,6 @@
+{
+  "version": "1.0.0",
+  "download_url": "https://github.com/YOUR_USERNAME/docprep-app/releases/download/v1.0.0/DocPrep-1.0.0.dmg",
+  "release_notes": "Initial release - Extract clean text from PDF, Excel, Word, and PowerPoint files."
+}
+
