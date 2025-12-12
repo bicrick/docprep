@@ -1,0 +1,207 @@
+/* ============================================
+   Onboarding Slide - New User Registration
+   ============================================ */
+
+.slide-onboarding .slide-content {
+    max-width: 420px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.onboarding-content {
+    width: 100%;
+}
+
+/* Card Container */
+.onboarding-card {
+    width: 100%;
+    padding: var(--space-lg);
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+}
+
+/* Header */
+.onboarding-header {
+    text-align: center;
+    margin-bottom: var(--space-lg);
+}
+
+.onboarding-title {
+    font-family: var(--font-sans);
+    font-weight: 600;
+    font-size: 1.5rem;
+    color: var(--text-primary);
+    margin: 0 0 var(--space-xs) 0;
+}
+
+.onboarding-subtitle {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin: 0;
+}
+
+/* Form Styles */
+.onboarding-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+}
+
+.onboarding-form .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+}
+
+.onboarding-form .form-label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.onboarding-form .form-input {
+    width: 100%;
+    padding: 0.625rem 0.875rem;
+    font-family: var(--font-sans);
+    font-size: 0.9rem;
+    color: var(--text-primary);
+    background: var(--bg-primary);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-sm);
+    outline: none;
+    transition: border-color var(--duration-fast) var(--ease-out),
+                box-shadow var(--duration-fast) var(--ease-out);
+    box-sizing: border-box;
+}
+
+.onboarding-form .form-input::placeholder {
+    color: var(--text-muted);
+}
+
+.onboarding-form .form-input:focus {
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 0 2px rgba(30, 58, 90, 0.1);
+}
+
+html.dark .onboarding-form .form-input:focus {
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.1);
+}
+
+.onboarding-form .form-input.error {
+    border-color: var(--error);
+}
+
+.onboarding-form .form-input[readonly] {
+    background: var(--bg-secondary);
+    color: var(--text-secondary);
+    cursor: default;
+}
+
+/* Form Hints */
+.form-hint {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+/* Error Message */
+.onboarding-error {
+    font-size: 0.85rem;
+    color: var(--error);
+    text-align: center;
+    min-height: 1.2em;
+    padding: var(--space-xs) 0;
+}
+
+.onboarding-error:empty {
+    display: none;
+}
+
+/* Primary Button */
+.btn-onboarding-primary {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    margin-top: 0;
+    font-family: var(--font-sans);
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--bg-primary);
+    background: var(--accent-primary);
+    border: none;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-sm);
+    transition: background var(--duration-fast) var(--ease-out),
+                transform var(--duration-fast) var(--ease-out);
+}
+
+html.dark .btn-onboarding-primary {
+    background: var(--accent-secondary);
+}
+
+.btn-onboarding-primary:hover:not(:disabled) {
+    background: var(--accent-secondary);
+    transform: translateY(-1px);
+}
+
+html.dark .btn-onboarding-primary:hover:not(:disabled) {
+    background: var(--text-primary);
+}
+
+.btn-onboarding-primary:active {
+    transform: translateY(0);
+}
+
+.btn-onboarding-primary:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.btn-onboarding-primary .btn-spinner {
+    display: none;
+}
+
+.btn-onboarding-primary.loading .btn-text {
+    display: none;
+}
+
+.btn-onboarding-primary.loading .btn-spinner {
+    display: flex;
+}
+
+/* Divider - use same styling as signin */
+.onboarding-card .signin-divider {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    margin: var(--space-md) 0;
+}
+
+/* Terms */
+.onboarding-terms {
+    margin-top: var(--space-md);
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    text-align: center;
+    line-height: 1.5;
+}
+
+.onboarding-terms .terms-link {
+    color: var(--text-muted);
+    text-decoration: underline;
+    transition: color var(--duration-fast) var(--ease-out);
+}
+
+.onboarding-terms .terms-link:hover {
+    color: var(--text-primary);
+}
+
+/* Back Button */
+.slide-onboarding .btn-back-link {
+    margin-top: var(--space-lg);
+}
+

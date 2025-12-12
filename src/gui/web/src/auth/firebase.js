@@ -213,6 +213,25 @@ export function getUserDisplayInfo(user) {
 }
 
 /**
+ * Fetch sign-in methods available for an email address
+ * @param {string} email 
+ * @returns {Promise<string[]>} Array of sign-in methods (e.g., ['password', 'google.com'])
+ */
+export async function fetchSignInMethodsForEmail(email) {
+    if (!auth) {
+        throw new Error('Firebase not initialized');
+    }
+    
+    try {
+        const methods = await auth.fetchSignInMethodsForEmail(email);
+        return methods;
+    } catch (error) {
+        console.error('Fetch sign-in methods error:', error);
+        throw error;
+    }
+}
+
+/**
  * Get a friendly error message for Firebase auth errors
  * @param {Error} error - Firebase error
  * @returns {string} User-friendly error message

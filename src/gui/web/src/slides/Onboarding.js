@@ -1,29 +1,28 @@
 /**
- * Sign In Slide Component
- * Firebase authentication with Google and Email options
- * Styled to match shadcn aesthetic
+ * Onboarding Slide Component
+ * New user registration form
  */
 
 import { icons } from '../components/icons.js';
 
-export function SignIn() {
+export function Onboarding() {
     return `
-    <section class="slide slide-signin" id="slide-signin">
-        <div class="slide-content signin-content">
-            <div class="signin-card">
-                <div class="signin-header">
-                    <h2 class="signin-title" id="signinTitle">Welcome back</h2>
-                    <p class="signin-subtitle" id="signinSubtitle">Login with your Google account</p>
+    <section class="slide slide-onboarding" id="slide-onboarding">
+        <div class="slide-content onboarding-content">
+            <div class="onboarding-card">
+                <div class="onboarding-header">
+                    <h2 class="onboarding-title">Create your account</h2>
+                    <p class="onboarding-subtitle">Sign up with your Google account</p>
                 </div>
                 
-                <button type="button" class="btn btn-signin-google" id="btnSignInGoogle">
+                <button type="button" class="btn btn-signin-google" id="btnSignUpGoogle">
                     <svg class="google-icon" viewBox="0 0 24 24">
                         <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
                         <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
                         <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
                         <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
                     </svg>
-                    <span>Login with Google</span>
+                    <span>Sign up with Google</span>
                 </button>
                 
                 <div class="signin-divider">
@@ -32,38 +31,59 @@ export function SignIn() {
                     <span class="divider-line"></span>
                 </div>
                 
-                <form class="signin-form" id="signinForm">
+                <form class="onboarding-form" id="onboardingForm">
                     <div class="form-group">
-                        <label class="form-label" for="signinEmail">Email</label>
+                        <label class="form-label" for="onboardingName">Full Name</label>
+                        <input 
+                            type="text" 
+                            id="onboardingName" 
+                            class="form-input" 
+                            placeholder="John Doe"
+                            autocomplete="name"
+                            required
+                        >
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="onboardingEmail">Email</label>
                         <input 
                             type="email" 
-                            id="signinEmail" 
+                            id="onboardingEmail" 
                             class="form-input" 
                             placeholder="user@example.com"
                             autocomplete="email"
-                            required
+                            readonly
                         >
+                        <span class="form-hint">This will be your login email</span>
                     </div>
                     
-                    <div class="form-group" id="passwordGroup">
-                        <div class="form-label-row">
-                            <label class="form-label" for="signinPassword">Password</label>
-                            <button type="button" class="forgot-password-link" id="forgotPasswordBtn">
-                                Forgot your password?
-                            </button>
-                        </div>
+                    <div class="form-group">
+                        <label class="form-label" for="onboardingPassword">Password</label>
                         <input 
                             type="password" 
-                            id="signinPassword" 
+                            id="onboardingPassword" 
                             class="form-input" 
-                            placeholder="Enter your password"
-                            autocomplete="current-password"
+                            placeholder="Create a password"
+                            autocomplete="new-password"
+                            required
+                        >
+                        <span class="form-hint">Must be at least 6 characters</span>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="onboardingPasswordConfirm">Confirm Password</label>
+                        <input 
+                            type="password" 
+                            id="onboardingPasswordConfirm" 
+                            class="form-input" 
+                            placeholder="Confirm your password"
+                            autocomplete="new-password"
                             required
                         >
                     </div>
                     
-                    <div class="signin-error" id="signinError"></div>
-                    <div class="signin-status" id="signinStatus">
+                    <div class="onboarding-error" id="onboardingError"></div>
+                    <div class="signin-status" id="onboardingStatus">
                         <svg class="status-spinner" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <circle cx="12" cy="12" r="10" stroke-opacity="0.25"/>
                             <path d="M12 2a10 10 0 0 1 10 10" stroke-linecap="round"/>
@@ -71,34 +91,30 @@ export function SignIn() {
                         <span class="status-text"></span>
                     </div>
                     
-                    <button type="submit" class="btn btn-signin-primary" id="btnSignInEmail">
-                        <span class="btn-text">Login</span>
+                    <button type="submit" class="btn btn-onboarding-primary" id="btnCreateAccount">
+                        <span class="btn-text">Create Account</span>
                         <span class="btn-spinner" style="display: none;">
                             ${icons.spinner || '<span class="spinner"></span>'}
                         </span>
                     </button>
                 </form>
                 
-                <p class="signin-terms">
+                <p class="onboarding-terms">
                     By clicking continue, you agree to our
-                    <a href="#" class="terms-link" id="openTermsModal">Terms of Service</a>
+                    <a href="#" class="terms-link" id="openTermsModalOnboarding">Terms of Service</a>
                     and
-                    <a href="#" class="terms-link" id="openPrivacyModal">Privacy Policy</a>.
-                </p>
-                
-                <p class="signin-signup-prompt">
-                    Don't have an account? <a href="#" class="signup-link" id="btnGoToSignUp">Sign up</a>
+                    <a href="#" class="terms-link" id="openPrivacyModalOnboarding">Privacy Policy</a>.
                 </p>
             </div>
             
-            <button type="button" class="btn-back-link" id="btnBackToTutorial">
+            <button type="button" class="btn-back-link" id="btnBackToSignIn">
                 ${icons.arrowLeft}
-                <span>Back</span>
+                <span>Back to Sign In</span>
             </button>
         </div>
         
         <!-- Privacy Policy Modal -->
-        <div class="modal-overlay" id="privacy-modal">
+        <div class="modal-overlay" id="privacy-modal-onboarding">
             <div class="modal-content">
                 <div class="modal-header">
                     <button class="modal-close" aria-label="Close">&times;</button>
@@ -141,7 +157,7 @@ export function SignIn() {
         </div>
         
         <!-- Terms of Service Modal -->
-        <div class="modal-overlay" id="terms-modal">
+        <div class="modal-overlay" id="terms-modal-onboarding">
             <div class="modal-content">
                 <div class="modal-header">
                     <button class="modal-close" aria-label="Close">&times;</button>
@@ -206,10 +222,3 @@ export function SignIn() {
     </section>`;
 }
 
-// Add spinner icon to icons if not present
-if (!icons.spinner) {
-    icons.spinner = `<svg class="spinner-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <circle cx="12" cy="12" r="10" stroke-opacity="0.25"/>
-        <path d="M12 2a10 10 0 0 1 10 10" stroke-linecap="round"/>
-    </svg>`;
-}

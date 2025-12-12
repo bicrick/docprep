@@ -16,7 +16,7 @@
 /* Card Container */
 .signin-card {
     width: 100%;
-    padding: var(--space-xl);
+    padding: var(--space-lg);
     background: var(--bg-card);
     border: 1px solid var(--border-subtle);
     border-radius: var(--radius-md);
@@ -25,7 +25,7 @@
 /* Header */
 .signin-header {
     text-align: center;
-    margin-bottom: var(--space-xl);
+    margin-bottom: var(--space-lg);
 }
 
 .signin-title {
@@ -46,7 +46,7 @@
 .signin-form {
     display: flex;
     flex-direction: column;
-    gap: var(--space-md);
+    gap: var(--space-sm);
 }
 
 .form-group {
@@ -59,6 +59,14 @@
     font-size: 0.875rem;
     font-weight: 500;
     color: var(--text-primary);
+    text-align: left;
+}
+
+.form-label-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-xs);
 }
 
 .form-input {
@@ -95,7 +103,6 @@ html.dark .form-input:focus {
 
 /* Forgot Password Link */
 .forgot-password-link {
-    align-self: flex-end;
     background: none;
     border: none;
     padding: 0;
@@ -229,7 +236,7 @@ html.dark .btn-signin-primary:hover:not(:disabled) {
     display: flex;
     align-items: center;
     gap: var(--space-md);
-    margin: var(--space-lg) 0;
+    margin: var(--space-md) 0;
 }
 
 .divider-line {
@@ -288,7 +295,7 @@ html:not(.dark) .btn-signin-google {
 
 /* Terms */
 .signin-terms {
-    margin-top: var(--space-lg);
+    margin-top: var(--space-md);
     font-size: 0.75rem;
     color: var(--text-muted);
     text-align: center;
@@ -305,9 +312,28 @@ html:not(.dark) .btn-signin-google {
     color: var(--text-primary);
 }
 
+/* Sign Up Prompt */
+.signin-signup-prompt {
+    margin-top: var(--space-md);
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    text-align: center;
+}
+
+.signup-link {
+    color: var(--text-primary);
+    font-weight: 500;
+    text-decoration: underline;
+    transition: color var(--duration-fast) var(--ease-out);
+}
+
+.signup-link:hover {
+    color: var(--accent-primary);
+}
+
 /* Back Button - positioned below card */
 .slide-signin .btn-back-link {
-    margin-top: var(--space-xl);
+    margin-top: var(--space-lg);
 }
 
 /* User Info Display (when signed in) */

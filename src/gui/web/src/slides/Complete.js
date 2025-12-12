@@ -6,6 +6,37 @@
 import { icons } from '../components/icons.js';
 import { SecondaryButton } from '../components/Button.js';
 
+/**
+ * Editor dropdown button for opening output in code editors
+ */
+function EditorDropdownButton() {
+    return `
+    <div class="editor-dropdown" id="editorDropdown">
+        <button class="btn btn-primary editor-dropdown-btn" id="btnOpenInEditor">
+            <span class="editor-btn-text">Open in Editor</span>
+            <span class="editor-dropdown-divider"></span>
+            <span class="editor-dropdown-chevron">${icons.chevronDown}</span>
+        </button>
+        <div class="editor-dropdown-menu" id="editorDropdownMenu">
+            <button class="editor-option" data-editor="cursor">
+                <span class="editor-option-icon">${icons.cursor}</span>
+                <span class="editor-option-name">Cursor</span>
+                <span class="editor-option-check">${icons.check}</span>
+            </button>
+            <button class="editor-option" data-editor="windsurf">
+                <span class="editor-option-icon">${icons.windsurf}</span>
+                <span class="editor-option-name">Windsurf</span>
+                <span class="editor-option-check">${icons.check}</span>
+            </button>
+            <button class="editor-option" data-editor="antigravity">
+                <span class="editor-option-icon">${icons.antigravity}</span>
+                <span class="editor-option-name">Antigravity</span>
+                <span class="editor-option-check">${icons.check}</span>
+            </button>
+        </div>
+    </div>`;
+}
+
 export function Complete() {
     return `
     <section class="slide slide-complete" id="slide-complete">
@@ -42,7 +73,8 @@ export function Complete() {
                 
                 <div class="action-buttons">
                     ${SecondaryButton('New Extraction', 'btnNewExtraction', icons.refresh)}
-                    <button class="btn btn-primary" id="btnOpenFolder">
+                    ${EditorDropdownButton()}
+                    <button class="btn btn-secondary" id="btnOpenFolder">
                         Open Output Folder
                         ${icons.externalLink}
                     </button>

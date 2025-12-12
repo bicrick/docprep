@@ -16,7 +16,8 @@ import {
     signOut,
     onAuthStateChanged,
     getUserDisplayInfo,
-    getAuthErrorMessage
+    getAuthErrorMessage,
+    fetchSignInMethodsForEmail
 } from './auth/firebase.js';
 
 // ============================================
@@ -40,7 +41,9 @@ const state = {
     // Auth state
     user: null,
     isAuthLoading: false,
-    authMode: 'signin' // 'signin' or 'signup'
+    pendingEmail: null,  // Email to pre-fill in onboarding
+    // Editor preference
+    selectedEditor: localStorage.getItem('docprep_selected_editor') || 'cursor'
 };
 
 // ============================================
@@ -81,10 +84,10 @@ function showSlide(slideName) {
         }
     }
     
-    // Show/hide polka dots (visible on welcome, signin, and complete screens)
+    // Show/hide polka dots (visible on welcome, signin, onboarding, and complete screens)
     const polkaDots = document.querySelector('.polka-dots');
     if (polkaDots) {
-        if (slideName === 'welcome' || slideName === 'signin' || slideName === 'complete') {
+        if (slideName === 'welcome' || slideName === 'signin' || slideName === 'onboarding' || slideName === 'complete') {
             polkaDots.classList.add('visible');
         } else {
             polkaDots.classList.remove('visible');
@@ -101,6 +104,11 @@ function showSlide(slideName) {
     // Reset sign-in form when navigating to signin slide
     if (slideName === 'signin') {
         resetSignInForm();
+    }
+    
+    // Pre-fill email when navigating to onboarding
+    if (slideName === 'onboarding') {
+        prefillOnboardingEmail();
     }
     
     state.currentSlide = slideName;
@@ -225,6 +233,29 @@ function initOutputNameInput() {
     
     // Initialize browse button
     initBrowseButton();
+    
+    // Initialize change source button
+    initChangeSourceButton();
+    
+    // Initialize settings panel toggle
+    initSettingsPanel();
+}
+
+function initSettingsPanel() {
+    const toggleBtn = document.getElementById('btnSettingsToggle');
+    const panel = document.getElementById('settingsPanel');
+    
+    if (!toggleBtn || !panel) return;
+    
+    // Remove existing listeners by cloning
+    const newBtn = toggleBtn.cloneNode(true);
+    toggleBtn.parentNode.replaceChild(newBtn, toggleBtn);
+    
+    newBtn.addEventListener('click', () => {
+        const isExpanded = newBtn.getAttribute('aria-expanded') === 'true';
+        newBtn.setAttribute('aria-expanded', !isExpanded);
+        panel.classList.toggle('open', !isExpanded);
+    });
 }
 
 function initBrowseButton() {
@@ -248,6 +279,25 @@ function initBrowseButton() {
                 validateOutputName();
                 updateOutputPathPreview();
                 updateStartButtonState();
+            }
+        }
+    });
+}
+
+function initChangeSourceButton() {
+    const changeBtn = document.getElementById('btnChangeSource');
+    if (!changeBtn) return;
+    
+    // Remove existing listeners by cloning
+    const newBtn = changeBtn.cloneNode(true);
+    changeBtn.parentNode.replaceChild(newBtn, changeBtn);
+    
+    newBtn.addEventListener('click', async () => {
+        if (window.pywebview) {
+            const result = await window.pywebview.api.select_folder();
+            if (result) {
+                // Re-use the existing folder selection handler
+                handleFolderSelected(result);
             }
         }
     });
@@ -452,18 +502,25 @@ function initAuth() {
         let initialAuthResolved = false;
         
         onAuthStateChanged((user) => {
+            console.log('Auth state changed:', user ? `User: ${user.email}` : 'No user');
+            console.log('Current slide:', state.currentSlide);
+            
             state.user = user;
             updateAuthUI(user);
             
             // Resolve the promise on first auth state (initial load)
             if (!initialAuthResolved) {
                 initialAuthResolved = true;
+                console.log('Initial auth resolved:', user ? 'signed in' : 'not signed in');
                 resolve(user);
             } else {
                 // Subsequent auth changes (sign in/out during session)
-                const preSignInSlides = ['welcome', 'intro', 'tutorial', 'signin'];
+                const preSignInSlides = ['welcome', 'intro', 'tutorial', 'signin', 'onboarding'];
+                
+                console.log('Checking navigation: user=', !!user, 'currentSlide=', state.currentSlide, 'inPreSignIn=', preSignInSlides.includes(state.currentSlide));
                 
                 if (user && preSignInSlides.includes(state.currentSlide)) {
+                    console.log('Navigating to drop zone after auth');
                     showSlide('drop');
                 }
             }
@@ -480,68 +537,70 @@ function initSignInForm() {
     const form = document.getElementById('signinForm');
     const emailInput = document.getElementById('signinEmail');
     const passwordInput = document.getElementById('signinPassword');
-    const passwordGroup = document.getElementById('passwordGroup');
     const googleBtn = document.getElementById('btnSignInGoogle');
     const forgotBtn = document.getElementById('forgotPasswordBtn');
-    const errorEl = document.getElementById('signinError');
-    const submitBtn = document.getElementById('btnSignInEmail');
     
     if (!form) return;
     
-    // Track if we've checked the email
-    let emailChecked = false;
-    let isNewUser = false;
-    
-    // Email form submit
+    // Email form submit - simple sign-in flow
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
         
         const email = emailInput?.value?.trim();
         const password = passwordInput?.value;
         
+        // Validate email
         if (!email) {
             showSignInError('Please enter your email address');
             return;
         }
         
-        // If password field is not visible, show it
-        if (passwordGroup?.style.display === 'none') {
-            passwordGroup.style.display = 'block';
-            passwordInput?.focus();
-            updateSignInButtonText();
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            showSignInError('Please enter a valid email address');
             return;
         }
         
+        // Validate password
         if (!password) {
             showSignInError('Please enter your password');
             return;
         }
         
-        // Try to sign in
         setSignInLoading(true);
         clearSignInError();
         
+        console.log('Attempting sign in for:', email);
+        
         try {
-            if (state.authMode === 'signup') {
-                await createAccountWithEmail(email, password);
-            } else {
-                await signInWithEmail(email, password);
-            }
+            await signInWithEmail(email, password);
+            console.log('Sign in successful, waiting for auth state change...');
             // Success - auth state listener will handle navigation
         } catch (error) {
-            // If user not found, offer to create account
+            console.error('Sign in failed:', error.code, error.message);
+            
             if (error.code === 'auth/user-not-found') {
-                state.authMode = 'signup';
-                updateSignInButtonText();
-                showSignInError('No account found. Click again to create one.');
-            } else if (error.code === 'auth/invalid-credential') {
-                showSignInError('Invalid email or password. Please try again.');
+                showSignInError('No account found with this email. Click "Sign up" below to create one.');
+            } else if (error.code === 'auth/invalid-credential' || 
+                error.code === 'auth/wrong-password') {
+                showSignInError('Incorrect email or password. Please try again.');
             } else {
                 showSignInError(getAuthErrorMessage(error));
             }
         } finally {
             setSignInLoading(false);
         }
+    });
+    
+    // Sign up link click handler
+    const signUpLink = document.getElementById('btnGoToSignUp');
+    signUpLink?.addEventListener('click', (e) => {
+        e.preventDefault();
+        const email = emailInput?.value?.trim();
+        if (email) {
+            state.pendingEmail = email;
+        }
+        showSlide('onboarding');
     });
     
     // Google sign in
@@ -586,39 +645,25 @@ function initSignInForm() {
             return;
         }
         
+        setSignInLoading(true);
         try {
             await sendPasswordReset(email);
             showSignInError('Password reset email sent. Check your inbox.');
         } catch (error) {
             showSignInError(getAuthErrorMessage(error));
+        } finally {
+            setSignInLoading(false);
         }
     });
     
-    // Reset form when email changes
+    // Clear error when user starts typing
     emailInput?.addEventListener('input', () => {
-        if (passwordGroup?.style.display !== 'none') {
-            // Reset auth mode when email changes
-            state.authMode = 'signin';
-            updateSignInButtonText();
-        }
         clearSignInError();
     });
-}
-
-function updateSignInButtonText() {
-    const submitBtn = document.getElementById('btnSignInEmail');
-    const btnText = submitBtn?.querySelector('.btn-text');
-    const passwordGroup = document.getElementById('passwordGroup');
     
-    if (!btnText) return;
-    
-    if (passwordGroup?.style.display === 'none') {
-        btnText.textContent = 'Continue with Email';
-    } else if (state.authMode === 'signup') {
-        btnText.textContent = 'Create Account';
-    } else {
-        btnText.textContent = 'Sign In';
-    }
+    passwordInput?.addEventListener('input', () => {
+        clearSignInError();
+    });
 }
 
 function showSignInError(message) {
@@ -727,16 +772,253 @@ function updateAuthUI(user) {
 function resetSignInForm() {
     const emailInput = document.getElementById('signinEmail');
     const passwordInput = document.getElementById('signinPassword');
-    const passwordGroup = document.getElementById('passwordGroup');
     const errorEl = document.getElementById('signinError');
     
     if (emailInput) emailInput.value = '';
     if (passwordInput) passwordInput.value = '';
-    if (passwordGroup) passwordGroup.style.display = 'none';
+    if (errorEl) errorEl.textContent = '';
+}
+
+// ============================================
+// Onboarding Form
+// ============================================
+
+function initOnboardingForm() {
+    const form = document.getElementById('onboardingForm');
+    const nameInput = document.getElementById('onboardingName');
+    const emailInput = document.getElementById('onboardingEmail');
+    const passwordInput = document.getElementById('onboardingPassword');
+    const confirmInput = document.getElementById('onboardingPasswordConfirm');
+    const backBtn = document.getElementById('btnBackToSignIn');
+    const googleBtn = document.getElementById('btnSignUpGoogle');
+    
+    if (!form) return;
+    
+    // Form submit
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const name = nameInput?.value?.trim();
+        const email = emailInput?.value?.trim();
+        const password = passwordInput?.value;
+        const confirmPassword = confirmInput?.value;
+        
+        // Validation
+        if (!name) {
+            showOnboardingError('Please enter your full name');
+            nameInput?.focus();
+            return;
+        }
+        
+        if (!email) {
+            showOnboardingError('Please enter your email');
+            return;
+        }
+        
+        if (!password) {
+            showOnboardingError('Please create a password');
+            passwordInput?.focus();
+            return;
+        }
+        
+        if (password.length < 6) {
+            showOnboardingError('Password must be at least 6 characters');
+            passwordInput?.focus();
+            return;
+        }
+        
+        if (password !== confirmPassword) {
+            showOnboardingError('Passwords do not match');
+            confirmInput?.focus();
+            return;
+        }
+        
+        // Create account
+        setOnboardingLoading(true);
+        clearOnboardingError();
+        
+        console.log('Creating account for:', email);
+        
+        try {
+            const user = await createAccountWithEmail(email, password);
+            console.log('Account created successfully:', user?.email);
+            
+            // Update display name after account creation
+            if (user && name) {
+                try {
+                    await user.updateProfile({ displayName: name });
+                    console.log('Display name updated to:', name);
+                } catch (profileError) {
+                    console.warn('Could not update display name:', profileError);
+                }
+            }
+            
+            // Success - auth state listener will handle navigation
+            console.log('Account creation complete, waiting for auth state change...');
+        } catch (error) {
+            console.error('Account creation failed:', error.code, error.message);
+            if (error.code === 'auth/email-already-in-use') {
+                // Check if this email is linked to Google
+                try {
+                    const signInMethods = await fetchSignInMethodsForEmail(email);
+                    if (signInMethods.includes('google.com') && !signInMethods.includes('password')) {
+                        showOnboardingError('This email is already linked to a Google account. Please use "Sign up with Google" below.');
+                    } else {
+                        showOnboardingError('An account with this email already exists. Please sign in instead.');
+                    }
+                } catch {
+                    showOnboardingError('An account with this email already exists. Please sign in instead.');
+                }
+            } else if (error.code === 'auth/weak-password') {
+                showOnboardingError('Password is too weak. Please use a stronger password.');
+            } else if (error.code === 'auth/invalid-email') {
+                showOnboardingError('Please enter a valid email address.');
+            } else {
+                showOnboardingError(getAuthErrorMessage(error));
+            }
+        } finally {
+            setOnboardingLoading(false);
+        }
+    });
+    
+    // Google sign up
+    googleBtn?.addEventListener('click', async () => {
+        setOnboardingLoading(true);
+        clearOnboardingError();
+        
+        // Check if running in pywebview (desktop app)
+        if (window.pywebview) {
+            try {
+                // Use desktop OAuth flow via Python backend
+                showOnboardingStatus('Opening browser for Google sign-up...');
+                await window.pywebview.api.start_google_signin();
+                // Result will come via googleSignInSuccess/googleSignInError callbacks
+            } catch (error) {
+                clearOnboardingStatus();
+                showOnboardingError('Failed to start Google sign-up');
+                setOnboardingLoading(false);
+            }
+        } else {
+            // Web fallback - use popup
+            try {
+                await signInWithGoogle();
+                // Success - auth state listener will handle navigation
+            } catch (error) {
+                if (error.code !== 'auth/popup-closed-by-user') {
+                    showOnboardingError(getAuthErrorMessage(error));
+                }
+            } finally {
+                setOnboardingLoading(false);
+            }
+        }
+    });
+    
+    // Back to sign in
+    backBtn?.addEventListener('click', () => {
+        resetOnboardingForm();
+        showSlide('signin');
+    });
+    
+    // Terms and privacy links in onboarding
+    document.getElementById('openTermsModalOnboarding')?.addEventListener('click', (e) => {
+        e.preventDefault();
+        openModal('terms-modal-onboarding');
+    });
+    
+    document.getElementById('openPrivacyModalOnboarding')?.addEventListener('click', (e) => {
+        e.preventDefault();
+        openModal('privacy-modal-onboarding');
+    });
+}
+
+function showOnboardingError(message) {
+    const errorEl = document.getElementById('onboardingError');
+    if (errorEl) {
+        errorEl.textContent = message;
+    }
+    // Hide status when showing error
+    clearOnboardingStatus();
+}
+
+function clearOnboardingError() {
+    const errorEl = document.getElementById('onboardingError');
+    if (errorEl) {
+        errorEl.textContent = '';
+    }
+}
+
+function showOnboardingStatus(message) {
+    const statusEl = document.getElementById('onboardingStatus');
+    const textEl = statusEl?.querySelector('.status-text');
+    if (statusEl && textEl) {
+        textEl.textContent = message;
+        statusEl.classList.add('visible');
+    }
+    // Hide error when showing status
+    clearOnboardingError();
+}
+
+function clearOnboardingStatus() {
+    const statusEl = document.getElementById('onboardingStatus');
+    if (statusEl) {
+        statusEl.classList.remove('visible');
+    }
+}
+
+function setOnboardingLoading(loading) {
+    const submitBtn = document.getElementById('btnCreateAccount');
+    const googleBtn = document.getElementById('btnSignUpGoogle');
+    const nameInput = document.getElementById('onboardingName');
+    const emailInput = document.getElementById('onboardingEmail');
+    const passwordInput = document.getElementById('onboardingPassword');
+    const confirmInput = document.getElementById('onboardingPasswordConfirm');
+    
+    if (loading) {
+        submitBtn?.classList.add('loading');
+        submitBtn?.setAttribute('disabled', 'true');
+        googleBtn?.setAttribute('disabled', 'true');
+        nameInput?.setAttribute('disabled', 'true');
+        emailInput?.setAttribute('disabled', 'true');
+        passwordInput?.setAttribute('disabled', 'true');
+        confirmInput?.setAttribute('disabled', 'true');
+    } else {
+        submitBtn?.classList.remove('loading');
+        submitBtn?.removeAttribute('disabled');
+        googleBtn?.removeAttribute('disabled');
+        nameInput?.removeAttribute('disabled');
+        emailInput?.removeAttribute('disabled');
+        passwordInput?.removeAttribute('disabled');
+        confirmInput?.removeAttribute('disabled');
+        clearOnboardingStatus();
+    }
+}
+
+function resetOnboardingForm() {
+    const nameInput = document.getElementById('onboardingName');
+    const emailInput = document.getElementById('onboardingEmail');
+    const passwordInput = document.getElementById('onboardingPassword');
+    const confirmInput = document.getElementById('onboardingPasswordConfirm');
+    const errorEl = document.getElementById('onboardingError');
+    
+    if (nameInput) nameInput.value = '';
+    if (emailInput) emailInput.value = '';
+    if (passwordInput) passwordInput.value = '';
+    if (confirmInput) confirmInput.value = '';
     if (errorEl) errorEl.textContent = '';
     
-    state.authMode = 'signin';
-    updateSignInButtonText();
+    state.pendingEmail = null;
+}
+
+function prefillOnboardingEmail() {
+    if (state.pendingEmail) {
+        const emailInput = document.getElementById('onboardingEmail');
+        if (emailInput) {
+            emailInput.value = state.pendingEmail;
+        }
+        // Focus on name field since email is pre-filled
+        const nameInput = document.getElementById('onboardingName');
+        nameInput?.focus();
+    }
 }
 
 // ============================================
@@ -968,6 +1250,101 @@ function initCompleteView() {
     // Back buttons
     document.getElementById('btnBackToSummary')?.addEventListener('click', showCompleteSummary);
     document.getElementById('btnBackToSummary2')?.addEventListener('click', showCompleteSummary);
+    
+    // Editor dropdown
+    initEditorDropdown();
+}
+
+// ============================================
+// Editor Dropdown
+// ============================================
+
+function initEditorDropdown() {
+    const dropdown = document.getElementById('editorDropdown');
+    const btn = document.getElementById('btnOpenInEditor');
+    const menu = document.getElementById('editorDropdownMenu');
+    const chevron = dropdown?.querySelector('.editor-dropdown-chevron');
+    
+    if (!dropdown || !btn || !menu) return;
+    
+    // Set initial selected state from localStorage
+    updateEditorSelection(state.selectedEditor);
+    
+    // Toggle dropdown on chevron click
+    chevron?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        dropdown.classList.toggle('open');
+    });
+    
+    // Open in editor on main button click (excluding chevron area)
+    btn.addEventListener('click', async (e) => {
+        // If clicking the chevron, don't open editor
+        if (e.target.closest('.editor-dropdown-chevron')) return;
+        
+        // Close dropdown if open
+        dropdown.classList.remove('open');
+        
+        // Open in selected editor
+        if (window.pywebview) {
+            const result = await window.pywebview.api.open_in_editor(state.selectedEditor);
+            if (result && result.error) {
+                console.error('Failed to open in editor:', result.error);
+                // Could show a toast/notification here
+            }
+        }
+    });
+    
+    // Handle editor option selection
+    menu.querySelectorAll('.editor-option').forEach(option => {
+        option.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const editor = option.dataset.editor;
+            if (editor) {
+                selectEditor(editor);
+                dropdown.classList.remove('open');
+            }
+        });
+    });
+    
+    // Close dropdown when clicking outside
+    document.addEventListener('click', (e) => {
+        if (!dropdown.contains(e.target)) {
+            dropdown.classList.remove('open');
+        }
+    });
+}
+
+function selectEditor(editor) {
+    state.selectedEditor = editor;
+    localStorage.setItem('docprep_selected_editor', editor);
+    updateEditorSelection(editor);
+}
+
+function updateEditorSelection(editor) {
+    const menu = document.getElementById('editorDropdownMenu');
+    const btnText = document.querySelector('.editor-btn-text');
+    if (!menu) return;
+    
+    // Editor display names
+    const editorNames = {
+        'cursor': 'Cursor',
+        'windsurf': 'Windsurf',
+        'antigravity': 'Antigravity'
+    };
+    
+    // Update button text to show selected editor
+    if (btnText && editor && editorNames[editor]) {
+        btnText.textContent = `Open in ${editorNames[editor]}`;
+    }
+    
+    // Update selected state on options
+    menu.querySelectorAll('.editor-option').forEach(option => {
+        if (option.dataset.editor === editor) {
+            option.classList.add('selected');
+        } else {
+            option.classList.remove('selected');
+        }
+    });
 }
 
 function showCompleteSummary() {
@@ -1290,6 +1667,7 @@ export async function initApp() {
     initDropZone();
     initButtons();
     initSignInForm();
+    initOnboardingForm();
     initModals();
 
     // Check if LibreOffice is available for PPTX image extraction
@@ -1340,9 +1718,14 @@ async function checkLibreOfficeAvailable() {
 }
 
 function updatePptxImagesToggleVisibility() {
-    const optionsSection = document.getElementById('pptxOptionsSection');
-    if (optionsSection) {
-        optionsSection.style.display = state.libreOfficeAvailable ? 'block' : 'none';
+    // The PPTX toggle is now inside the settings panel
+    // Show/hide the toggle option based on LibreOffice availability
+    const pptxToggle = document.getElementById('pptxImagesToggle');
+    if (pptxToggle) {
+        const toggleOption = pptxToggle.closest('.toggle-option');
+        if (toggleOption) {
+            toggleOption.style.display = state.libreOfficeAvailable ? 'flex' : 'none';
+        }
     }
 }
 
@@ -1352,21 +1735,38 @@ function updatePptxImagesToggleVisibility() {
 
 async function googleSignInSuccess(tokens) {
     try {
+        // Clear both sign-in and onboarding states
         clearSignInError();
         clearSignInStatus();
+        clearOnboardingError();
+        clearOnboardingStatus();
+        
         await signInWithGoogleCredential(tokens.idToken, tokens.accessToken);
         // Success - auth state listener will handle navigation
     } catch (error) {
-        showSignInError(getAuthErrorMessage(error));
+        // Show error on whichever page is active
+        if (state.currentSlide === 'onboarding') {
+            showOnboardingError(getAuthErrorMessage(error));
+        } else {
+            showSignInError(getAuthErrorMessage(error));
+        }
     } finally {
         setSignInLoading(false);
+        setOnboardingLoading(false);
     }
 }
 
 function googleSignInError(errorMessage) {
-    clearSignInStatus();
-    showSignInError(errorMessage || 'Google sign-in failed');
-    setSignInLoading(false);
+    // Clear and show error on whichever page is active
+    if (state.currentSlide === 'onboarding') {
+        clearOnboardingStatus();
+        showOnboardingError(errorMessage || 'Google sign-up failed');
+        setOnboardingLoading(false);
+    } else {
+        clearSignInStatus();
+        showSignInError(errorMessage || 'Google sign-in failed');
+        setSignInLoading(false);
+    }
 }
 
 // Expose functions for Python to call

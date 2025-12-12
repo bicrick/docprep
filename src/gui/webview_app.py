@@ -605,6 +605,117 @@ class DocPrepAPI:
         except Exception as e:
             logger.warning(f"Failed to open folder: {e}")
     
+    def open_in_editor(self, editor: str) -> Optional[Dict]:
+        """
+        Open the output folder in a code editor.
+        
+        Args:
+            editor: Editor name ('cursor', 'windsurf', or 'antigravity')
+            
+        Returns:
+            None on success, or dict with 'error' key on failure
+        """
+        if not self.output_folder or not self.output_folder.exists():
+            return {'error': 'Output folder does not exist'}
+        
+        folder_path = str(self.output_folder)
+        
+        # Editor configurations for different platforms
+        editor_configs = {
+            'cursor': {
+                'Darwin': {
+                    'app': '/Applications/Cursor.app',
+                    'cli': 'cursor'
+                },
+                'Windows': {
+                    'cli': 'cursor'
+                }
+            },
+            'windsurf': {
+                'Darwin': {
+                    'app': '/Applications/Windsurf.app',
+                    'cli': 'windsurf'
+                },
+                'Windows': {
+                    'cli': 'windsurf'
+                }
+            },
+            'antigravity': {
+                'Darwin': {
+                    'app': '/Applications/Antigravity.app',
+                    'cli': 'antigravity'
+                },
+                'Windows': {
+                    'cli': 'antigravity'
+                }
+            }
+        }
+        
+        if editor not in editor_configs:
+            return {'error': f'Unknown editor: {editor}'}
+        
+        config = editor_configs[editor]
+        system = platform.system()
+        
+        if system not in config:
+            return {'error': f'{editor} is not supported on {system}'}
+        
+        platform_config = config[system]
+        
+        try:
+            import shutil
+            
+            if system == 'Darwin':
+                # macOS: Try CLI first, then fall back to app executable
+                cli = platform_config.get('cli')
+                app_path = platform_config.get('app')
+                
+                # Check if CLI is available using shutil.which (handles PATH properly)
+                cli_path = shutil.which(cli) if cli else None
+                
+                if cli_path:
+                    # Pass folder as single argument - list form handles spaces correctly
+                    subprocess.Popen([cli_path, folder_path])
+                    logger.info(f"Opened '{folder_path}' in {editor} via CLI")
+                elif app_path and Path(app_path).exists():
+                    # Get the executable name from the app bundle (usually same as app name)
+                    app_name = Path(app_path).stem  # e.g., "Cursor" from "Cursor.app"
+                    executable_path = Path(app_path) / 'Contents' / 'MacOS' / app_name
+                    
+                    if executable_path.exists():
+                        # Run the executable directly - handles spaces correctly
+                        subprocess.Popen([str(executable_path), folder_path])
+                        logger.info(f"Opened '{folder_path}' in {editor} via executable")
+                    else:
+                        # Fallback: use 'open' command with proper quoting via list form
+                        # The '--args' flag passes subsequent args to the application
+                        subprocess.Popen(['open', '-a', app_path, '--args', folder_path])
+                        logger.info(f"Opened '{folder_path}' in {editor} via open -a")
+                else:
+                    return {'error': f'{editor.title()} is not installed'}
+                    
+            elif system == 'Windows':
+                cli = platform_config.get('cli')
+                if cli:
+                    # Check if CLI is available
+                    cli_path = shutil.which(cli)
+                    if cli_path:
+                        # On Windows, use list form WITHOUT shell=True to handle spaces properly
+                        subprocess.Popen([cli_path, folder_path])
+                        logger.info(f"Opened '{folder_path}' in {editor}")
+                    else:
+                        return {'error': f'{editor.title()} is not installed or not in PATH'}
+                else:
+                    return {'error': f'{editor.title()} CLI not configured for Windows'}
+            else:
+                return {'error': f'{editor} is not supported on {system}'}
+                
+            return None  # Success
+            
+        except Exception as e:
+            logger.warning(f"Failed to open in {editor}: {e}")
+            return {'error': str(e)}
+    
     # Window control methods for custom title bar
     def minimize_window(self) -> None:
         """Minimize the window"""

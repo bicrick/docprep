@@ -1,125 +1,211 @@
 /* ============================================
-   Ready Screen
+   Ready Screen - Unified Workflow Card
    ============================================ */
 
 .ready-header {
     margin-bottom: var(--space-lg);
+    text-align: center;
 }
 
 .ready-header h2 {
     font-size: 1.5rem;
+    font-weight: 600;
 }
 
-/* Folder Cards Container - Vertical Layout */
-.folder-cards-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: var(--space-sm);
-    margin-bottom: var(--space-md);
+/* ============================================
+   Workflow Card Container
+   ============================================ */
+
+.workflow-card {
+    background: var(--bg-secondary, var(--bg-card));
+    border: 1px solid var(--border-color, var(--border-subtle));
+    border-radius: var(--radius-xl, 16px);
+    overflow: hidden;
     width: 100%;
     max-width: 500px;
-    margin-left: auto;
-    margin-right: auto;
+    margin: 0 auto var(--space-md);
 }
 
-/* Down Arrow between cards */
-.folder-arrow-down {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--text-tertiary);
-    transform: rotate(90deg);
-    padding: var(--space-xs) 0;
+/* ============================================
+   Workflow Sections (Source & Destination)
+   ============================================ */
+
+.workflow-section {
+    padding: var(--space-lg);
 }
 
-.folder-arrow-down svg {
-    width: 20px;
-    height: 20px;
-}
-
-/* Individual Folder Cards */
-.slide-ready .folder-card {
-    position: relative;
-    width: 100%;
-    max-width: 100%;
-    padding: 0;
-    margin-bottom: 0;
-    background: transparent;
-    border: none;
+.workflow-label {
     display: block;
-}
-
-.slide-ready .folder-card-label {
-    position: absolute;
-    top: -10px;
-    left: 16px;
-    padding: 2px 10px;
-    font-size: 0.7rem;
+    font-size: 0.65rem;
     font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
-    border-radius: var(--radius-sm);
-    z-index: 1;
+    letter-spacing: 0.08em;
+    color: var(--text-tertiary);
+    margin-bottom: var(--space-sm);
 }
 
-.slide-ready .folder-card-source .folder-card-label,
-.slide-ready .folder-card-destination .folder-card-label {
-    background: var(--bg-card, #e5e7eb);
-    color: var(--text-primary);
-    border: 1px solid var(--border-color, var(--border-subtle));
-}
-
-.slide-ready .folder-card-content {
+.workflow-row {
     display: flex;
     align-items: flex-start;
     gap: var(--space-md);
-    padding: var(--space-md) var(--space-lg);
-    padding-top: calc(var(--space-md) + 6px);
-    background: var(--bg-secondary, var(--bg-card));
-    border-radius: var(--radius-lg);
-    border: 1px solid var(--border-color, var(--border-subtle));
 }
 
+.workflow-icon {
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-secondary);
+}
 
-.slide-ready .folder-icon-new {
+.workflow-icon svg {
+    width: 28px;
+    height: 28px;
+}
+
+.workflow-icon-new {
     color: var(--accent-primary);
 }
 
-.slide-ready .folder-info {
-    min-width: 0;
+.workflow-info {
     flex: 1;
-    overflow: hidden;
+    min-width: 0;
 }
 
-.slide-ready .folder-name {
+.workflow-name {
     font-weight: 500;
-    font-size: 0.95rem;
-    margin-bottom: 4px;
+    font-size: 1rem;
+    margin: 0 0 4px 0;
+    color: var(--text-primary);
     word-break: break-word;
-    white-space: normal;
-    overflow: visible;
 }
 
-.slide-ready .folder-path {
-    font-size: 0.8rem;
+.workflow-path {
+    font-size: 0.75rem;
     color: var(--text-muted);
     font-family: var(--font-mono);
-    word-break: break-word;
-    white-space: normal;
-    overflow: visible;
+    word-break: break-all;
     line-height: 1.4;
+    margin: 0;
 }
 
-/* Output Input Row with Browse Button */
-.slide-ready .output-input-row {
+/* ============================================
+   Source Input (clickable to change)
+   ============================================ */
+
+.source-input-row {
     display: flex;
     gap: var(--space-sm);
     width: 100%;
     align-items: center;
+    margin-bottom: 4px;
 }
 
-.slide-ready .output-name-input {
+.source-name-box {
+    flex: 1;
+    min-width: 0;
+    padding: 8px 12px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--text-primary);
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color, var(--border-subtle));
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    text-align: left;
+    transition: border-color 0.2s ease, background 0.2s ease;
+    font-family: inherit;
+}
+
+.source-name-box:hover {
+    border-color: var(--accent-primary);
+    background: var(--bg-card-hover, var(--bg-secondary));
+}
+
+.source-name {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.change-label {
+    font-size: 0.8rem;
+    color: var(--text-tertiary);
+    white-space: nowrap;
+    padding-right: var(--space-xs);
+}
+
+/* ============================================
+   Connector with File Count
+   ============================================ */
+
+.workflow-connector {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 var(--space-lg);
+    gap: var(--space-sm);
+}
+
+.connector-line {
+    flex: 1;
+    height: 1px;
+    background: var(--border-color, var(--border-subtle));
+}
+
+.connector-badge {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color, var(--border-subtle));
+    border-radius: var(--radius-full, 999px);
+    white-space: nowrap;
+}
+
+.connector-arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    color: var(--text-tertiary);
+    transform: rotate(90deg);
+}
+
+.connector-arrow svg {
+    width: 100%;
+    height: 100%;
+}
+
+.connector-count {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--text-primary);
+}
+
+.connector-label {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+/* ============================================
+   Destination Input
+   ============================================ */
+
+.workflow-destination .output-input-row {
+    display: flex;
+    gap: var(--space-sm);
+    width: 100%;
+    align-items: center;
+    margin-bottom: 4px;
+}
+
+.workflow-destination .output-name-input {
     flex: 1;
     min-width: 0;
     padding: 8px 12px;
@@ -133,26 +219,25 @@
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-.slide-ready .output-name-input:focus {
+.workflow-destination .output-name-input:focus {
     border-color: var(--accent-primary);
     box-shadow: 0 0 0 3px rgba(var(--accent-primary-rgb, 30, 58, 90), 0.1);
 }
 
-.slide-ready .output-name-input::placeholder {
+.workflow-destination .output-name-input::placeholder {
     color: var(--text-tertiary);
 }
 
-.slide-ready .output-name-input.error {
+.workflow-destination .output-name-input.error {
     border-color: var(--color-error, #e74c3c);
     background: rgba(231, 76, 60, 0.05);
 }
 
-.slide-ready .output-name-input.error:focus {
+.workflow-destination .output-name-input.error:focus {
     box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.1);
 }
 
-/* Browse Button */
-.slide-ready .browse-btn {
+.workflow-destination .browse-btn {
     padding: 8px 14px;
     font-size: 0.85rem;
     font-weight: 500;
@@ -165,44 +250,204 @@
     transition: background 0.2s ease, border-color 0.2s ease;
 }
 
-.slide-ready .browse-btn:hover {
+.workflow-destination .browse-btn:hover {
     background: var(--bg-card-hover, var(--bg-secondary));
     border-color: var(--accent-primary);
-    color: var(--text-primary);
 }
 
-.slide-ready .output-name-error {
+.workflow-destination .output-name-error {
+    display: block;
     font-size: 0.75rem;
     color: var(--color-error, #e74c3c);
     min-height: 1em;
     line-height: 1.2;
+}
+
+.workflow-path-preview {
     margin-top: 4px;
 }
 
-/* Folder Path Preview */
-.slide-ready .folder-path-preview {
-    font-size: 0.8rem;
-    color: var(--text-muted);
-    font-family: var(--font-mono);
-    word-break: break-word;
-    margin-top: 6px;
-    line-height: 1.4;
+/* ============================================
+   Options Section (Collapsible)
+   ============================================ */
+
+.workflow-options {
+    border-top: 1px solid var(--border-color, var(--border-subtle));
 }
 
-/* Safe Notice - Grey/Muted */
-.safe-notice {
-    display: inline-flex;
+.options-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: var(--space-md) var(--space-lg);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.options-toggle:hover {
+    background: rgba(var(--accent-primary-rgb, 30, 58, 90), 0.05);
+}
+
+.options-toggle-left {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+}
+
+.options-icon {
+    display: flex;
     align-items: center;
     justify-content: center;
-    padding: var(--space-xs) var(--space-md);
-    margin-bottom: var(--space-md);
-    background: transparent;
-    border-radius: var(--radius-md);
+    width: 18px;
+    height: 18px;
+    color: var(--text-secondary);
 }
 
-.safe-notice-text {
+.options-icon svg {
+    width: 100%;
+    height: 100%;
+}
+
+.options-text {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+}
+
+.options-chevron {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    color: var(--text-tertiary);
+    transition: transform 0.3s ease;
+}
+
+.options-chevron svg {
+    width: 100%;
+    height: 100%;
+}
+
+.options-toggle[aria-expanded="true"] .options-chevron {
+    transform: rotate(180deg);
+}
+
+/* Options Panel (hidden by default) */
+.options-panel {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+}
+
+.options-panel.open {
+    max-height: 300px;
+}
+
+.options-content {
+    padding: 0 var(--space-lg) var(--space-lg);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+}
+
+/* ============================================
+   Toggle Options
+   ============================================ */
+
+.toggle-option {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    cursor: pointer;
+    padding: var(--space-xs) 0;
+}
+
+.toggle-option-disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.toggle-option-disabled .toggle-switch {
+    cursor: not-allowed;
+}
+
+.toggle-switch {
+    position: relative;
+    width: 36px;
+    height: 20px;
+    background: var(--bg-tertiary, #ccc);
+    border-radius: 10px;
+    transition: background 0.2s ease;
+    flex-shrink: 0;
+}
+
+.toggle-switch::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 16px;
+    height: 16px;
+    background: white;
+    border-radius: 50%;
+    transition: transform 0.2s ease;
+}
+
+.toggle-option input:checked + .toggle-switch {
+    background: var(--accent-primary);
+}
+
+.toggle-option input:checked + .toggle-switch::after {
+    transform: translateX(16px);
+}
+
+.toggle-option input {
+    display: none;
+}
+
+.toggle-label {
+    font-size: 0.85rem;
+    color: var(--text-primary);
+}
+
+.info-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 14px;
+    height: 14px;
+    color: var(--text-tertiary);
+    cursor: help;
+}
+
+.info-icon svg {
+    width: 100%;
+    height: 100%;
+}
+
+.coming-soon-badge {
+    font-size: 0.6rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    padding: 2px 6px;
+    background: var(--bg-tertiary, rgba(0, 0, 0, 0.1));
+    color: var(--text-tertiary);
+    border-radius: var(--radius-sm);
+    margin-left: auto;
+}
+
+/* ============================================
+   Safe Notice
+   ============================================ */
+
+.slide-ready .safe-notice {
+    text-align: center;
     font-size: 0.75rem;
     color: var(--text-tertiary);
-    white-space: nowrap;
+    margin-bottom: var(--space-lg);
 }
-
