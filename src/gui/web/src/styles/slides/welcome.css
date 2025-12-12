@@ -43,3 +43,41 @@
     opacity: 1;
 }
 
+/* Auth loading state for Get Started button */
+#btnGetStarted .btn-spinner {
+    display: none;
+}
+
+#btnGetStarted .btn-spinner .spinner-icon {
+    width: 20px;
+    height: 20px;
+    animation: spin 1s linear infinite;
+}
+
+/* Loading state - show ONLY spinner, hide text AND arrow */
+#btnGetStarted.btn-auth-loading .btn-text,
+#btnGetStarted.btn-auth-loading > svg {
+    display: none !important;
+}
+
+#btnGetStarted.btn-auth-loading .btn-spinner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Ready state - show text and arrow, hide spinner */
+#btnGetStarted.btn-auth-ready .btn-text,
+#btnGetStarted.btn-auth-ready > svg {
+    display: inline;
+}
+
+#btnGetStarted.btn-auth-ready .btn-spinner {
+    display: none;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+

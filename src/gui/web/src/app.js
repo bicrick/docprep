@@ -553,10 +553,11 @@ function initSignInForm() {
         if (window.pywebview) {
             try {
                 // Use desktop OAuth flow via Python backend
-                showSignInError('Opening browser for Google sign-in...');
+                showSignInStatus('Opening browser for Google sign-in...');
                 await window.pywebview.api.start_google_signin();
                 // Result will come via googleSignInSuccess/googleSignInError callbacks
             } catch (error) {
+                clearSignInStatus();
                 showSignInError('Failed to start Google sign-in');
                 setSignInLoading(false);
             }
@@ -625,12 +626,32 @@ function showSignInError(message) {
     if (errorEl) {
         errorEl.textContent = message;
     }
+    // Hide status when showing error
+    clearSignInStatus();
 }
 
 function clearSignInError() {
     const errorEl = document.getElementById('signinError');
     if (errorEl) {
         errorEl.textContent = '';
+    }
+}
+
+function showSignInStatus(message) {
+    const statusEl = document.getElementById('signinStatus');
+    const textEl = statusEl?.querySelector('.status-text');
+    if (statusEl && textEl) {
+        textEl.textContent = message;
+        statusEl.classList.add('visible');
+    }
+    // Hide error when showing status
+    clearSignInError();
+}
+
+function clearSignInStatus() {
+    const statusEl = document.getElementById('signinStatus');
+    if (statusEl) {
+        statusEl.classList.remove('visible');
     }
 }
 
@@ -1280,20 +1301,27 @@ export async function initApp() {
         footer.classList.add('hidden');
     }
 
-    // Wait for Firebase auth to determine initial state before showing any slide
-    // This prevents the flash of welcome screen for already signed-in users
+    // Show welcome slide immediately (with loading spinner on button)
+    showSlide('welcome');
+    
+    // Wait for Firebase auth to determine initial state
     const user = await initAuth();
     
     // Initialize avatar handlers after auth is ready
     initUserAvatarHandlers();
     
-    // Show appropriate initial slide based on auth state
+    // Handle auth state result
+    const getStartedBtn = document.getElementById('btnGetStarted');
+    
     if (user) {
         // User is already signed in, go directly to drop zone
         showSlide('drop');
     } else {
-        // Not signed in, show welcome screen
-        showSlide('welcome');
+        // Not signed in - reveal the "Get Started" button
+        if (getStartedBtn) {
+            getStartedBtn.classList.remove('btn-auth-loading');
+            getStartedBtn.classList.add('btn-auth-ready');
+        }
     }
 }
 
@@ -1325,6 +1353,7 @@ function updatePptxImagesToggleVisibility() {
 async function googleSignInSuccess(tokens) {
     try {
         clearSignInError();
+        clearSignInStatus();
         await signInWithGoogleCredential(tokens.idToken, tokens.accessToken);
         // Success - auth state listener will handle navigation
     } catch (error) {
@@ -1335,6 +1364,7 @@ async function googleSignInSuccess(tokens) {
 }
 
 function googleSignInError(errorMessage) {
+    clearSignInStatus();
     showSignInError(errorMessage || 'Google sign-in failed');
     setSignInLoading(false);
 }

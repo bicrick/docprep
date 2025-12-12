@@ -3,7 +3,6 @@
  */
 
 import { icons } from '../components/icons.js';
-import { PrimaryButton } from '../components/Button.js';
 
 export function Welcome() {
     return `
@@ -21,7 +20,16 @@ export function Welcome() {
                 <img src="./word-logo.svg" alt="Word" class="format-logo">
                 <img src="./powerpoint-logo.svg" alt="PowerPoint" class="format-logo">
             </div>
-            ${PrimaryButton('Get Started', 'btnGetStarted', { showArrow: true, large: true })}
+            <button class="btn btn-primary btn-large btn-auth-loading" id="btnGetStarted">
+                <span class="btn-text">Get Started</span>
+                <span class="btn-spinner">
+                    <svg class="spinner-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10" stroke-opacity="0.25"/>
+                        <path d="M12 2a10 10 0 0 1 10 10" stroke-linecap="round"/>
+                    </svg>
+                </span>
+                ${icons.arrowRight}
+            </button>
         </div>
     </section>`;
 }

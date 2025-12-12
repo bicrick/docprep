@@ -44,6 +44,13 @@ export function SignIn() {
                     </div>
                     
                     <div class="signin-error" id="signinError"></div>
+                    <div class="signin-status" id="signinStatus">
+                        <svg class="status-spinner" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10" stroke-opacity="0.25"/>
+                            <path d="M12 2a10 10 0 0 1 10 10" stroke-linecap="round"/>
+                        </svg>
+                        <span class="status-text"></span>
+                    </div>
                     
                     <button type="submit" class="btn btn-signin-primary" id="btnSignInEmail">
                         <span class="btn-text">Continue with Email</span>
@@ -199,3 +206,4 @@ if (!icons.spinner) {
         <path d="M12 2a10 10 0 0 1 10 10" stroke-linecap="round"/>
     </svg>`;
 }
+

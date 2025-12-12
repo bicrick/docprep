@@ -124,6 +124,40 @@ html.dark .form-input:focus {
     display: none;
 }
 
+/* Status Message (for loading states) */
+.signin-status {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-sm);
+    padding: var(--space-md);
+    background: var(--bg-secondary);
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-subtle);
+}
+
+.signin-status.visible {
+    display: flex;
+}
+
+.signin-status .status-spinner {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+    color: var(--accent-primary);
+    animation: spin 1s linear infinite;
+}
+
+html.dark .signin-status .status-spinner {
+    color: var(--accent-secondary);
+}
+
+.signin-status .status-text {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
 /* Primary Sign In Button */
 .btn-signin-primary {
     width: 100%;
@@ -407,3 +441,4 @@ html:not(.dark) .btn-signin-google {
     font-size: 0.9rem;
     color: var(--text-secondary);
 }
+
