@@ -91,7 +91,7 @@ export function Intro() {
                 </div>
             </div>
             
-            <div class="action-buttons">
+            <div class="action-buttons action-buttons-fixed">
                 ${BackButton('btnBackToWelcomeFromIntro')}
                 ${PrimaryButton('Continue', 'btnContinue', { showArrow: true, large: true })}
             </div>

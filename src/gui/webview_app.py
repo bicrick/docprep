@@ -674,23 +674,24 @@ class DocPrepAPI:
                 cli_path = shutil.which(cli) if cli else None
                 
                 if cli_path:
-                    # Pass folder as single argument - list form handles spaces correctly
-                    subprocess.Popen([cli_path, folder_path])
-                    logger.info(f"Opened '{folder_path}' in {editor} via CLI")
+                    # Use -n/--new-window to force a new window with folder as workspace root
+                    subprocess.Popen([cli_path, '-n', folder_path])
+                    logger.info(f"Opened '{folder_path}' in {editor} via CLI (new window)")
                 elif app_path and Path(app_path).exists():
                     # Get the executable name from the app bundle (usually same as app name)
                     app_name = Path(app_path).stem  # e.g., "Cursor" from "Cursor.app"
                     executable_path = Path(app_path) / 'Contents' / 'MacOS' / app_name
                     
                     if executable_path.exists():
-                        # Run the executable directly - handles spaces correctly
-                        subprocess.Popen([str(executable_path), folder_path])
-                        logger.info(f"Opened '{folder_path}' in {editor} via executable")
+                        # Run the executable directly with -n to force new window
+                        subprocess.Popen([str(executable_path), '-n', folder_path])
+                        logger.info(f"Opened '{folder_path}' in {editor} via executable (new window)")
                     else:
-                        # Fallback: use 'open' command with proper quoting via list form
+                        # Fallback: use 'open' command with -n to open new instance
+                        # The '-n' flag for open opens a new instance of the application
                         # The '--args' flag passes subsequent args to the application
-                        subprocess.Popen(['open', '-a', app_path, '--args', folder_path])
-                        logger.info(f"Opened '{folder_path}' in {editor} via open -a")
+                        subprocess.Popen(['open', '-n', '-a', app_path, '--args', folder_path])
+                        logger.info(f"Opened '{folder_path}' in {editor} via open -a (new instance)")
                 else:
                     return {'error': f'{editor.title()} is not installed'}
                     
@@ -700,9 +701,9 @@ class DocPrepAPI:
                     # Check if CLI is available
                     cli_path = shutil.which(cli)
                     if cli_path:
-                        # On Windows, use list form WITHOUT shell=True to handle spaces properly
-                        subprocess.Popen([cli_path, folder_path])
-                        logger.info(f"Opened '{folder_path}' in {editor}")
+                        # On Windows, use -n flag to force a new window with folder as workspace root
+                        subprocess.Popen([cli_path, '-n', folder_path])
+                        logger.info(f"Opened '{folder_path}' in {editor} (new window)")
                     else:
                         return {'error': f'{editor.title()} is not installed or not in PATH'}
                 else:

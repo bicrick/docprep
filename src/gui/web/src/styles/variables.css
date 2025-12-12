@@ -26,6 +26,7 @@
     --text-primary: #1e3a5a;
     --text-secondary: #4a5a6a;
     --text-muted: #8a9aaa;
+    --text-tertiary: #a0aab8;
     
     --border-subtle: #dde3ea;
     --border-accent: #1e3a5a;
@@ -64,9 +65,9 @@
     :root {
         /* Dark Mode - Navy background, white text */
         --bg-primary: #1e3a5a;
-        --bg-secondary: #253f5f;
-        --bg-card: #2d4a6a;
-        --bg-card-hover: #3a5a7a;
+        --bg-secondary: #284668;
+        --bg-card: #325278;
+        --bg-card-hover: #3d6088;
         
         --accent-primary: #ffffff;
         --accent-secondary: #e8edf3;
@@ -79,10 +80,11 @@
         --error: #d88a8a;
         
         --text-primary: #ffffff;
-        --text-secondary: #c8d0da;
-        --text-muted: #8a9aaa;
+        --text-secondary: #d0daea;
+        --text-muted: #9aacbe;
+        --text-tertiary: #8a9cb0;
         
-        --border-subtle: #3a5a7a;
+        --border-subtle: #4a6a8a;
         --border-accent: #ffffff;
     }
 }
@@ -90,9 +92,9 @@
 /* Manual dark mode override (when .dark class is applied to html) */
 html.dark {
     --bg-primary: #1e3a5a;
-    --bg-secondary: #253f5f;
-    --bg-card: #2d4a6a;
-    --bg-card-hover: #3a5a7a;
+    --bg-secondary: #284668;
+    --bg-card: #325278;
+    --bg-card-hover: #3d6088;
     
     --accent-primary: #ffffff;
     --accent-secondary: #e8edf3;
@@ -105,10 +107,11 @@ html.dark {
     --error: #d88a8a;
     
     --text-primary: #ffffff;
-    --text-secondary: #c8d0da;
-    --text-muted: #8a9aaa;
+    --text-secondary: #d0daea;
+    --text-muted: #9aacbe;
+    --text-tertiary: #8a9cb0;
     
-    --border-subtle: #3a5a7a;
+    --border-subtle: #4a6a8a;
     --border-accent: #ffffff;
 }
 
@@ -132,6 +135,7 @@ html.light {
     --text-primary: #1e3a5a;
     --text-secondary: #4a5a6a;
     --text-muted: #8a9aaa;
+    --text-tertiary: #a0aab8;
     
     --border-subtle: #dde3ea;
     --border-accent: #1e3a5a;

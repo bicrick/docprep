@@ -293,6 +293,53 @@ html:not(.dark) .btn-signin-google {
     height: 18px;
 }
 
+/* Email Sign In Button */
+.btn-signin-email {
+    width: 100%;
+    margin-top: var(--space-sm);
+    padding: 0.75rem 1rem;
+    font-family: var(--font-sans);
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text-primary);
+    background: var(--bg-primary);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-sm);
+    transition: background var(--duration-fast) var(--ease-out), border-color var(--duration-fast) var(--ease-out);
+}
+
+html:not(.dark) .btn-signin-email {
+    border-color: #b0bac6;
+}
+
+.btn-signin-email:hover {
+    background: var(--bg-secondary);
+    border-color: var(--text-muted);
+}
+
+.email-icon {
+    width: 18px;
+    height: 18px;
+}
+
+/* Compact modal for email sign-in */
+.modal-content-compact {
+    max-width: 360px;
+}
+
+.modal-content-compact .modal-body {
+    padding: var(--space-md) var(--space-lg) var(--space-lg);
+}
+
+.modal-content-compact .signin-form {
+    gap: var(--space-md);
+}
+
 /* Terms */
 .signin-terms {
     margin-top: var(--space-md);

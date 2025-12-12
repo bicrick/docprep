@@ -57,6 +57,9 @@ function showSlide(slideName) {
     
     if (!targetSlide) return;
     
+    // Close any open modals
+    document.querySelectorAll('.modal-overlay.active').forEach(m => m.classList.remove('active'));
+    
     // Mark current slide for exit animation
     slides.forEach(slide => {
         if (slide.classList.contains('active')) {
@@ -333,9 +336,12 @@ function validateOutputName() {
         state.outputNameError = 'A folder with this name already exists';
     }
     
-    // Update UI
+    // Update UI - apply error class to parent container
     if (input) {
-        input.classList.toggle('error', !state.outputNameValid);
+        const container = input.closest('.folder-box');
+        if (container) {
+            container.classList.toggle('error', !state.outputNameValid);
+        }
     }
     if (errorEl) {
         errorEl.textContent = state.outputNameError;
@@ -515,7 +521,7 @@ function initAuth() {
                 resolve(user);
             } else {
                 // Subsequent auth changes (sign in/out during session)
-                const preSignInSlides = ['welcome', 'intro', 'tutorial', 'signin', 'onboarding'];
+                const preSignInSlides = ['welcome', 'intro', 'tutorial', 'signin', 'email-signin', 'onboarding'];
                 
                 console.log('Checking navigation: user=', !!user, 'currentSlide=', state.currentSlide, 'inPreSignIn=', preSignInSlides.includes(state.currentSlide));
                 
@@ -534,73 +540,17 @@ function initUserAvatarHandlers() {
 }
 
 function initSignInForm() {
-    const form = document.getElementById('signinForm');
-    const emailInput = document.getElementById('signinEmail');
-    const passwordInput = document.getElementById('signinPassword');
     const googleBtn = document.getElementById('btnSignInGoogle');
-    const forgotBtn = document.getElementById('forgotPasswordBtn');
-    
-    if (!form) return;
-    
-    // Email form submit - simple sign-in flow
-    form.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        
-        const email = emailInput?.value?.trim();
-        const password = passwordInput?.value;
-        
-        // Validate email
-        if (!email) {
-            showSignInError('Please enter your email address');
-            return;
-        }
-        
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(email)) {
-            showSignInError('Please enter a valid email address');
-            return;
-        }
-        
-        // Validate password
-        if (!password) {
-            showSignInError('Please enter your password');
-            return;
-        }
-        
-        setSignInLoading(true);
-        clearSignInError();
-        
-        console.log('Attempting sign in for:', email);
-        
-        try {
-            await signInWithEmail(email, password);
-            console.log('Sign in successful, waiting for auth state change...');
-            // Success - auth state listener will handle navigation
-        } catch (error) {
-            console.error('Sign in failed:', error.code, error.message);
-            
-            if (error.code === 'auth/user-not-found') {
-                showSignInError('No account found with this email. Click "Sign up" below to create one.');
-            } else if (error.code === 'auth/invalid-credential' || 
-                error.code === 'auth/wrong-password') {
-                showSignInError('Incorrect email or password. Please try again.');
-            } else {
-                showSignInError(getAuthErrorMessage(error));
-            }
-        } finally {
-            setSignInLoading(false);
-        }
-    });
     
     // Sign up link click handler
-    const signUpLink = document.getElementById('btnGoToSignUp');
-    signUpLink?.addEventListener('click', (e) => {
+    document.getElementById('btnGoToSignUp')?.addEventListener('click', (e) => {
         e.preventDefault();
-        const email = emailInput?.value?.trim();
-        if (email) {
-            state.pendingEmail = email;
-        }
         showSlide('onboarding');
+    });
+    
+    // Email sign in button - navigate to email signin slide
+    document.getElementById('btnOpenEmailModal')?.addEventListener('click', () => {
+        showSlide('email-signin');
     });
     
     // Google sign in
@@ -634,36 +584,106 @@ function initSignInForm() {
             }
         }
     });
+}
+
+function initEmailSignInForm() {
+    const form = document.getElementById('emailSigninForm');
+    const emailInput = document.getElementById('emailSigninEmail');
+    const passwordInput = document.getElementById('emailSigninPassword');
+    const forgotBtn = document.getElementById('emailForgotPasswordBtn');
+    
+    if (!form) return;
+    
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const email = emailInput?.value?.trim();
+        const password = passwordInput?.value;
+        
+        if (!email) {
+            showEmailSignInError('Please enter your email address');
+            return;
+        }
+        
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            showEmailSignInError('Please enter a valid email address');
+            return;
+        }
+        
+        if (!password) {
+            showEmailSignInError('Please enter your password');
+            return;
+        }
+        
+        setEmailSignInLoading(true);
+        clearEmailSignInError();
+        
+        try {
+            await signInWithEmail(email, password);
+        } catch (error) {
+            if (error.code === 'auth/user-not-found') {
+                showEmailSignInError('No account found with this email.');
+            } else if (error.code === 'auth/invalid-credential' || error.code === 'auth/wrong-password') {
+                showEmailSignInError('Incorrect email or password.');
+            } else {
+                showEmailSignInError(getAuthErrorMessage(error));
+            }
+        } finally {
+            setEmailSignInLoading(false);
+        }
+    });
+    
+    // Sign up link
+    document.getElementById('btnGoToSignUpFromEmail')?.addEventListener('click', (e) => {
+        e.preventDefault();
+        const email = emailInput?.value?.trim();
+        if (email) state.pendingEmail = email;
+        showSlide('onboarding');
+    });
+    
+    // Back button
+    document.getElementById('btnBackToSignIn')?.addEventListener('click', () => showSlide('signin'));
     
     // Forgot password
     forgotBtn?.addEventListener('click', async () => {
         const email = emailInput?.value?.trim();
-        
         if (!email) {
-            showSignInError('Please enter your email address first');
+            showEmailSignInError('Please enter your email address first');
             emailInput?.focus();
             return;
         }
-        
-        setSignInLoading(true);
+        setEmailSignInLoading(true);
         try {
             await sendPasswordReset(email);
-            showSignInError('Password reset email sent. Check your inbox.');
+            showEmailSignInError('Password reset email sent. Check your inbox.');
         } catch (error) {
-            showSignInError(getAuthErrorMessage(error));
+            showEmailSignInError(getAuthErrorMessage(error));
         } finally {
-            setSignInLoading(false);
+            setEmailSignInLoading(false);
         }
     });
     
-    // Clear error when user starts typing
-    emailInput?.addEventListener('input', () => {
-        clearSignInError();
-    });
-    
-    passwordInput?.addEventListener('input', () => {
-        clearSignInError();
-    });
+    emailInput?.addEventListener('input', clearEmailSignInError);
+    passwordInput?.addEventListener('input', clearEmailSignInError);
+}
+
+function showEmailSignInError(message) {
+    const el = document.getElementById('emailSigninError');
+    if (el) el.textContent = message;
+}
+
+function clearEmailSignInError() {
+    const el = document.getElementById('emailSigninError');
+    if (el) el.textContent = '';
+}
+
+function setEmailSignInLoading(loading) {
+    const btn = document.getElementById('btnEmailSignIn');
+    if (btn) {
+        btn.disabled = loading;
+        btn.classList.toggle('loading', loading);
+    }
 }
 
 function showSignInError(message) {
@@ -1667,6 +1687,7 @@ export async function initApp() {
     initDropZone();
     initButtons();
     initSignInForm();
+    initEmailSignInForm();
     initOnboardingForm();
     initModals();
 

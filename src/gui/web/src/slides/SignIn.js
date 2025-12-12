@@ -13,7 +13,7 @@ export function SignIn() {
             <div class="signin-card">
                 <div class="signin-header">
                     <h2 class="signin-title" id="signinTitle">Welcome back</h2>
-                    <p class="signin-subtitle" id="signinSubtitle">Login with your Google account</p>
+                    <p class="signin-subtitle" id="signinSubtitle">Choose how you'd like to sign in</p>
                 </div>
                 
                 <button type="button" class="btn btn-signin-google" id="btnSignInGoogle">
@@ -26,58 +26,13 @@ export function SignIn() {
                     <span>Login with Google</span>
                 </button>
                 
-                <div class="signin-divider">
-                    <span class="divider-line"></span>
-                    <span class="divider-text">Or continue with</span>
-                    <span class="divider-line"></span>
-                </div>
-                
-                <form class="signin-form" id="signinForm">
-                    <div class="form-group">
-                        <label class="form-label" for="signinEmail">Email</label>
-                        <input 
-                            type="email" 
-                            id="signinEmail" 
-                            class="form-input" 
-                            placeholder="user@example.com"
-                            autocomplete="email"
-                            required
-                        >
-                    </div>
-                    
-                    <div class="form-group" id="passwordGroup">
-                        <div class="form-label-row">
-                            <label class="form-label" for="signinPassword">Password</label>
-                            <button type="button" class="forgot-password-link" id="forgotPasswordBtn">
-                                Forgot your password?
-                            </button>
-                        </div>
-                        <input 
-                            type="password" 
-                            id="signinPassword" 
-                            class="form-input" 
-                            placeholder="Enter your password"
-                            autocomplete="current-password"
-                            required
-                        >
-                    </div>
-                    
-                    <div class="signin-error" id="signinError"></div>
-                    <div class="signin-status" id="signinStatus">
-                        <svg class="status-spinner" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <circle cx="12" cy="12" r="10" stroke-opacity="0.25"/>
-                            <path d="M12 2a10 10 0 0 1 10 10" stroke-linecap="round"/>
-                        </svg>
-                        <span class="status-text"></span>
-                    </div>
-                    
-                    <button type="submit" class="btn btn-signin-primary" id="btnSignInEmail">
-                        <span class="btn-text">Login</span>
-                        <span class="btn-spinner" style="display: none;">
-                            ${icons.spinner || '<span class="spinner"></span>'}
-                        </span>
-                    </button>
-                </form>
+                <button type="button" class="btn btn-signin-email" id="btnOpenEmailModal">
+                    <svg class="email-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="2" y="4" width="20" height="16" rx="2"/>
+                        <path d="M22 7l-10 6L2 7"/>
+                    </svg>
+                    <span>Login with Email</span>
+                </button>
                 
                 <p class="signin-terms">
                     By clicking continue, you agree to our
@@ -203,6 +158,7 @@ export function SignIn() {
                 </div>
             </div>
         </div>
+        
     </section>`;
 }
 

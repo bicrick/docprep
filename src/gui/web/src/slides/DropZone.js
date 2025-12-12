@@ -23,7 +23,9 @@ export function DropZone() {
                 </div>
             </div>
             
-            ${BackButton('btnBackToWelcome')}
+            <div class="action-buttons action-buttons-fixed">
+                ${BackButton('btnBackToWelcome')}
+            </div>
         </div>
     </section>`;
 }

@@ -10,6 +10,16 @@
     width: 100%;
 }
 
+/* Fixed positioning for consistent navigation button placement */
+.action-buttons-fixed {
+    position: fixed;
+    bottom: 80px; /* Above the docprep footer */
+    left: 0;
+    right: 0;
+    z-index: 50;
+    /* justify-content: center is inherited from .action-buttons */
+}
+
 .action-buttons .btn-back-link {
     margin-top: 0;
     flex: 0 0 auto;

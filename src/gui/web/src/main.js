@@ -7,7 +7,7 @@
 import './styles/index.css';
 
 // Import components
-import { Welcome, Intro, Tutorial, SignIn, Onboarding, DropZone, Ready, Progress, Complete } from './slides/index.js';
+import { Welcome, Intro, Tutorial, SignIn, EmailSignIn, Onboarding, DropZone, Ready, Progress, Complete } from './slides/index.js';
 import { ThemeToggle } from './components/ThemeToggle.js';
 import { UserAvatar } from './components/UserAvatar.js';
 import { Footer } from './components/Footer.js';
@@ -29,6 +29,7 @@ function renderApp() {
         ${Intro()}
         ${Tutorial()}
         ${SignIn()}
+        ${EmailSignIn()}
         ${Onboarding()}
         ${DropZone()}
         ${Ready()}

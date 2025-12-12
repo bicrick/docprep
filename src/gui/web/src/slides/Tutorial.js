@@ -47,7 +47,7 @@ export function Tutorial() {
                 <p class="security-text">All processing happens locally on your device. Your documents never leave your computer.</p>
             </div>
             
-            <div class="action-buttons">
+            <div class="action-buttons action-buttons-fixed">
                 ${BackButton('btnBackToIntro')}
                 ${PrimaryButton('Continue', 'btnContinueToUpload', { showArrow: true, large: true })}
             </div>

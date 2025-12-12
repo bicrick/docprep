@@ -1,6 +1,10 @@
 /* ============================================
-   Ready Screen - Unified Workflow Card
+   Ready Screen - Horizontal Workflow
    ============================================ */
+
+.slide-ready .slide-content-wide {
+    max-width: 700px;
+}
 
 .ready-header {
     margin-bottom: var(--space-lg);
@@ -10,261 +14,222 @@
 .ready-header h2 {
     font-size: 1.5rem;
     font-weight: 600;
+    margin-bottom: var(--space-xs);
 }
 
-/* ============================================
-   Workflow Card Container
-   ============================================ */
-
-.workflow-card {
-    background: var(--bg-secondary, var(--bg-card));
-    border: 1px solid var(--border-color, var(--border-subtle));
-    border-radius: var(--radius-xl, 16px);
-    overflow: hidden;
-    width: 100%;
-    max-width: 500px;
-    margin: 0 auto var(--space-md);
-}
-
-/* ============================================
-   Workflow Sections (Source & Destination)
-   ============================================ */
-
-.workflow-section {
-    padding: var(--space-lg);
-}
-
-.workflow-label {
-    display: block;
-    font-size: 0.65rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--text-tertiary);
-    margin-bottom: var(--space-sm);
-}
-
-.workflow-row {
-    display: flex;
-    align-items: flex-start;
-    gap: var(--space-md);
-}
-
-.workflow-icon {
-    flex-shrink: 0;
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--text-secondary);
-}
-
-.workflow-icon svg {
-    width: 28px;
-    height: 28px;
-}
-
-.workflow-icon-new {
-    color: var(--accent-primary);
-}
-
-.workflow-info {
-    flex: 1;
-    min-width: 0;
-}
-
-.workflow-name {
-    font-weight: 500;
-    font-size: 1rem;
-    margin: 0 0 4px 0;
-    color: var(--text-primary);
-    word-break: break-word;
-}
-
-.workflow-path {
-    font-size: 0.75rem;
+.ready-subtitle {
+    font-size: 0.85rem;
     color: var(--text-muted);
-    font-family: var(--font-mono);
-    word-break: break-all;
-    line-height: 1.4;
     margin: 0;
 }
 
 /* ============================================
-   Source Input (clickable to change)
+   Workflow Card
    ============================================ */
 
-.source-input-row {
-    display: flex;
-    gap: var(--space-sm);
+.workflow-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-xl, 16px);
+    overflow: hidden;
     width: 100%;
-    align-items: center;
-    margin-bottom: 4px;
+    margin: 0 auto var(--space-md);
 }
 
-.source-name-box {
+/* Horizontal row layout */
+.workflow-row {
+    display: flex;
+    align-items: flex-start;
+    padding: var(--space-lg);
+    gap: var(--space-md);
+}
+
+/* Each column (From / To) */
+.workflow-col {
     flex: 1;
     min-width: 0;
-    padding: 8px 12px;
-    font-size: 0.95rem;
-    font-weight: 500;
-    color: var(--text-primary);
-    background: var(--bg-primary);
-    border: 1px solid var(--border-color, var(--border-subtle));
+    display: flex;
+    flex-direction: column;
+}
+
+.workflow-label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-tertiary);
+    margin-bottom: var(--space-xs);
+}
+
+/* Arrow between columns */
+.workflow-arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-top: 28px; /* Align with folder boxes */
+    color: var(--text-tertiary);
+    flex-shrink: 0;
+}
+
+.workflow-arrow svg {
+    width: 20px;
+    height: 20px;
+}
+
+/* ============================================
+   Folder Box (unified)
+   ============================================ */
+
+.folder-box {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    width: 100%;
+    padding: 10px 12px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-subtle);
     border-radius: var(--radius-md);
     cursor: pointer;
-    text-align: left;
     transition: border-color 0.2s ease, background 0.2s ease;
     font-family: inherit;
+    text-align: left;
 }
 
-.source-name-box:hover {
+button.folder-box:hover {
     border-color: var(--accent-primary);
-    background: var(--bg-card-hover, var(--bg-secondary));
+    background: var(--bg-card-hover);
 }
 
-.source-name {
-    display: block;
+.folder-box-icon {
+    flex-shrink: 0;
+    width: 18px;
+    height: 18px;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.folder-box-icon svg {
+    width: 100%;
+    height: 100%;
+}
+
+.folder-box-icon-new {
+    color: var(--accent-primary);
+}
+
+.folder-box-name {
+    flex: 1;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text-primary);
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
 
-.change-label {
-    font-size: 0.8rem;
-    color: var(--text-tertiary);
+/* Path below the box */
+.folder-box-path {
+    font-size: 0.7rem;
+    color: var(--text-secondary);
+    font-family: var(--font-mono);
+    margin: 6px 0 0 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
     white-space: nowrap;
-    padding-right: var(--space-xs);
+    opacity: 0.7;
 }
 
-/* ============================================
-   Connector with File Count
-   ============================================ */
 
-.workflow-connector {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0 var(--space-lg);
-    gap: var(--space-sm);
+/* Editable variant (destination) */
+.folder-box-editable {
+    cursor: default;
 }
 
-.connector-line {
+.folder-box-input {
     flex: 1;
-    height: 1px;
-    background: var(--border-color, var(--border-subtle));
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text-primary);
+    background: transparent;
+    border: none;
+    outline: none;
+    padding: 0;
+    min-width: 0;
+    font-family: inherit;
 }
 
-.connector-badge {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 6px 12px;
-    background: var(--bg-primary);
-    border: 1px solid var(--border-color, var(--border-subtle));
-    border-radius: var(--radius-full, 999px);
-    white-space: nowrap;
+.folder-box-input::placeholder {
+    color: var(--text-tertiary);
 }
 
-.connector-arrow {
+/* Edit icon on source (inside button) */
+.folder-box-edit {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 16px;
-    height: 16px;
-    color: var(--text-tertiary);
-    transform: rotate(90deg);
+    width: 18px;
+    height: 18px;
+    color: var(--text-muted);
+    flex-shrink: 0;
+    opacity: 0.6;
+    transition: opacity 0.2s ease;
 }
 
-.connector-arrow svg {
+.folder-box-edit svg {
     width: 100%;
     height: 100%;
 }
 
-.connector-count {
-    font-weight: 600;
-    font-size: 0.9rem;
-    color: var(--text-primary);
+button.folder-box:hover .folder-box-edit {
+    opacity: 1;
 }
 
-.connector-label {
-    font-size: 0.75rem;
-    color: var(--text-muted);
-}
-
-/* ============================================
-   Destination Input
-   ============================================ */
-
-.workflow-destination .output-input-row {
+/* Edit button on destination */
+.folder-box-edit-btn {
     display: flex;
-    gap: var(--space-sm);
-    width: 100%;
     align-items: center;
-    margin-bottom: 4px;
-}
-
-.workflow-destination .output-name-input {
-    flex: 1;
-    min-width: 0;
-    padding: 8px 12px;
-    font-size: 0.95rem;
-    font-weight: 500;
-    color: var(--text-primary);
-    background: var(--bg-primary);
-    border: 1px solid var(--border-color, var(--border-subtle));
-    border-radius: var(--radius-md);
-    outline: none;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
-}
-
-.workflow-destination .output-name-input:focus {
-    border-color: var(--accent-primary);
-    box-shadow: 0 0 0 3px rgba(var(--accent-primary-rgb, 30, 58, 90), 0.1);
-}
-
-.workflow-destination .output-name-input::placeholder {
-    color: var(--text-tertiary);
-}
-
-.workflow-destination .output-name-input.error {
-    border-color: var(--color-error, #e74c3c);
-    background: rgba(231, 76, 60, 0.05);
-}
-
-.workflow-destination .output-name-input.error:focus {
-    box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.1);
-}
-
-.workflow-destination .browse-btn {
-    padding: 8px 14px;
-    font-size: 0.85rem;
-    font-weight: 500;
-    color: var(--text-primary);
-    background: var(--bg-card);
-    border: 1px solid var(--border-color, var(--border-subtle));
-    border-radius: var(--radius-md);
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    background: transparent;
+    border: none;
+    border-radius: var(--radius-sm);
+    color: var(--text-muted);
     cursor: pointer;
-    white-space: nowrap;
-    transition: background 0.2s ease, border-color 0.2s ease;
+    transition: color 0.2s ease, background 0.2s ease;
+    flex-shrink: 0;
+    margin: -4px -4px -4px 0;
+    opacity: 0.6;
 }
 
-.workflow-destination .browse-btn:hover {
-    background: var(--bg-card-hover, var(--bg-secondary));
-    border-color: var(--accent-primary);
+.folder-box-edit-btn:hover {
+    color: var(--accent-primary);
+    opacity: 1;
 }
 
-.workflow-destination .output-name-error {
+.folder-box-edit-btn svg {
+    width: 16px;
+    height: 16px;
+}
+
+/* Error state */
+.folder-box.error {
+    border-color: var(--color-error, #e74c3c);
+}
+
+.output-name-error {
     display: block;
-    font-size: 0.75rem;
+    font-size: 0.65rem;
     color: var(--color-error, #e74c3c);
-    min-height: 1em;
-    line-height: 1.2;
+    min-height: 0;
+    margin-top: 2px;
 }
 
-.workflow-path-preview {
-    margin-top: 4px;
+.output-name-error:not(:empty) {
+    min-height: 1em;
 }
 
 /* ============================================
@@ -280,7 +245,7 @@
     align-items: center;
     justify-content: space-between;
     width: 100%;
-    padding: var(--space-md) var(--space-lg);
+    padding: var(--space-sm) var(--space-lg);
     background: transparent;
     border: none;
     cursor: pointer;
@@ -288,22 +253,22 @@
 }
 
 .options-toggle:hover {
-    background: rgba(var(--accent-primary-rgb, 30, 58, 90), 0.05);
+    background: var(--bg-card-hover);
 }
 
 .options-toggle-left {
     display: flex;
     align-items: center;
-    gap: var(--space-sm);
+    gap: var(--space-xs);
 }
 
 .options-icon {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 18px;
-    height: 18px;
-    color: var(--text-secondary);
+    width: 16px;
+    height: 16px;
+    color: var(--text-muted);
 }
 
 .options-icon svg {
@@ -312,18 +277,18 @@
 }
 
 .options-text {
-    font-size: 0.9rem;
+    font-size: 0.8rem;
     font-weight: 500;
-    color: var(--text-secondary);
+    color: var(--text-muted);
 }
 
 .options-chevron {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 18px;
-    height: 18px;
-    color: var(--text-tertiary);
+    width: 16px;
+    height: 16px;
+    color: var(--text-muted);
     transition: transform 0.3s ease;
 }
 
@@ -336,7 +301,7 @@
     transform: rotate(180deg);
 }
 
-/* Options Panel (hidden by default) */
+/* Options Panel */
 .options-panel {
     max-height: 0;
     overflow: hidden;
@@ -344,11 +309,11 @@
 }
 
 .options-panel.open {
-    max-height: 300px;
+    max-height: 200px;
 }
 
 .options-content {
-    padding: 0 var(--space-lg) var(--space-lg);
+    padding: var(--space-xs) var(--space-lg) var(--space-md);
     display: flex;
     flex-direction: column;
     gap: var(--space-xs);
@@ -371,16 +336,12 @@
     cursor: not-allowed;
 }
 
-.toggle-option-disabled .toggle-switch {
-    cursor: not-allowed;
-}
-
 .toggle-switch {
     position: relative;
-    width: 36px;
-    height: 20px;
-    background: var(--bg-tertiary, #ccc);
-    border-radius: 10px;
+    width: 32px;
+    height: 18px;
+    background: var(--border-subtle);
+    border-radius: 9px;
     transition: background 0.2s ease;
     flex-shrink: 0;
 }
@@ -390,8 +351,8 @@
     position: absolute;
     top: 2px;
     left: 2px;
-    width: 16px;
-    height: 16px;
+    width: 14px;
+    height: 14px;
     background: white;
     border-radius: 50%;
     transition: transform 0.2s ease;
@@ -402,7 +363,7 @@
 }
 
 .toggle-option input:checked + .toggle-switch::after {
-    transform: translateX(16px);
+    transform: translateX(14px);
 }
 
 .toggle-option input {
@@ -410,33 +371,17 @@
 }
 
 .toggle-label {
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     color: var(--text-primary);
 }
 
-.info-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 14px;
-    height: 14px;
-    color: var(--text-tertiary);
-    cursor: help;
-}
-
-.info-icon svg {
-    width: 100%;
-    height: 100%;
-}
-
 .coming-soon-badge {
-    font-size: 0.6rem;
+    font-size: 0.55rem;
     font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.03em;
-    padding: 2px 6px;
-    background: var(--bg-tertiary, rgba(0, 0, 0, 0.1));
-    color: var(--text-tertiary);
+    padding: 2px 5px;
+    background: var(--border-subtle);
+    color: var(--text-muted);
     border-radius: var(--radius-sm);
     margin-left: auto;
 }
@@ -447,7 +392,7 @@
 
 .slide-ready .safe-notice {
     text-align: center;
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     color: var(--text-tertiary);
     margin-bottom: var(--space-lg);
 }

@@ -30,7 +30,7 @@ export function Progress() {
                 <p class="current-substep" id="currentSubStep"></p>
             </div>
             
-            <div class="action-buttons">
+            <div class="action-buttons action-buttons-fixed">
                 ${SkipButton('btnSkip')}
                 ${CancelButton('btnCancel')}
             </div>

@@ -57,6 +57,15 @@
     text-align: center;
 }
 
+/* Slides with fixed navigation buttons need bottom padding for clearance */
+.slide-intro .slide-content,
+.slide-tutorial .slide-content,
+.slide-drop .slide-content,
+.slide-ready .slide-content,
+.slide-progress .slide-content {
+    padding-bottom: 100px; /* Space for fixed buttons */
+}
+
 /* Complete slide needs full height for scrollable detail view */
 .slide-complete .slide-content {
     height: 100%;
