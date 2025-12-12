@@ -59,3 +59,5 @@ test_output/
 # Workspace files
 docprep.code-workspace
 
+# OAuth secrets (do not commit)
+client_secret*.json

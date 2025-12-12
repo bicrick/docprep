@@ -53,9 +53,14 @@ PRESERVE_FORMATTING = False  # For text extraction
 LOG_LEVEL = "INFO"
 LOG_FORMAT = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 
-# Update checking
-# Set this to your GitHub Pages URL: https://<username>.github.io/<repo>/updates.json
-UPDATE_URL = "https://raw.githubusercontent.com/YOUR_USERNAME/docprep-app/main/docs/updates.json"
+# Update checking - Cloudflare R2
+UPDATE_URL = "https://pub-7075773554534e1ea27cd98fe79bcfca.r2.dev/updates.json"
+
+# Google OAuth for desktop app sign-in
+# Create at: https://console.cloud.google.com/apis/credentials
+# Set these via environment variables or a .env file (not committed to git)
+GOOGLE_OAUTH_CLIENT_ID = os.environ.get("GOOGLE_OAUTH_CLIENT_ID", "")
+GOOGLE_OAUTH_CLIENT_SECRET = os.environ.get("GOOGLE_OAUTH_CLIENT_SECRET", "")
 
 # File naming
 SANITIZE_FILENAMES = True

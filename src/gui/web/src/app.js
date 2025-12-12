@@ -3,6 +3,22 @@
  * Handles slide navigation, state management, and Python bridge communication
  */
 
+import { showUpdateNotice, hideUpdateNotice } from './components/UpdateNotice.js';
+import {
+    initFirebase,
+    getCurrentUser,
+    isSignedIn,
+    signInWithGoogle,
+    signInWithGoogleCredential,
+    signInWithEmail,
+    createAccountWithEmail,
+    sendPasswordReset,
+    signOut,
+    onAuthStateChanged,
+    getUserDisplayInfo,
+    getAuthErrorMessage
+} from './auth/firebase.js';
+
 // ============================================
 // State Management
 // ============================================
@@ -20,7 +36,11 @@ const state = {
     outputFolderName: '',
     outputFolderPath: '',  // Full path to output folder
     outputNameValid: true,
-    outputNameError: ''
+    outputNameError: '',
+    // Auth state
+    user: null,
+    isAuthLoading: false,
+    authMode: 'signin' // 'signin' or 'signup'
 };
 
 // ============================================
@@ -61,14 +81,26 @@ function showSlide(slideName) {
         }
     }
     
-    // Show/hide polka dots (visible on welcome and complete screens)
+    // Show/hide polka dots (visible on welcome, signin, and complete screens)
     const polkaDots = document.querySelector('.polka-dots');
     if (polkaDots) {
-        if (slideName === 'welcome' || slideName === 'complete') {
+        if (slideName === 'welcome' || slideName === 'signin' || slideName === 'complete') {
             polkaDots.classList.add('visible');
         } else {
             polkaDots.classList.remove('visible');
         }
+    }
+    
+    // Show/hide update notice (only visible on welcome screen)
+    if (slideName === 'welcome') {
+        showUpdateNotice();
+    } else {
+        hideUpdateNotice();
+    }
+    
+    // Reset sign-in form when navigating to signin slide
+    if (slideName === 'signin') {
+        resetSignInForm();
     }
     
     state.currentSlide = slideName;
@@ -286,9 +318,14 @@ function initButtons() {
         showSlide('welcome');
     });
     
-    // Continue button (from tutorial slide) -> go to drop
+    // Continue button (from tutorial slide) -> go to signin (changed from drop)
     document.getElementById('btnContinueToUpload')?.addEventListener('click', () => {
-        showSlide('drop');
+        // If already signed in, skip to drop zone
+        if (isSignedIn()) {
+            showSlide('drop');
+        } else {
+            showSlide('signin');
+        }
     });
     
     // Back to intro button (from tutorial slide)
@@ -296,9 +333,14 @@ function initButtons() {
         showSlide('intro');
     });
     
-    // Back to tutorial button (from drop slide)
-    document.getElementById('btnBackToWelcome')?.addEventListener('click', () => {
+    // Back to tutorial button (from signin slide)
+    document.getElementById('btnBackToTutorial')?.addEventListener('click', () => {
         showSlide('tutorial');
+    });
+    
+    // Back to signin button (from drop slide) - now goes back to signin
+    document.getElementById('btnBackToWelcome')?.addEventListener('click', () => {
+        showSlide('signin');
     });
     
     // Back button (from ready slide)
@@ -377,6 +419,296 @@ function resetState() {
     const pptxToggle = document.getElementById('pptxImagesToggle');
     if (pptxToggle) {
         pptxToggle.checked = false;
+    }
+}
+
+// ============================================
+// Authentication
+// ============================================
+
+function initAuth() {
+    // Initialize Firebase
+    const firebaseReady = initFirebase();
+    if (!firebaseReady) {
+        console.warn('Firebase not initialized - auth features will be disabled');
+        return;
+    }
+    
+    // Listen for auth state changes
+    onAuthStateChanged((user) => {
+        state.user = user;
+        updateAuthUI(user);
+        
+        // If user just signed in and we're on the signin slide, proceed to drop
+        if (user && state.currentSlide === 'signin') {
+            showSlide('drop');
+        }
+    });
+}
+
+function initSignInForm() {
+    const form = document.getElementById('signinForm');
+    const emailInput = document.getElementById('signinEmail');
+    const passwordInput = document.getElementById('signinPassword');
+    const passwordGroup = document.getElementById('passwordGroup');
+    const googleBtn = document.getElementById('btnSignInGoogle');
+    const forgotBtn = document.getElementById('forgotPasswordBtn');
+    const errorEl = document.getElementById('signinError');
+    const submitBtn = document.getElementById('btnSignInEmail');
+    
+    if (!form) return;
+    
+    // Track if we've checked the email
+    let emailChecked = false;
+    let isNewUser = false;
+    
+    // Email form submit
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const email = emailInput?.value?.trim();
+        const password = passwordInput?.value;
+        
+        if (!email) {
+            showSignInError('Please enter your email address');
+            return;
+        }
+        
+        // If password field is not visible, show it
+        if (passwordGroup?.style.display === 'none') {
+            passwordGroup.style.display = 'block';
+            passwordInput?.focus();
+            updateSignInButtonText();
+            return;
+        }
+        
+        if (!password) {
+            showSignInError('Please enter your password');
+            return;
+        }
+        
+        // Try to sign in
+        setSignInLoading(true);
+        clearSignInError();
+        
+        try {
+            if (state.authMode === 'signup') {
+                await createAccountWithEmail(email, password);
+            } else {
+                await signInWithEmail(email, password);
+            }
+            // Success - auth state listener will handle navigation
+        } catch (error) {
+            // If user not found, offer to create account
+            if (error.code === 'auth/user-not-found') {
+                state.authMode = 'signup';
+                updateSignInButtonText();
+                showSignInError('No account found. Click again to create one.');
+            } else if (error.code === 'auth/invalid-credential') {
+                showSignInError('Invalid email or password. Please try again.');
+            } else {
+                showSignInError(getAuthErrorMessage(error));
+            }
+        } finally {
+            setSignInLoading(false);
+        }
+    });
+    
+    // Google sign in
+    googleBtn?.addEventListener('click', async () => {
+        setSignInLoading(true, 'google');
+        clearSignInError();
+        
+        // Check if running in pywebview (desktop app)
+        if (window.pywebview) {
+            try {
+                // Use desktop OAuth flow via Python backend
+                showSignInError('Opening browser for Google sign-in...');
+                await window.pywebview.api.start_google_signin();
+                // Result will come via googleSignInSuccess/googleSignInError callbacks
+            } catch (error) {
+                showSignInError('Failed to start Google sign-in');
+                setSignInLoading(false);
+            }
+        } else {
+            // Web fallback - use popup
+            try {
+                await signInWithGoogle();
+                // Success - auth state listener will handle navigation
+            } catch (error) {
+                if (error.code !== 'auth/popup-closed-by-user') {
+                    showSignInError(getAuthErrorMessage(error));
+                }
+            } finally {
+                setSignInLoading(false);
+            }
+        }
+    });
+    
+    // Forgot password
+    forgotBtn?.addEventListener('click', async () => {
+        const email = emailInput?.value?.trim();
+        
+        if (!email) {
+            showSignInError('Please enter your email address first');
+            emailInput?.focus();
+            return;
+        }
+        
+        try {
+            await sendPasswordReset(email);
+            showSignInError('Password reset email sent. Check your inbox.');
+        } catch (error) {
+            showSignInError(getAuthErrorMessage(error));
+        }
+    });
+    
+    // Reset form when email changes
+    emailInput?.addEventListener('input', () => {
+        if (passwordGroup?.style.display !== 'none') {
+            // Reset auth mode when email changes
+            state.authMode = 'signin';
+            updateSignInButtonText();
+        }
+        clearSignInError();
+    });
+}
+
+function updateSignInButtonText() {
+    const submitBtn = document.getElementById('btnSignInEmail');
+    const btnText = submitBtn?.querySelector('.btn-text');
+    const passwordGroup = document.getElementById('passwordGroup');
+    
+    if (!btnText) return;
+    
+    if (passwordGroup?.style.display === 'none') {
+        btnText.textContent = 'Continue with Email';
+    } else if (state.authMode === 'signup') {
+        btnText.textContent = 'Create Account';
+    } else {
+        btnText.textContent = 'Sign In';
+    }
+}
+
+function showSignInError(message) {
+    const errorEl = document.getElementById('signinError');
+    if (errorEl) {
+        errorEl.textContent = message;
+    }
+}
+
+function clearSignInError() {
+    const errorEl = document.getElementById('signinError');
+    if (errorEl) {
+        errorEl.textContent = '';
+    }
+}
+
+function setSignInLoading(loading, type = 'email') {
+    state.isAuthLoading = loading;
+    
+    const emailBtn = document.getElementById('btnSignInEmail');
+    const googleBtn = document.getElementById('btnSignInGoogle');
+    const emailInput = document.getElementById('signinEmail');
+    const passwordInput = document.getElementById('signinPassword');
+    
+    if (loading) {
+        emailBtn?.classList.add('loading');
+        emailBtn?.setAttribute('disabled', 'true');
+        googleBtn?.setAttribute('disabled', 'true');
+        emailInput?.setAttribute('disabled', 'true');
+        passwordInput?.setAttribute('disabled', 'true');
+    } else {
+        emailBtn?.classList.remove('loading');
+        emailBtn?.removeAttribute('disabled');
+        googleBtn?.removeAttribute('disabled');
+        emailInput?.removeAttribute('disabled');
+        passwordInput?.removeAttribute('disabled');
+    }
+}
+
+function updateAuthUI(user) {
+    // Update any UI elements that depend on auth state
+    // This could show user info in a header, etc.
+    if (user) {
+        console.log('User signed in:', user.email);
+    } else {
+        console.log('User signed out');
+    }
+}
+
+function resetSignInForm() {
+    const emailInput = document.getElementById('signinEmail');
+    const passwordInput = document.getElementById('signinPassword');
+    const passwordGroup = document.getElementById('passwordGroup');
+    const errorEl = document.getElementById('signinError');
+    
+    if (emailInput) emailInput.value = '';
+    if (passwordInput) passwordInput.value = '';
+    if (passwordGroup) passwordGroup.style.display = 'none';
+    if (errorEl) errorEl.textContent = '';
+    
+    state.authMode = 'signin';
+    updateSignInButtonText();
+}
+
+// ============================================
+// Modal Handling
+// ============================================
+
+function initModals() {
+    // Open Privacy Policy modal
+    document.getElementById('openPrivacyModal')?.addEventListener('click', (e) => {
+        e.preventDefault();
+        openModal('privacy-modal');
+    });
+    
+    // Open Terms of Service modal
+    document.getElementById('openTermsModal')?.addEventListener('click', (e) => {
+        e.preventDefault();
+        openModal('terms-modal');
+    });
+    
+    // Close buttons
+    document.querySelectorAll('.modal-close').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const modal = btn.closest('.modal-overlay');
+            if (modal) closeModal(modal.id);
+        });
+    });
+    
+    // Close on overlay click
+    document.querySelectorAll('.modal-overlay').forEach(overlay => {
+        overlay.addEventListener('click', (e) => {
+            if (e.target === overlay) {
+                closeModal(overlay.id);
+            }
+        });
+    });
+    
+    // Close on Escape key
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            document.querySelectorAll('.modal-overlay.active').forEach(modal => {
+                closeModal(modal.id);
+            });
+        }
+    });
+}
+
+function openModal(modalId) {
+    const modal = document.getElementById(modalId);
+    if (modal) {
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+}
+
+function closeModal(modalId) {
+    const modal = document.getElementById(modalId);
+    if (modal) {
+        modal.classList.remove('active');
+        document.body.style.overflow = '';
     }
 }
 
@@ -813,6 +1145,9 @@ export async function initApp() {
     createPolkaDots();
     initDropZone();
     initButtons();
+    initAuth();
+    initSignInForm();
+    initModals();
     
     // Check if LibreOffice is available for PPTX image extraction
     await checkLibreOfficeAvailable();
@@ -848,6 +1183,27 @@ function updatePptxImagesToggleVisibility() {
     }
 }
 
+// ============================================
+// Google OAuth Callbacks (called from Python)
+// ============================================
+
+async function googleSignInSuccess(tokens) {
+    try {
+        clearSignInError();
+        await signInWithGoogleCredential(tokens.idToken, tokens.accessToken);
+        // Success - auth state listener will handle navigation
+    } catch (error) {
+        showSignInError(getAuthErrorMessage(error));
+    } finally {
+        setSignInLoading(false);
+    }
+}
+
+function googleSignInError(errorMessage) {
+    showSignInError(errorMessage || 'Google sign-in failed');
+    setSignInLoading(false);
+}
+
 // Expose functions for Python to call
 window.updateProgress = updateProgress;
 window.updateCurrentFile = updateCurrentFile;
@@ -855,4 +1211,6 @@ window.updateSubStep = updateSubStep;
 window.showComplete = showComplete;
 window.showCancelled = showCancelled;
 window.showError = showError;
+window.googleSignInSuccess = googleSignInSuccess;
+window.googleSignInError = googleSignInError;
 

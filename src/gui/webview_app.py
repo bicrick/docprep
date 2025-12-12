@@ -625,6 +625,196 @@ class DocPrepAPI:
         """Open a URL in the default browser (for downloading updates)"""
         import webbrowser
         webbrowser.open(url)
+    
+    def start_google_signin(self) -> None:
+        """
+        Start Google OAuth flow in the system browser.
+        Opens browser for sign-in and waits for callback.
+        Results are pushed back to JavaScript.
+        """
+        # Run in background thread to not block UI
+        oauth_thread = threading.Thread(
+            target=self._run_google_oauth,
+            daemon=True
+        )
+        oauth_thread.start()
+    
+    def _run_google_oauth(self) -> None:
+        """Run the Google OAuth flow (called in background thread)"""
+        try:
+            from utils.oauth_server import OAuthServer
+            from config import GOOGLE_OAUTH_CLIENT_ID, GOOGLE_OAUTH_CLIENT_SECRET
+            import urllib.request
+            import urllib.parse
+            import json
+            import secrets
+            import hashlib
+            import base64
+            
+            if not GOOGLE_OAUTH_CLIENT_ID:
+                self._call_js('googleSignInError', 'Google OAuth not configured. Set GOOGLE_OAUTH_CLIENT_ID in config.py')
+                return
+            
+            CLIENT_ID = GOOGLE_OAUTH_CLIENT_ID
+            CLIENT_SECRET = GOOGLE_OAUTH_CLIENT_SECRET
+            
+            # Start local callback server
+            server = OAuthServer(port=8547)
+            server.start()
+            
+            # Use consistent redirect URI
+            redirect_uri = "http://127.0.0.1:8547/callback"
+            
+            # Generate PKCE code verifier and challenge
+            code_verifier = secrets.token_urlsafe(43)  # 43 chars gives 32 bytes when decoded
+            code_challenge = base64.urlsafe_b64encode(
+                hashlib.sha256(code_verifier.encode()).digest()
+            ).rstrip(b'=').decode()
+            
+            logger.info(f"OAuth redirect_uri: {redirect_uri}")
+            logger.info(f"PKCE verifier length: {len(code_verifier)}, challenge length: {len(code_challenge)}")
+            
+            # Build OAuth URL with PKCE
+            params = {
+                "client_id": CLIENT_ID,
+                "redirect_uri": redirect_uri,
+                "response_type": "code",
+                "scope": "email profile openid",
+                "code_challenge": code_challenge,
+                "code_challenge_method": "S256",
+                "access_type": "offline",
+                "prompt": "select_account"
+            }
+            
+            oauth_url = "https://accounts.google.com/o/oauth2/v2/auth?" + urllib.parse.urlencode(params)
+            
+            # Open browser
+            import webbrowser
+            webbrowser.open(oauth_url)
+            
+            # Wait for callback (5 minute timeout)
+            auth_code, error = server.wait_for_callback(timeout=300)
+            server.stop()
+            
+            if error:
+                self._call_js('googleSignInError', error)
+                return
+            
+            if not auth_code:
+                self._call_js('googleSignInError', 'No authorization code received')
+                return
+            
+            logger.info(f"Got auth code, length: {len(auth_code)}")
+            
+            # Exchange code for tokens using PKCE
+            token_url = "https://oauth2.googleapis.com/token"
+            token_params = {
+                "client_id": CLIENT_ID,
+                "code": auth_code,
+                "code_verifier": code_verifier,
+                "grant_type": "authorization_code",
+                "redirect_uri": redirect_uri
+            }
+            if CLIENT_SECRET:
+                token_params["client_secret"] = CLIENT_SECRET
+            token_data = urllib.parse.urlencode(token_params).encode()
+            
+            logger.info(f"Token request redirect_uri: {redirect_uri}, has_secret: {bool(CLIENT_SECRET)}")
+            
+            req = urllib.request.Request(token_url, data=token_data, method="POST")
+            req.add_header("Content-Type", "application/x-www-form-urlencoded")
+            
+            try:
+                with urllib.request.urlopen(req, timeout=30) as response:
+                    tokens = json.loads(response.read().decode())
+            except urllib.error.HTTPError as e:
+                error_body = e.read().decode()
+                logger.error(f"Token exchange failed: {e.code} - {error_body}")
+                self._call_js('googleSignInError', f"Token exchange failed: {error_body}")
+                return
+            
+            id_token = tokens.get("id_token")
+            access_token = tokens.get("access_token")
+            
+            if not id_token:
+                self._call_js('googleSignInError', 'No ID token received from Google')
+                return
+            
+            logger.info("Successfully got tokens from Google")
+            
+            # Send tokens to JavaScript for Firebase sign-in
+            self._call_js('googleSignInSuccess', {
+                'idToken': id_token,
+                'accessToken': access_token
+            })
+            
+        except Exception as e:
+            logger.error(f"Google OAuth failed: {e}")
+            self._call_js('googleSignInError', str(e))
+    
+    def download_and_install_update(self) -> None:
+        """
+        Download update, install with admin privileges, and relaunch.
+        Progress is pushed to JavaScript via callbacks.
+        
+        This runs in a background thread to avoid blocking the UI.
+        """
+        # Start in background thread
+        update_thread = threading.Thread(
+            target=self._run_update_installation,
+            daemon=True
+        )
+        update_thread.start()
+    
+    def _run_update_installation(self) -> None:
+        """Run the update installation process (called in background thread)"""
+        try:
+            from utils.auto_updater import download_update, install_update, relaunch_app
+            from config import APP_VERSION, UPDATE_URL
+            from utils.update_checker import get_update_info_dict
+            
+            # Get update info to get download URL
+            update_info = get_update_info_dict(APP_VERSION, UPDATE_URL)
+            if not update_info or not update_info.get('download_url'):
+                self._call_js('updateInstallError', 'Could not get update information')
+                return
+            
+            download_url = update_info['download_url']
+            
+            # Define progress callback to push to JS
+            def on_download_progress(downloaded: int, total: int):
+                percent = int((downloaded / total) * 100) if total > 0 else 0
+                self._call_js('updateDownloadProgress', percent)
+            
+            # Download the update
+            self._call_js('updateDownloadProgress', 0)
+            dmg_path = download_update(download_url, progress_callback=on_download_progress)
+            
+            if not dmg_path:
+                self._call_js('updateInstallError', 'Download failed')
+                return
+            
+            # Signal download complete, starting install
+            self._call_js('updateInstallStarted')
+            
+            # Install the update (will prompt for admin password)
+            success = install_update(dmg_path)
+            
+            if not success:
+                self._call_js('updateInstallError', 'Installation cancelled or failed')
+                return
+            
+            # Installation succeeded - relaunch
+            self._call_js('updateInstallComplete')
+            
+            # Small delay to let JS update, then relaunch
+            import time
+            time.sleep(0.5)
+            relaunch_app()
+            
+        except Exception as e:
+            logger.error(f"Update installation failed: {e}")
+            self._call_js('updateInstallError', str(e))
 
 
 class WebviewApp:

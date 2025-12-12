@@ -12,9 +12,9 @@ from dataclasses import dataclass
 
 logger = logging.getLogger(__name__)
 
-# Update manifest URL - configure this to your GitHub Pages URL
-# Format: https://<username>.github.io/<repo>/updates.json
-UPDATE_URL = "https://raw.githubusercontent.com/YOUR_USERNAME/docprep-app/main/docs/updates.json"
+# Update manifest URL - configured in config.py
+# This is a fallback; prefer importing from config
+UPDATE_URL = "https://pub-7075773554534e1ea27cd98fe79bcfca.r2.dev/updates.json"
 
 
 @dataclass

@@ -19,11 +19,13 @@
 @import './components/drop-zone.css';
 @import './components/tree.css';
 @import './components/update-notice.css';
+@import './components/modals.css';
 
 /* Slide-specific styles */
 @import './slides/welcome.css';
 @import './slides/intro.css';
 @import './slides/tutorial.css';
+@import './slides/signin.css';
 @import './slides/ready.css';
 @import './slides/complete.css';
 

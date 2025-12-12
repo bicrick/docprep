@@ -41,6 +41,8 @@ a = Analysis(
         'utils.file_scanner',
         'utils.report',
         'utils.office_converter',
+        'utils.update_checker',
+        'utils.auto_updater',
         'extractors',
         'extractors.base',
         'extractors.excel',
