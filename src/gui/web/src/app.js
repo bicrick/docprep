@@ -107,6 +107,16 @@ function showSlide(slideName) {
     
     // Update user avatar visibility
     updateUserAvatarVisibility();
+    
+    // Hide back button on drop zone if user is signed in (no need to go back)
+    const dropBackBtn = document.getElementById('btnBackToWelcome');
+    if (dropBackBtn) {
+        if (slideName === 'drop' && state.user) {
+            dropBackBtn.style.display = 'none';
+        } else {
+            dropBackBtn.style.display = '';
+        }
+    }
 }
 
 // ============================================
