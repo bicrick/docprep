@@ -6,7 +6,7 @@ import logging
 from pathlib import Path
 from typing import Optional
 
-from extractors.base import BaseExtractor, ExtractionResult
+from extractors.base import BaseExtractor, ExtractionResult, ExtractionInterrupted
 
 logger = logging.getLogger(__name__)
 
@@ -68,11 +68,12 @@ class PDFExtractor(BaseExtractor):
             doc = fitz.open(filepath)
             
             result.metadata['page_count'] = len(doc)
-            logger.info(f"PDF has {len(doc)} pages")
+            total_pages = len(doc)
+            logger.info(f"PDF has {total_pages} pages")
             
             # Extract text
             text_output = output_dir / f"{file_safe_name}.txt"
-            text_content = self._extract_text(doc, result)
+            text_content = self._extract_text(doc, result, total_pages)
             
             if text_content.strip():
                 with open(text_output, 'w', encoding='utf-8') as f:
@@ -98,6 +99,10 @@ class PDFExtractor(BaseExtractor):
                 logger.info(f"Successfully extracted data from {filepath.name}")
             else:
                 result.add_warning("No data extracted from PDF")
+        
+        except ExtractionInterrupted:
+            # Re-raise interrupt exceptions so they propagate to the manager
+            raise
             
         except Exception as e:
             error_msg = f"Failed to extract {filepath.name}: {str(e)}"
@@ -106,7 +111,7 @@ class PDFExtractor(BaseExtractor):
         
         return result
     
-    def _extract_text(self, doc, result: ExtractionResult) -> str:
+    def _extract_text(self, doc, result: ExtractionResult, total_pages: int) -> str:
         """Extract all text from PDF document"""
         try:
             import fitz
@@ -114,6 +119,12 @@ class PDFExtractor(BaseExtractor):
             text_parts = []
             
             for page_num in range(len(doc)):
+                # Check for interrupt before each page
+                self.check_interrupted()
+                
+                # Report substep progress
+                self.report_substep(f"Extracting page {page_num + 1} of {total_pages}")
+                
                 page = doc[page_num]
                 
                 # Add page header
@@ -132,6 +143,9 @@ class PDFExtractor(BaseExtractor):
                 text_parts.append("\n")
             
             return ''.join(text_parts)
+        
+        except ExtractionInterrupted:
+            raise
             
         except Exception as e:
             logger.error(f"Error extracting text: {e}")
@@ -153,6 +167,9 @@ class PDFExtractor(BaseExtractor):
                 return 0
             
             for page_num in range(len(doc)):
+                # Check for interrupt
+                self.check_interrupted()
+                
                 page = doc[page_num]
                 
                 # Get list of images on the page
@@ -184,6 +201,9 @@ class PDFExtractor(BaseExtractor):
                         logger.warning(f"Failed to extract image {img_index + 1} from page {page_num + 1}: {e}")
             
             return image_count
+        
+        except ExtractionInterrupted:
+            raise
             
         except Exception as e:
             logger.error(f"Error extracting images: {e}")

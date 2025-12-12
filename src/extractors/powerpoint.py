@@ -6,7 +6,7 @@ import logging
 from pathlib import Path
 from typing import Optional
 
-from extractors.base import BaseExtractor, ExtractionResult
+from extractors.base import BaseExtractor, ExtractionResult, ExtractionInterrupted
 from utils.office_converter import OfficeConverter
 
 logger = logging.getLogger(__name__)
@@ -70,11 +70,15 @@ class PowerPointExtractor(BaseExtractor):
             prs = pptx.Presentation(filepath)
             
             result.metadata['slide_count'] = len(prs.slides)
-            logger.info(f"Presentation has {len(prs.slides)} slides")
+            total_slides = len(prs.slides)
+            logger.info(f"Presentation has {total_slides} slides")
+            
+            # Report initial substep
+            self.report_substep(f"Extracting text from {total_slides} slides")
             
             # Extract text from all slides
             text_output = output_dir / f"{file_safe_name}.txt"
-            text_content = self._extract_text(prs, result)
+            text_content = self._extract_text(prs, result, total_slides)
             
             if text_content.strip():
                 with open(text_output, 'w', encoding='utf-8') as f:
@@ -84,6 +88,9 @@ class PowerPointExtractor(BaseExtractor):
             else:
                 result.add_warning("No text content found in presentation")
             
+            # Check for interrupt before image extraction
+            self.check_interrupted()
+            
             # Extract slide images (snapshots)
             if self.extract_images:
                 # Use LibreOffice converter for full slide screenshots
@@ -91,6 +98,7 @@ class PowerPointExtractor(BaseExtractor):
                 
                 # Check if LibreOffice is available
                 if self.converter.soffice_path:
+                    self.report_substep(f"Converting {total_slides} slides to images")
                     logger.info("Using LibreOffice for slide image extraction")
                     generated_files = self.converter.convert_to_png(filepath, images_dir)
                     
@@ -116,6 +124,10 @@ class PowerPointExtractor(BaseExtractor):
                 logger.info(f"Successfully extracted data from {filepath.name}")
             else:
                 result.add_warning("No data extracted from PowerPoint")
+        
+        except ExtractionInterrupted:
+            # Re-raise interrupt exceptions so they propagate to the manager
+            raise
             
         except Exception as e:
             error_msg = f"Failed to extract {filepath.name}: {str(e)}"
@@ -124,7 +136,7 @@ class PowerPointExtractor(BaseExtractor):
         
         return result
     
-    def _extract_text(self, prs, result: ExtractionResult) -> str:
+    def _extract_text(self, prs, result: ExtractionResult, total_slides: int) -> str:
         """Extract all text from PowerPoint presentation"""
         try:
             text_parts = []
@@ -134,6 +146,12 @@ class PowerPointExtractor(BaseExtractor):
             text_parts.append(f"{'='*80}\n\n")
             
             for slide_idx, slide in enumerate(prs.slides, 1):
+                # Check for interrupt before each slide
+                self.check_interrupted()
+                
+                # Report substep progress
+                self.report_substep(f"Processing slide {slide_idx} of {total_slides}")
+                
                 text_parts.append(f"\n{'='*80}\n")
                 text_parts.append(f"SLIDE {slide_idx}\n")
                 text_parts.append(f"{'='*80}\n\n")
@@ -155,6 +173,9 @@ class PowerPointExtractor(BaseExtractor):
                 text_parts.append("\n")
             
             return ''.join(text_parts)
+        
+        except ExtractionInterrupted:
+            raise
             
         except Exception as e:
             logger.error(f"Error extracting text: {e}")

@@ -55,10 +55,10 @@ function showSlide(slideName) {
         }
     }
     
-    // Show/hide polka dots (only visible on welcome screen)
+    // Show/hide polka dots (visible on welcome and complete screens)
     const polkaDots = document.querySelector('.polka-dots');
     if (polkaDots) {
-        if (slideName === 'welcome') {
+        if (slideName === 'welcome' || slideName === 'complete') {
             polkaDots.classList.add('visible');
         } else {
             polkaDots.classList.remove('visible');
@@ -263,42 +263,217 @@ function updateProgress(current, total) {
 function updateCurrentFile(filename) {
     const currentFileName = document.getElementById('currentFileName');
     if (currentFileName) currentFileName.textContent = filename;
+    
+    // Clear substep when starting a new file
+    const substep = document.getElementById('currentSubStep');
+    if (substep) {
+        substep.textContent = '';
+        substep.classList.remove('typing');
+    }
+}
+
+function updateSubStep(message) {
+    const el = document.getElementById('currentSubStep');
+    if (el) {
+        el.classList.remove('typing');
+        void el.offsetWidth; // Trigger reflow for animation restart
+        el.textContent = message;
+        el.classList.add('typing');
+    }
 }
 
 function showComplete(results) {
     state.isExtracting = false;
     
-    // Update results
-    const resultProcessed = document.getElementById('resultProcessed');
-    const resultExtracted = document.getElementById('resultExtracted');
-    if (resultProcessed) resultProcessed.textContent = results.processed || 0;
-    if (resultExtracted) resultExtracted.textContent = results.extracted || 0;
+    // Store results globally
+    window.extractionResults = results;
     
-    // Show warnings if any
-    const warningsCard = document.getElementById('resultWarningsCard');
-    const warningsNum = document.getElementById('resultWarnings');
-    if (warningsCard && warningsNum) {
-        if (results.warnings > 0) {
+    // Update stat cards
+    const processedValue = document.getElementById('statProcessedValue');
+    const extractedValue = document.getElementById('statExtractedValue');
+    const succeededCard = document.getElementById('statSucceededCard');
+    const succeededValue = document.getElementById('statSucceededValue');
+    const warningsCard = document.getElementById('statWarningsCard');
+    const warningsValue = document.getElementById('statWarningsValue');
+    const failedCard = document.getElementById('statFailedCard');
+    const failedValue = document.getElementById('statFailedValue');
+    
+    if (processedValue) processedValue.textContent = results.processed || 0;
+    if (extractedValue) extractedValue.textContent = results.extracted || 0;
+    
+    // Show succeeded card if any
+    const succeededCount = results.succeeded ? results.succeeded.length : 0;
+    if (succeededCard) {
+        if (succeededCount > 0) {
+            succeededCard.style.display = 'flex';
+            succeededValue.textContent = succeededCount;
+        } else {
+            succeededCard.style.display = 'none';
+        }
+    }
+    
+    // Show warnings card if any
+    const warningsCount = results.warnings ? results.warnings.length : 0;
+    if (warningsCard) {
+        if (warningsCount > 0) {
             warningsCard.style.display = 'flex';
-            warningsNum.textContent = results.warnings;
+            warningsValue.textContent = warningsCount;
         } else {
             warningsCard.style.display = 'none';
         }
     }
     
-    // Show errors if any
-    const errorsCard = document.getElementById('resultErrorsCard');
-    const errorsNum = document.getElementById('resultErrors');
-    if (errorsCard && errorsNum) {
-        if (results.errors > 0) {
-            errorsCard.style.display = 'flex';
-            errorsNum.textContent = results.errors;
+    // Show failed card if any
+    const failedCount = results.failed ? results.failed.length : 0;
+    if (failedCard) {
+        if (failedCount > 0) {
+            failedCard.style.display = 'flex';
+            failedValue.textContent = failedCount;
         } else {
-            errorsCard.style.display = 'none';
+            failedCard.style.display = 'none';
         }
     }
     
+    // Initialize clickable stat cards
+    initCompleteView();
+    
+    // Ensure summary view is shown (not detail)
+    showCompleteSummary();
+    
     showSlide('complete');
+}
+
+function initCompleteView() {
+    // Clickable stat cards
+    const succeededCard = document.getElementById('statSucceededCard');
+    const warningsCard = document.getElementById('statWarningsCard');
+    const failedCard = document.getElementById('statFailedCard');
+    
+    succeededCard?.addEventListener('click', () => showCompleteDetail('succeeded', 'Succeeded Files'));
+    warningsCard?.addEventListener('click', () => showCompleteDetail('warnings', 'Files with Warnings'));
+    failedCard?.addEventListener('click', () => showCompleteDetail('failed', 'Failed Files'));
+    
+    // Back buttons
+    document.getElementById('btnBackToSummary')?.addEventListener('click', showCompleteSummary);
+    document.getElementById('btnBackToSummary2')?.addEventListener('click', showCompleteSummary);
+}
+
+function showCompleteSummary() {
+    const summary = document.getElementById('completeSummary');
+    const detail = document.getElementById('completeDetail');
+    if (summary) summary.style.display = 'flex';
+    if (detail) detail.style.display = 'none';
+    
+    // Show polka dots on summary view
+    const polkaDots = document.querySelector('.polka-dots');
+    if (polkaDots) polkaDots.classList.add('visible');
+}
+
+function showCompleteDetail(category, title) {
+    const summary = document.getElementById('completeSummary');
+    const detail = document.getElementById('completeDetail');
+    const titleEl = document.getElementById('detailTitle');
+    
+    if (summary) summary.style.display = 'none';
+    if (detail) detail.style.display = 'flex';
+    if (titleEl) titleEl.textContent = title;
+    
+    // Hide polka dots on detail view
+    const polkaDots = document.querySelector('.polka-dots');
+    if (polkaDots) polkaDots.classList.remove('visible');
+    
+    renderDetailList(category);
+}
+
+function renderDetailList(category) {
+    const results = window.extractionResults;
+    if (!results) return;
+    
+    const listContainer = document.getElementById('resultsList');
+    if (!listContainer) return;
+    
+    let items = [];
+    
+    switch (category) {
+        case 'succeeded':
+            items = (results.succeeded || []).map(item => ({ ...item, status: 'succeeded' }));
+            break;
+        case 'warnings':
+            items = (results.warnings || []).map(item => ({ ...item, status: 'warning' }));
+            break;
+        case 'failed':
+            items = (results.failed || []).map(item => ({ ...item, status: 'failed' }));
+            break;
+    }
+    
+    if (items.length === 0) {
+        listContainer.innerHTML = `<div class="results-empty">No files in this category</div>`;
+        return;
+    }
+    
+    listContainer.innerHTML = items.map(item => renderResultItem(item)).join('');
+    
+    // Add click handlers for expandable items
+    listContainer.querySelectorAll('.result-item.expandable').forEach(el => {
+        el.addEventListener('click', () => {
+            el.classList.toggle('expanded');
+        });
+    });
+}
+
+function renderResultItem(item) {
+    const hasDetails = (item.messages && item.messages.length > 0) || 
+                       (item.errors && item.errors.length > 0);
+    const expandableClass = hasDetails ? 'expandable' : '';
+    
+    let statusIcon = '';
+    let statusClass = '';
+    
+    switch (item.status) {
+        case 'succeeded':
+            statusIcon = '<span class="status-icon status-success">&#10003;</span>';
+            statusClass = 'result-item-success';
+            break;
+        case 'warning':
+            statusIcon = '<span class="status-icon status-warning">!</span>';
+            statusClass = 'result-item-warning';
+            break;
+        case 'failed':
+            statusIcon = '<span class="status-icon status-error">&#10005;</span>';
+            statusClass = 'result-item-error';
+            break;
+    }
+    
+    let detailsHtml = '';
+    if (hasDetails) {
+        const messages = item.messages || item.errors || [];
+        detailsHtml = `
+            <div class="result-item-details">
+                ${messages.map(msg => `<p class="detail-message">${escapeHtml(msg)}</p>`).join('')}
+            </div>
+        `;
+    }
+    
+    const outputInfo = item.output_count !== undefined ? 
+        `<span class="result-item-outputs">${item.output_count} files</span>` : '';
+    
+    return `
+        <div class="result-item ${statusClass} ${expandableClass}">
+            <div class="result-item-header">
+                ${statusIcon}
+                <span class="result-item-name">${escapeHtml(item.file)}</span>
+                ${outputInfo}
+                ${hasDetails ? '<span class="expand-icon">&#9662;</span>' : ''}
+            </div>
+            ${detailsHtml}
+        </div>
+    `;
+}
+
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
 }
 
 function showCancelled() {
@@ -540,6 +715,7 @@ function updatePptxImagesToggleVisibility() {
 // Expose functions for Python to call
 window.updateProgress = updateProgress;
 window.updateCurrentFile = updateCurrentFile;
+window.updateSubStep = updateSubStep;
 window.showComplete = showComplete;
 window.showCancelled = showCancelled;
 window.showError = showError;

@@ -8,6 +8,7 @@ from typing import List, Dict, Callable, Optional
 import os
 
 from config import is_supported_file, get_all_supported_extensions
+from extractors.base import ExtractionInterrupted
 
 logger = logging.getLogger(__name__)
 
@@ -126,13 +127,15 @@ class ExtractionManager:
         self.extractors = extractors
         self.results = []
         self.current_file = None
+        self.current_extractor = None
         self.cancelled = False
         self.skipped = False
     
     def extract_all(self, 
                    output_base: Path,
                    progress_callback: Optional[Callable] = None,
-                   file_callback: Optional[Callable] = None) -> Dict:
+                   file_callback: Optional[Callable] = None,
+                   substep_callback: Optional[Callable] = None) -> Dict:
         """
         Extract all scanned files
         
@@ -140,6 +143,7 @@ class ExtractionManager:
             output_base: Base directory for output
             progress_callback: Callback for overall progress (current, total)
             file_callback: Callback when starting a new file
+            substep_callback: Callback for sub-step progress within a file
             
         Returns:
             Summary dictionary of extraction results
@@ -176,6 +180,16 @@ class ExtractionManager:
                 failed += 1
                 continue
             
+            # Track current extractor so we can interrupt it
+            self.current_extractor = extractor
+            
+            # Reset interrupt flag before starting
+            extractor.reset_interrupt()
+            
+            # Set substep callback on extractor
+            if substep_callback:
+                extractor.set_substep_callback(substep_callback)
+            
             # Get output directory
             output_dir = self.scanner.create_mirrored_output_path(filepath, output_base)
             
@@ -193,9 +207,18 @@ class ExtractionManager:
                 if result.warnings:
                     warnings += 1
                 
+            except ExtractionInterrupted:
+                # File extraction was interrupted mid-process
+                logger.info(f"Extraction interrupted for {filepath}")
+                # Don't count as failed - it was user-initiated
+                break
+                
             except Exception as e:
                 logger.error(f"Unexpected error extracting {filepath}: {e}")
                 failed += 1
+            
+            finally:
+                self.current_extractor = None
             
             # Call progress callback
             if progress_callback:
@@ -226,11 +249,17 @@ class ExtractionManager:
     def cancel(self):
         """Cancel the extraction process"""
         self.cancelled = True
+        # Interrupt current extractor if one is running
+        if self.current_extractor:
+            self.current_extractor.interrupt()
         logger.info("Cancellation requested")
     
     def skip(self):
         """Skip remaining files and show summary with current progress"""
         self.cancelled = True
         self.skipped = True
+        # Interrupt current extractor if one is running
+        if self.current_extractor:
+            self.current_extractor.interrupt()
         logger.info("Skip requested - will show summary with current progress")
 

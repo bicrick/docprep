@@ -27,6 +27,7 @@ export function Progress() {
             <div class="current-file">
                 <p class="current-file-label">Currently processing:</p>
                 <p class="current-file-name" id="currentFileName">Waiting...</p>
+                <p class="current-substep" id="currentSubStep"></p>
             </div>
             
             <div class="action-buttons">

@@ -59,7 +59,7 @@ fi
 echo "Creating DMG..."
 create-dmg \
     --volname "${VOLUME_NAME}" \
-    --volicon "${SCRIPT_DIR}/icons/AppIcon.icns" \
+    --volicon "${SCRIPT_DIR}/icons/mac/AppIcon.icns" \
     --window-pos 200 120 \
     --window-size 660 400 \
     --icon-size 100 \

@@ -11,7 +11,7 @@ import pandas as pd
 from PIL import Image
 import io
 
-from extractors.base import BaseExtractor, ExtractionResult
+from extractors.base import BaseExtractor, ExtractionResult, ExtractionInterrupted
 
 warnings.filterwarnings('ignore')
 
@@ -114,18 +114,33 @@ class ExcelExtractor(BaseExtractor):
             result.metadata['sheet_names'] = sheet_names
             
             # Extract each sheet
-            for sheet_name in sheet_names:
+            total_sheets = len(sheet_names)
+            for idx, sheet_name in enumerate(sheet_names, 1):
+                # Check for interrupt before processing each sheet
+                self.check_interrupted()
+                
+                # Report substep progress
+                self.report_substep(f"Extracting sheet {idx} of {total_sheets}: {sheet_name}")
+                
                 try:
                     self._extract_sheet(excel_file, sheet_name, file_output_dir, result)
+                except ExtractionInterrupted:
+                    # Re-raise interrupts so they propagate up
+                    raise
                 except Exception as e:
                     error_msg = f"Error extracting sheet '{sheet_name}': {str(e)}"
                     logger.error(error_msg)
                     result.add_warning(error_msg)
             
+            # Check for interrupt before chart extraction
+            self.check_interrupted()
+            
             # Extract charts if .xlsx file (openpyxl required)
             if ext == '.xlsx' and self.xlsx_available:
                 try:
                     self._extract_charts(filepath, file_output_dir, result)
+                except ExtractionInterrupted:
+                    raise
                 except Exception as e:
                     error_msg = f"Error extracting charts: {str(e)}"
                     logger.warning(error_msg)
@@ -136,6 +151,10 @@ class ExcelExtractor(BaseExtractor):
                 logger.info(f"Successfully extracted {len(result.extracted_files)} files from {filepath.name}")
             else:
                 result.add_warning("No data extracted from Excel file")
+        
+        except ExtractionInterrupted:
+            # Re-raise interrupt exceptions so they propagate to the manager
+            raise
             
         except Exception as e:
             error_msg = f"Failed to extract {filepath.name}: {str(e)}"
@@ -189,6 +208,9 @@ class ExcelExtractor(BaseExtractor):
             
             # Iterate through all sheets
             for sheet_name in wb.sheetnames:
+                # Check for interrupt
+                self.check_interrupted()
+                
                 sheet = wb[sheet_name]
                 
                 # Extract charts

@@ -140,5 +140,5 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    icon='icons/docprep.ico',  # Windows icon
+    icon='icons/windows/app-icon.ico',  # Windows icon
 )

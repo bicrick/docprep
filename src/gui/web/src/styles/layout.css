@@ -57,6 +57,12 @@
     text-align: center;
 }
 
+/* Complete slide needs full height for scrollable detail view */
+.slide-complete .slide-content {
+    height: 100%;
+    max-height: calc(100vh - var(--space-xl) * 2 - 80px);
+}
+
 /* ============================================
    Persistent App Footer
    ============================================ */

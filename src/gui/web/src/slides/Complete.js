@@ -1,58 +1,76 @@
 /**
  * Complete Slide Component
- * Shows extraction results
+ * Shows extraction results with clickable stats for details
  */
 
 import { icons } from '../components/icons.js';
-import { SecondaryButton, PrimaryButton } from '../components/Button.js';
+import { SecondaryButton } from '../components/Button.js';
 
 export function Complete() {
     return `
     <section class="slide slide-complete" id="slide-complete">
-        <div class="slide-content">
-            <div class="complete-header">
-                <div class="success-icon">
-                    ${icons.success}
+        <div class="slide-content complete-content">
+            <!-- Summary View (default) -->
+            <div class="complete-summary" id="completeSummary">
+                <div class="complete-header">
+                    <h2>Extraction Complete</h2>
+                    <p class="complete-subtitle">Your documents have been processed</p>
                 </div>
-                <h2>Extraction Complete</h2>
-                <p class="complete-subtitle">Your documents have been processed successfully</p>
+                
+                <div class="stats-grid">
+                    <div class="stat-card stat-card-primary" id="statProcessedCard">
+                        <span class="stat-card-label">Files Processed</span>
+                        <span class="stat-card-value" id="statProcessedValue">0</span>
+                    </div>
+                    <div class="stat-card stat-card-secondary" id="statExtractedCard">
+                        <span class="stat-card-label">Files Extracted</span>
+                        <span class="stat-card-value" id="statExtractedValue">0</span>
+                    </div>
+                    <div class="stat-card stat-card-clickable stat-card-success" id="statSucceededCard" style="display: none;">
+                        <span class="stat-card-label">Succeeded</span>
+                        <span class="stat-card-value" id="statSucceededValue">0</span>
+                    </div>
+                    <div class="stat-card stat-card-clickable stat-card-warning" id="statWarningsCard" style="display: none;">
+                        <span class="stat-card-label">Warnings</span>
+                        <span class="stat-card-value" id="statWarningsValue">0</span>
+                    </div>
+                    <div class="stat-card stat-card-clickable stat-card-error" id="statFailedCard" style="display: none;">
+                        <span class="stat-card-label">Failed</span>
+                        <span class="stat-card-value" id="statFailedValue">0</span>
+                    </div>
+                </div>
+                
+                <div class="action-buttons">
+                    ${SecondaryButton('New Extraction', 'btnNewExtraction', icons.refresh)}
+                    <button class="btn btn-primary" id="btnOpenFolder">
+                        Open Output Folder
+                        ${icons.externalLink}
+                    </button>
+                </div>
             </div>
             
-            <div class="results-list">
-                <div class="result-row result-row-primary">
-                    <div class="result-row-content">
-                        <span class="result-label">Files Processed</span>
-                        <span class="result-number" id="resultProcessed">0</span>
+            <!-- Detail View (hidden by default) -->
+            <div class="complete-detail" id="completeDetail" style="display: none;">
+                <div class="detail-header">
+                    <button class="back-button" id="btnBackToSummary">
+                        ${icons.arrowLeft}
+                        <span>Back</span>
+                    </button>
+                    <h3 class="detail-title" id="detailTitle">Files</h3>
+                </div>
+                
+                <div class="results-content">
+                    <div class="results-list" id="resultsList">
+                        <!-- Populated by JS -->
                     </div>
                 </div>
-                <div class="result-row result-row-secondary">
-                    <div class="result-row-content">
-                        <span class="result-label">Files Extracted</span>
-                        <span class="result-number" id="resultExtracted">0</span>
-                    </div>
+                
+                <div class="action-buttons">
+                    <button class="btn btn-secondary" id="btnBackToSummary2">
+                        Back to Summary
+                    </button>
                 </div>
-                <div class="result-row result-row-warning" id="resultWarningsCard" style="display: none;">
-                    <div class="result-row-content">
-                        <span class="result-label">Warnings</span>
-                        <span class="result-number" id="resultWarnings">0</span>
-                    </div>
-                </div>
-                <div class="result-row result-row-error" id="resultErrorsCard" style="display: none;">
-                    <div class="result-row-content">
-                        <span class="result-label">Errors</span>
-                        <span class="result-number" id="resultErrors">0</span>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="action-buttons">
-                ${SecondaryButton('New Extraction', 'btnNewExtraction', icons.refresh)}
-                <button class="btn btn-primary" id="btnOpenFolder">
-                    Open Output Folder
-                    ${icons.externalLink}
-                </button>
             </div>
         </div>
     </section>`;
 }
-

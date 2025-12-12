@@ -6,7 +6,7 @@ import logging
 from pathlib import Path
 from typing import Optional
 
-from extractors.base import BaseExtractor, ExtractionResult
+from extractors.base import BaseExtractor, ExtractionResult, ExtractionInterrupted
 
 logger = logging.getLogger(__name__)
 
@@ -70,6 +70,9 @@ class WordExtractor(BaseExtractor):
             # Open document
             doc = docx.Document(filepath)
             
+            # Report substep
+            self.report_substep("Extracting text content")
+            
             # Extract text
             text_output = output_dir / f"{file_safe_name}.txt"
             text_content = self._extract_text(doc, result)
@@ -82,7 +85,11 @@ class WordExtractor(BaseExtractor):
             else:
                 result.add_warning("No text content found in document")
             
+            # Check for interrupt before image extraction
+            self.check_interrupted()
+            
             # Extract images
+            self.report_substep("Extracting embedded images")
             image_count = self._extract_images(doc, images_dir, result)
             
             if image_count > 0:
@@ -96,6 +103,10 @@ class WordExtractor(BaseExtractor):
                 logger.info(f"Successfully extracted data from {filepath.name}")
             else:
                 result.add_warning("No data extracted from Word document")
+        
+        except ExtractionInterrupted:
+            # Re-raise interrupt exceptions so they propagate to the manager
+            raise
             
         except Exception as e:
             error_msg = f"Failed to extract {filepath.name}: {str(e)}"

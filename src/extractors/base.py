@@ -6,9 +6,14 @@ import os
 import logging
 from pathlib import Path
 from abc import ABC, abstractmethod
-from typing import Dict, List, Optional
+from typing import Callable, Dict, List, Optional
 
 logger = logging.getLogger(__name__)
+
+
+class ExtractionInterrupted(Exception):
+    """Raised when extraction is interrupted by user (skip/cancel)"""
+    pass
 
 
 class ExtractionResult:
@@ -46,6 +51,33 @@ class BaseExtractor(ABC):
     def __init__(self, output_base_path: Path):
         self.output_base_path = Path(output_base_path)
         self.logger = logging.getLogger(self.__class__.__name__)
+        self.substep_callback: Optional[Callable[[str], None]] = None
+        self._interrupted = False
+    
+    def set_substep_callback(self, callback: Optional[Callable[[str], None]]):
+        """Set callback for reporting sub-step progress"""
+        self.substep_callback = callback
+    
+    def report_substep(self, message: str):
+        """Report a sub-step progress update"""
+        if self.substep_callback:
+            self.substep_callback(message)
+    
+    def interrupt(self):
+        """Signal the extractor to stop processing"""
+        self._interrupted = True
+    
+    def reset_interrupt(self):
+        """Reset the interrupt flag before starting a new extraction"""
+        self._interrupted = False
+    
+    def check_interrupted(self):
+        """
+        Check if extraction was interrupted and raise exception if so.
+        Call this in processing loops to allow immediate cancellation.
+        """
+        if self._interrupted:
+            raise ExtractionInterrupted("Extraction interrupted by user")
     
     @abstractmethod
     def can_extract(self, filepath: Path) -> bool:

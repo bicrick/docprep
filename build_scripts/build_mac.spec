@@ -155,7 +155,7 @@ coll = COLLECT(
 app = BUNDLE(
     coll,
     name='docprep.app',
-    icon='icons/AppIcon.icns',
+    icon='icons/mac/AppIcon.icns',
     bundle_identifier='com.docprep.app',
     info_plist={
         'NSHighResolutionCapable': 'True',

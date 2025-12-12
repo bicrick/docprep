@@ -345,7 +345,8 @@ class DocPrepAPI:
             extraction_summary = self.extraction_manager.extract_all(
                 self.output_folder,
                 progress_callback=self._on_progress,
-                file_callback=self._on_file_start
+                file_callback=self._on_file_start,
+                substep_callback=self._on_substep
             )
             
             # Check if cancelled (but not skipped - skip shows summary)
@@ -377,11 +378,40 @@ class DocPrepAPI:
             else:
                 processed_count = extraction_summary['total_processed']
             
+            # Build detailed results lists from extraction results
+            succeeded_list = []
+            warnings_list = []
+            failed_list = []
+            
+            for result in self.extraction_manager.results:
+                file_info = {
+                    'file': result.source_file.name,
+                    'path': str(result.source_file)
+                }
+                
+                if result.success and not result.warnings:
+                    # Succeeded without warnings
+                    file_info['outputs'] = [f.name for f in result.extracted_files]
+                    file_info['output_count'] = len(result.extracted_files)
+                    succeeded_list.append(file_info)
+                elif result.success and result.warnings:
+                    # Succeeded with warnings
+                    file_info['outputs'] = [f.name for f in result.extracted_files]
+                    file_info['output_count'] = len(result.extracted_files)
+                    file_info['messages'] = result.warnings
+                    warnings_list.append(file_info)
+                else:
+                    # Failed
+                    file_info['errors'] = result.errors
+                    failed_list.append(file_info)
+            
             results = {
                 'processed': processed_count,
                 'extracted': extraction_summary['total_files_extracted'],
-                'warnings': extraction_summary['warnings'],
-                'errors': extraction_summary['failed']
+                'succeeded': succeeded_list,
+                'warnings': warnings_list,
+                'failed': failed_list,
+                'skipped': []  # Files that weren't processed due to skip/cancel
             }
             
             self._call_js('showComplete', results)
@@ -397,6 +427,10 @@ class DocPrepAPI:
     def _on_file_start(self, filepath: Path, current: int, total: int):
         """File start callback - push to JavaScript"""
         self._call_js('updateCurrentFile', filepath.name)
+    
+    def _on_substep(self, message: str):
+        """Substep callback - push sub-step progress to JavaScript"""
+        self._call_js('updateSubStep', message)
     
     def _call_js(self, function_name: str, *args):
         """Call a JavaScript function from Python (thread-safe)"""
