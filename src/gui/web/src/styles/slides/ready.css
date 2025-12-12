@@ -20,7 +20,7 @@
 .check-circle svg {
     width: 24px;
     height: 24px;
-    color: white;
+    color: var(--bg-primary);
 }
 
 .ready-header h2 {
