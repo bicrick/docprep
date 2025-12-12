@@ -58,10 +58,9 @@ UPDATE_URL = "https://pub-7075773554534e1ea27cd98fe79bcfca.r2.dev/updates.json"
 
 # Google OAuth for desktop app sign-in
 # Create at: https://console.cloud.google.com/apis/credentials
-# Set these via environment variables or a .env file (not committed to git)
-GOOGLE_OAUTH_CLIENT_ID = os.environ.get("GOOGLE_OAUTH_CLIENT_ID", "")
-GOOGLE_OAUTH_CLIENT_SECRET = os.environ.get("GOOGLE_OAUTH_CLIENT_SECRET", "")
-
+# Type: "Desktop app" (auto-allows localhost redirects)
+GOOGLE_OAUTH_CLIENT_ID = "125874830244-olvcm0573alftvspdc8eaflmbp6mgrpi.apps.googleusercontent.com"  # Set your OAuth Client ID here
+GOOGLE_OAUTH_CLIENT_SECRET = "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"
 # File naming
 SANITIZE_FILENAMES = True
 MAX_FILENAME_LENGTH = 200

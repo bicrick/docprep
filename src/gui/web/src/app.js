@@ -104,6 +104,9 @@ function showSlide(slideName) {
     }
     
     state.currentSlide = slideName;
+    
+    // Update user avatar visibility
+    updateUserAvatarVisibility();
 }
 
 // ============================================
@@ -431,19 +434,36 @@ function initAuth() {
     const firebaseReady = initFirebase();
     if (!firebaseReady) {
         console.warn('Firebase not initialized - auth features will be disabled');
-        return;
+        return Promise.resolve(null);
     }
     
-    // Listen for auth state changes
-    onAuthStateChanged((user) => {
-        state.user = user;
-        updateAuthUI(user);
+    // Return a promise that resolves with the initial auth state
+    return new Promise((resolve) => {
+        let initialAuthResolved = false;
         
-        // If user just signed in and we're on the signin slide, proceed to drop
-        if (user && state.currentSlide === 'signin') {
-            showSlide('drop');
-        }
+        onAuthStateChanged((user) => {
+            state.user = user;
+            updateAuthUI(user);
+            
+            // Resolve the promise on first auth state (initial load)
+            if (!initialAuthResolved) {
+                initialAuthResolved = true;
+                resolve(user);
+            } else {
+                // Subsequent auth changes (sign in/out during session)
+                const preSignInSlides = ['welcome', 'intro', 'tutorial', 'signin'];
+                
+                if (user && preSignInSlides.includes(state.currentSlide)) {
+                    showSlide('drop');
+                }
+            }
+        });
     });
+}
+
+function initUserAvatarHandlers() {
+    // Initialize avatar handlers (called after initial slide is shown)
+    initUserAvatar();
 }
 
 function initSignInForm() {
@@ -628,13 +648,49 @@ function setSignInLoading(loading, type = 'email') {
 }
 
 function updateAuthUI(user) {
-    // Update any UI elements that depend on auth state
-    // This could show user info in a header, etc.
+    // Update user avatar with user info
+    const avatarPhoto = document.getElementById('userAvatarPhoto');
+    const avatarInitial = document.getElementById('userAvatarInitial');
+    const dropdownName = document.getElementById('userDropdownName');
+    const dropdownEmail = document.getElementById('userDropdownEmail');
+    
     if (user) {
         console.log('User signed in:', user.email);
+        const userInfo = getUserDisplayInfo(user);
+        
+        // Update avatar photo or initial
+        if (userInfo.photoURL && avatarPhoto) {
+            avatarPhoto.style.backgroundImage = `url(${userInfo.photoURL})`;
+            avatarPhoto.classList.add('visible');
+            if (avatarInitial) avatarInitial.classList.add('hidden');
+        } else if (avatarInitial) {
+            const initial = userInfo.displayName ? userInfo.displayName.charAt(0) : 'U';
+            avatarInitial.textContent = initial;
+            avatarInitial.classList.remove('hidden');
+            if (avatarPhoto) avatarPhoto.classList.remove('visible');
+        }
+        
+        // Update dropdown info
+        if (dropdownName) dropdownName.textContent = userInfo.displayName || 'User';
+        if (dropdownEmail) dropdownEmail.textContent = userInfo.email || '';
     } else {
         console.log('User signed out');
+        
+        // Clear avatar
+        if (avatarPhoto) {
+            avatarPhoto.style.backgroundImage = '';
+            avatarPhoto.classList.remove('visible');
+        }
+        if (avatarInitial) {
+            avatarInitial.textContent = '';
+            avatarInitial.classList.remove('hidden');
+        }
+        if (dropdownName) dropdownName.textContent = '';
+        if (dropdownEmail) dropdownEmail.textContent = '';
     }
+    
+    // Update avatar visibility based on current slide
+    updateUserAvatarVisibility();
 }
 
 function resetSignInForm() {
@@ -650,6 +706,63 @@ function resetSignInForm() {
     
     state.authMode = 'signin';
     updateSignInButtonText();
+}
+
+// ============================================
+// User Avatar
+// ============================================
+
+function initUserAvatar() {
+    const avatarBtn = document.getElementById('userAvatarBtn');
+    const dropdown = document.getElementById('userDropdown');
+    const signOutBtn = document.getElementById('btnSignOut');
+    
+    if (!avatarBtn || !dropdown) return;
+    
+    // Toggle dropdown on avatar click
+    avatarBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        dropdown.classList.toggle('open');
+    });
+    
+    // Close dropdown when clicking outside
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('.user-avatar-container')) {
+            dropdown.classList.remove('open');
+        }
+    });
+    
+    // Sign out button
+    if (signOutBtn) {
+        signOutBtn.addEventListener('click', async () => {
+            dropdown.classList.remove('open');
+            try {
+                await signOut();
+                // Navigate back to welcome screen
+                showSlide('welcome');
+            } catch (error) {
+                console.error('Sign out error:', error);
+            }
+        });
+    }
+}
+
+function updateUserAvatarVisibility() {
+    const avatarContainer = document.getElementById('userAvatarContainer');
+    if (!avatarContainer) return;
+    
+    // Slides where the avatar should be visible (post sign-in)
+    const postSignInSlides = ['drop', 'ready', 'progress', 'complete'];
+    
+    // Show avatar only if user is signed in AND on a post-sign-in slide
+    if (state.user && postSignInSlides.includes(state.currentSlide)) {
+        avatarContainer.classList.add('visible');
+    } else {
+        avatarContainer.classList.remove('visible');
+        // Also close dropdown when hiding
+        const dropdown = document.getElementById('userDropdown');
+        if (dropdown) dropdown.classList.remove('open');
+    }
 }
 
 // ============================================
@@ -1145,21 +1258,33 @@ export async function initApp() {
     createPolkaDots();
     initDropZone();
     initButtons();
-    initAuth();
     initSignInForm();
     initModals();
-    
+
     // Check if LibreOffice is available for PPTX image extraction
     await checkLibreOfficeAvailable();
-    
-    // Hide footer initially (welcome screen)
+
+    // Hide footer initially
     const footer = document.getElementById('appFooter');
     if (footer) {
         footer.classList.add('hidden');
     }
+
+    // Wait for Firebase auth to determine initial state before showing any slide
+    // This prevents the flash of welcome screen for already signed-in users
+    const user = await initAuth();
     
-    // Show welcome slide first
-    showSlide('welcome');
+    // Initialize avatar handlers after auth is ready
+    initUserAvatarHandlers();
+    
+    // Show appropriate initial slide based on auth state
+    if (user) {
+        // User is already signed in, go directly to drop zone
+        showSlide('drop');
+    } else {
+        // Not signed in, show welcome screen
+        showSlide('welcome');
+    }
 }
 
 async function checkLibreOfficeAvailable() {

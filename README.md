@@ -57,3 +57,9 @@ Run the app:
 ```bash
 python src/main.py
 ```
+
+## Build macOS app
+
+```bash
+pyinstaller --clean -y build_mac.spec
+```

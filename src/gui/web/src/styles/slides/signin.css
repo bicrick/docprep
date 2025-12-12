@@ -232,6 +232,11 @@ html.dark .btn-signin-primary:hover:not(:disabled) {
                 border-color var(--duration-fast) var(--ease-out);
 }
 
+/* Light mode - darker border for better visibility */
+html:not(.dark) .btn-signin-google {
+    border-color: #b0bac6;
+}
+
 .btn-signin-google:hover {
     background: var(--bg-secondary);
     border-color: var(--text-muted);

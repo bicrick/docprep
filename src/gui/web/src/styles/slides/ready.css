@@ -63,15 +63,11 @@
     z-index: 1;
 }
 
-.slide-ready .folder-card-source .folder-card-label {
+.slide-ready .folder-card-source .folder-card-label,
+.slide-ready .folder-card-destination .folder-card-label {
     background: var(--bg-card, #e5e7eb);
     color: var(--text-primary);
     border: 1px solid var(--border-color, var(--border-subtle));
-}
-
-.slide-ready .folder-card-destination .folder-card-label {
-    background: var(--accent-primary);
-    color: var(--bg-primary);
 }
 
 .slide-ready .folder-card-content {
@@ -85,9 +81,6 @@
     border: 1px solid var(--border-color, var(--border-subtle));
 }
 
-.slide-ready .folder-card-destination .folder-card-content {
-    border-color: var(--accent-primary);
-}
 
 .slide-ready .folder-icon-new {
     color: var(--accent-primary);

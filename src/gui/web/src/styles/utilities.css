@@ -158,3 +158,168 @@ html.light .moon-icon {
     transform: rotate(0deg);
 }
 
+/* ============================================
+   User Avatar Button
+   ============================================ */
+
+.user-avatar-container {
+    position: fixed;
+    top: var(--space-lg);
+    left: var(--space-lg);
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transform: scale(0.9);
+    transition: opacity var(--duration-fast) var(--ease-out),
+                visibility var(--duration-fast) var(--ease-out),
+                transform var(--duration-fast) var(--ease-out);
+}
+
+.user-avatar-container.visible {
+    opacity: 1;
+    visibility: visible;
+    transform: scale(1);
+}
+
+.user-avatar-btn {
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-full);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--duration-fast) var(--ease-out);
+    color: var(--text-primary);
+    overflow: hidden;
+}
+
+.user-avatar-btn:hover {
+    background: var(--bg-card-hover);
+    border-color: var(--accent-primary);
+    transform: scale(1.05);
+}
+
+.user-avatar-btn:active {
+    transform: scale(0.95);
+}
+
+.user-avatar-btn:focus-visible {
+    outline: 2px solid var(--accent-primary);
+    outline-offset: 2px;
+}
+
+.user-avatar-photo {
+    width: 100%;
+    height: 100%;
+    border-radius: var(--radius-full);
+    background-size: cover;
+    background-position: center;
+    display: none;
+}
+
+.user-avatar-photo.visible {
+    display: block;
+}
+
+.user-avatar-initial {
+    font-family: var(--font-sans);
+    font-weight: 600;
+    font-size: 1rem;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.user-avatar-initial.hidden {
+    display: none;
+}
+
+/* User Dropdown */
+.user-dropdown {
+    position: absolute;
+    top: calc(100% + var(--space-sm));
+    left: 0;
+    min-width: 200px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-sm);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-8px);
+    transition: opacity var(--duration-fast) var(--ease-out),
+                visibility var(--duration-fast) var(--ease-out),
+                transform var(--duration-fast) var(--ease-out);
+}
+
+html.dark .user-dropdown {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.user-dropdown.open {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.user-dropdown-info {
+    padding: var(--space-md);
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.user-dropdown-name {
+    font-family: var(--font-sans);
+    font-weight: 500;
+    font-size: 0.9rem;
+    color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.user-dropdown-email {
+    font-family: var(--font-sans);
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.user-dropdown-divider {
+    height: 1px;
+    background: var(--border-subtle);
+    margin: 0;
+}
+
+.user-dropdown-signout {
+    width: 100%;
+    padding: var(--space-md);
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    font-family: var(--font-sans);
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    transition: all var(--duration-fast) var(--ease-out);
+}
+
+.user-dropdown-signout:hover {
+    background: var(--bg-secondary);
+    color: var(--error);
+}
+
+.user-dropdown-signout svg {
+    flex-shrink: 0;
+}
+

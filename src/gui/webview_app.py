@@ -9,6 +9,7 @@ import logging
 import subprocess
 import platform
 import sys
+import os
 from pathlib import Path
 from typing import Optional, Dict
 from io import StringIO
@@ -124,6 +125,40 @@ if platform.system() == 'Windows':
     
     # Replace stderr with filtered version
     sys.stderr = FilteredStderr(sys.stderr)
+
+
+def get_storage_path():
+    """
+    Get the platform-specific path for persistent webview storage (localStorage, etc.)
+    This enables Firebase auth persistence across app restarts.
+    """
+    app_name = "docprep"
+    
+    # Use os.path.expanduser for reliable home directory detection in bundled apps
+    home = os.path.expanduser('~')
+    
+    if platform.system() == 'Darwin':  # macOS
+        base = os.path.join(home, 'Library', 'Application Support')
+    elif platform.system() == 'Windows':
+        base = os.environ.get('APPDATA', home)
+    else:  # Linux and others
+        base = os.path.join(home, '.local', 'share')
+    
+    storage_dir = os.path.join(base, app_name)
+    
+    # Ensure the directory exists
+    try:
+        os.makedirs(storage_dir, exist_ok=True)
+        logger.info(f"Webview storage path: {storage_dir}")
+    except Exception as e:
+        logger.warning(f"Could not create storage directory {storage_dir}: {e}")
+        # Fall back to a temp directory if we can't create the preferred one
+        import tempfile
+        storage_dir = os.path.join(tempfile.gettempdir(), app_name)
+        os.makedirs(storage_dir, exist_ok=True)
+        logger.info(f"Using fallback storage path: {storage_dir}")
+    
+    return storage_dir
 
 
 def detect_system_theme() -> str:
@@ -881,12 +916,15 @@ class WebviewApp:
         # Set window reference in API
         self.api.set_window(self.window)
         
-        # Start the webview
+        # Start the webview with persistent storage for localStorage (auth persistence)
+        # private_mode=False is required to persist localStorage/cookies between sessions
+        storage_path = get_storage_path()
+        
         # On Windows, suppress debug output to avoid introspection errors
         if platform.system() == 'Windows':
-            webview.start(debug=False, http_server=False)
+            webview.start(debug=False, http_server=False, private_mode=False, storage_path=storage_path)
         else:
-            webview.start(debug=False)
+            webview.start(debug=False, private_mode=False, storage_path=storage_path)
 
 
 def main():
