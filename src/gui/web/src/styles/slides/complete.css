@@ -364,7 +364,21 @@
 }
 
 .editor-btn-text {
-    padding-right: var(--space-sm);
+    padding-right: var(--space-xs);
+}
+
+.editor-btn-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    margin-right: var(--space-sm);
+}
+
+.editor-btn-icon svg {
+    width: 16px;
+    height: 16px;
 }
 
 .editor-dropdown-divider {

@@ -664,34 +664,29 @@ class DocPrepAPI:
         
         try:
             import shutil
+            import shlex
             
             if system == 'Darwin':
-                # macOS: Try CLI first, then fall back to app executable
+                # macOS: Try CLI first, then fall back to 'open' command
                 cli = platform_config.get('cli')
                 app_path = platform_config.get('app')
                 
                 # Check if CLI is available using shutil.which (handles PATH properly)
                 cli_path = shutil.which(cli) if cli else None
                 
+                # Use shlex.quote to properly escape paths with spaces for shell execution
+                quoted_path = shlex.quote(folder_path)
+                
                 if cli_path:
-                    # Use -n/--new-window to force a new window with folder as workspace root
-                    subprocess.Popen([cli_path, '-n', folder_path])
+                    # Use shell=True with properly quoted path to handle spaces
+                    cmd = f'{shlex.quote(cli_path)} --new-window {quoted_path}'
+                    subprocess.Popen(cmd, shell=True)
                     logger.info(f"Opened '{folder_path}' in {editor} via CLI (new window)")
                 elif app_path and Path(app_path).exists():
-                    # Get the executable name from the app bundle (usually same as app name)
-                    app_name = Path(app_path).stem  # e.g., "Cursor" from "Cursor.app"
-                    executable_path = Path(app_path) / 'Contents' / 'MacOS' / app_name
-                    
-                    if executable_path.exists():
-                        # Run the executable directly with -n to force new window
-                        subprocess.Popen([str(executable_path), '-n', folder_path])
-                        logger.info(f"Opened '{folder_path}' in {editor} via executable (new window)")
-                    else:
-                        # Fallback: use 'open' command with -n to open new instance
-                        # The '-n' flag for open opens a new instance of the application
-                        # The '--args' flag passes subsequent args to the application
-                        subprocess.Popen(['open', '-n', '-a', app_path, '--args', folder_path])
-                        logger.info(f"Opened '{folder_path}' in {editor} via open -a (new instance)")
+                    # Use macOS 'open' command with properly quoted paths
+                    cmd = f'open -n -a {shlex.quote(app_path)} {quoted_path}'
+                    subprocess.Popen(cmd, shell=True)
+                    logger.info(f"Opened '{folder_path}' in {editor} via open -a (new instance)")
                 else:
                     return {'error': f'{editor.title()} is not installed'}
                     
@@ -701,8 +696,11 @@ class DocPrepAPI:
                     # Check if CLI is available
                     cli_path = shutil.which(cli)
                     if cli_path:
-                        # On Windows, use -n flag to force a new window with folder as workspace root
-                        subprocess.Popen([cli_path, '-n', folder_path])
+                        # On Windows, wrap path in double quotes for shell
+                        # Windows uses different quoting than Unix
+                        quoted_path = f'"{folder_path}"'
+                        cmd = f'"{cli_path}" --new-window {quoted_path}'
+                        subprocess.Popen(cmd, shell=True)
                         logger.info(f"Opened '{folder_path}' in {editor} (new window)")
                     else:
                         return {'error': f'{editor.title()} is not installed or not in PATH'}

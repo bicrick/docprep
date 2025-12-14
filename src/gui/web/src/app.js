@@ -190,7 +190,9 @@ async function handleFolderSelected(folderData) {
     state.fileCount = folderData.file_count;
     
     // Set default output folder name and full path
-    const defaultOutputName = folderData.name + '_extracted';
+    // Replace spaces with underscores to avoid path issues with editors
+    const sanitizedName = folderData.name.replace(/ /g, '_');
+    const defaultOutputName = sanitizedName + '_extracted';
     state.outputFolderName = defaultOutputName;
     const separator = state.parentPath.includes('\\') ? '\\' : '/';
     state.outputFolderPath = state.parentPath + separator + defaultOutputName;
@@ -1343,6 +1345,7 @@ function selectEditor(editor) {
 function updateEditorSelection(editor) {
     const menu = document.getElementById('editorDropdownMenu');
     const btnText = document.querySelector('.editor-btn-text');
+    const btnIcon = document.getElementById('editorBtnIcon');
     if (!menu) return;
     
     // Editor display names
@@ -1355,6 +1358,14 @@ function updateEditorSelection(editor) {
     // Update button text to show selected editor
     if (btnText && editor && editorNames[editor]) {
         btnText.textContent = `Open in ${editorNames[editor]}`;
+    }
+    
+    // Update button icon to show selected editor's logo
+    if (btnIcon && editor) {
+        const selectedOption = menu.querySelector(`.editor-option[data-editor="${editor}"] .editor-option-icon`);
+        if (selectedOption) {
+            btnIcon.innerHTML = selectedOption.innerHTML;
+        }
     }
     
     // Update selected state on options

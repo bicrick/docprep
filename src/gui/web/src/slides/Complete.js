@@ -14,6 +14,7 @@ function EditorDropdownButton() {
     <div class="editor-dropdown" id="editorDropdown">
         <button class="btn btn-primary editor-dropdown-btn" id="btnOpenInEditor">
             <span class="editor-btn-text">Open in Editor</span>
+            <span class="editor-btn-icon" id="editorBtnIcon"></span>
             <span class="editor-dropdown-divider"></span>
             <span class="editor-dropdown-chevron">${icons.chevronDown}</span>
         </button>
