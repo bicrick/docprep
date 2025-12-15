@@ -261,7 +261,7 @@ class DocPrepAPI:
                     if w == window:
                         self.window_id = idx
                         self.window = None  # Don't store object on Windows
-                        return
+                        break
             except Exception:
                 # Fallback to storing window if ID lookup fails
                 self.window = window
@@ -284,6 +284,63 @@ class DocPrepAPI:
         # Fallback to stored window reference (works on Mac/Linux)
         return self.window
     
+    def setup_drag_drop_handlers(self):
+        """Set up drag-and-drop event handlers using pywebview's DOM API
+        This should be called after the window is ready (in the start callback)"""
+        window = self._get_window()
+        if not window:
+            logger.warning("Cannot set up drag-and-drop: window not available")
+            return
+            
+        try:
+            from webview.dom import DOMEventHandler
+            
+            def on_drag(e):
+                """Handle drag events (dragenter, dragover, dragstart)"""
+                # Prevent default to allow drop
+                pass
+            
+            def on_drop(e):
+                """Handle drop event and extract file paths"""
+                files = e.get('dataTransfer', {}).get('files', [])
+                
+                if len(files) == 0:
+                    logger.warning("Drop event with no files")
+                    return
+                
+                # Get the first file's full path using pywebview's special property
+                first_file = files[0]
+                path = first_file.get('pywebviewFullPath')
+                
+                if not path:
+                    logger.warning("Could not get pywebviewFullPath from dropped file")
+                    logger.info(f"Dropped file name: {first_file.get('name', 'unknown')}")
+                    return
+                
+                logger.info(f"File dropped: {path}")
+                
+                # Validate and set the folder
+                result = self.validate_folder(path)
+                
+                if result:
+                    # Call JavaScript to update the UI
+                    self._call_js('window.handleFolderDrop', result)
+                else:
+                    logger.warning(f"Invalid folder path from drop: {path}")
+            
+            # Bind event handlers to the document
+            window.dom.document.events.dragenter += DOMEventHandler(on_drag, True, True)
+            window.dom.document.events.dragstart += DOMEventHandler(on_drag, True, True)
+            window.dom.document.events.dragover += DOMEventHandler(on_drag, True, True, debounce=500)
+            window.dom.document.events.drop += DOMEventHandler(on_drop, True, True)
+            
+            logger.info("Drag-and-drop handlers registered successfully")
+            
+        except ImportError:
+            logger.warning("DOM API not available - drag-and-drop will not work")
+        except Exception as e:
+            logger.warning(f"Failed to set up drag-and-drop handlers: {e}")
+    
     def select_folder(self) -> Optional[Dict]:
         """
         Open native folder selection dialog.
@@ -294,7 +351,7 @@ class DocPrepAPI:
             return None
         
         result = window.create_file_dialog(
-            webview.FOLDER_DIALOG,
+            webview.FileDialog.FOLDER,
             directory='',
             allow_multiple=False
         )
@@ -310,10 +367,24 @@ class DocPrepAPI:
         Validate a folder path (from drag-and-drop).
         Returns folder info or None if invalid.
         """
-        folder_path = Path(path)
-        
-        if folder_path.is_dir():
-            return self._get_folder_info(str(folder_path))
+        try:
+            folder_path = Path(path)
+            
+            # Handle file:// URLs that might come from drag-and-drop
+            if path.startswith('file://'):
+                import urllib.parse
+                path = urllib.parse.unquote(path.replace('file://', ''))
+                folder_path = Path(path)
+            
+            if folder_path.exists() and folder_path.is_dir():
+                return self._get_folder_info(str(folder_path))
+            
+            # If a file was dropped, use its parent directory
+            if folder_path.exists() and folder_path.is_file():
+                return self._get_folder_info(str(folder_path.parent))
+                
+        except Exception as e:
+            logger.warning(f"Failed to validate folder path '{path}': {e}")
         
         return None
     
@@ -331,7 +402,7 @@ class DocPrepAPI:
         start_dir = str(self.input_folder.parent) if self.input_folder else ''
         
         result = window.create_file_dialog(
-            webview.FOLDER_DIALOG,
+            webview.FileDialog.FOLDER,
             directory=start_dir,
             allow_multiple=False
         )
@@ -1026,15 +1097,19 @@ class WebviewApp:
         # Set window reference in API
         self.api.set_window(self.window)
         
+        # Define callback to set up drag-and-drop after window is ready
+        def on_ready():
+            self.api.setup_drag_drop_handlers()
+        
         # Start the webview with persistent storage for localStorage (auth persistence)
         # private_mode=False is required to persist localStorage/cookies between sessions
         storage_path = get_storage_path()
         
         # On Windows, suppress debug output to avoid introspection errors
         if platform.system() == 'Windows':
-            webview.start(debug=False, http_server=False, private_mode=False, storage_path=storage_path)
+            webview.start(on_ready, debug=False, http_server=False, private_mode=False, storage_path=storage_path)
         else:
-            webview.start(debug=False, private_mode=False, storage_path=storage_path)
+            webview.start(on_ready, debug=False, private_mode=False, storage_path=storage_path)
 
 
 def main():

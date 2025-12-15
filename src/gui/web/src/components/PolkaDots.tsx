@@ -22,7 +22,7 @@ export function PolkaDots() {
   const [dots, setDots] = useState<Dot[]>([]);
 
   // Slides where polka dots should be visible
-  const visibleSlides = ['welcome', 'signin', 'onboarding', 'complete'];
+  const visibleSlides = ['welcome', 'signin', 'onboarding', 'drop', 'complete'];
   const isVisible = visibleSlides.includes(state.currentSlide);
 
   useEffect(() => {
