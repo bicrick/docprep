@@ -125,3 +125,6 @@ def generate_dmg_background(output_path="dmg_background.png", width=660, height=
 if __name__ == '__main__':
     generate_dmg_background()
 
+
+
+

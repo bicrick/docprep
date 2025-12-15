@@ -264,3 +264,6 @@ window.updateDownloadProgress = updateDownloadProgress;
 window.updateInstallStarted = updateInstallStarted;
 window.updateInstallComplete = updateInstallComplete;
 window.updateInstallError = updateInstallError;
+
+
+

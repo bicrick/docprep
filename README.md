@@ -61,5 +61,5 @@ python src/main.py
 ## Build macOS app
 
 ```bash
-pyinstaller --clean -y build_mac.spec
+cd /Users/b407404/Desktop/Misc/docprep-app/build_scripts && pyinstaller --clean -y build_mac.spec
 ```

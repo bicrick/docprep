@@ -144,3 +144,6 @@ def get_update_info_dict(current_version: str, update_url: str = None) -> Option
         'is_newer': update_info.is_newer
     }
 
+
+
+
