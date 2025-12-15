@@ -5,6 +5,7 @@ Checks GitHub Pages for new versions and notifies users
 
 import json
 import logging
+import time
 import urllib.request
 import urllib.error
 from typing import Optional, Dict
@@ -15,6 +16,11 @@ logger = logging.getLogger(__name__)
 # Update manifest URL - configured in config.py
 # This is a fallback; prefer importing from config
 UPDATE_URL = "https://pub-7075773554534e1ea27cd98fe79bcfca.r2.dev/updates.json"
+
+# Rate limiting: cache results for 5 minutes to prevent excessive requests
+_CACHE_DURATION = 300  # 5 minutes in seconds
+_last_check_time: Optional[float] = None
+_cached_result: Optional[Dict] = None
 
 
 @dataclass
@@ -124,6 +130,7 @@ def check_for_updates(current_version: str, update_url: str = None) -> Optional[
 def get_update_info_dict(current_version: str, update_url: str = None) -> Optional[Dict]:
     """
     Check for updates and return as a dictionary (for JSON serialization).
+    Includes rate limiting to prevent excessive requests.
     
     Args:
         current_version: The current app version
@@ -132,17 +139,37 @@ def get_update_info_dict(current_version: str, update_url: str = None) -> Option
     Returns:
         Dictionary with update info, or None if no update or error
     """
+    global _last_check_time, _cached_result
+    
+    current_time = time.time()
+    
+    # Return cached result if still valid
+    if (_last_check_time is not None and 
+        _cached_result is not None and 
+        (current_time - _last_check_time) < _CACHE_DURATION):
+        logger.debug("Returning cached update check result")
+        return _cached_result
+    
+    # Perform actual update check
     update_info = check_for_updates(current_version, update_url)
     
+    # Update cache
+    _last_check_time = current_time
+    
     if update_info is None:
+        _cached_result = None
         return None
     
-    return {
+    result = {
         'version': update_info.version,
         'download_url': update_info.download_url,
         'release_notes': update_info.release_notes,
         'is_newer': update_info.is_newer
     }
+    
+    _cached_result = result
+    return result
+
 
 
 

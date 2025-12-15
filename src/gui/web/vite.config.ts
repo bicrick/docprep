@@ -1,10 +1,18 @@
 import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
 import { resolve } from 'path';
 
 export default defineConfig({
+  plugins: [react()],
   root: '.',
   base: './',
   publicDir: 'assets',
+  resolve: {
+    alias: {
+      '@': resolve(__dirname, './src'),
+    },
+    extensions: ['.mjs', '.tsx', '.ts', '.jsx', '.js', '.json'],
+  },
   build: {
     outDir: 'dist',
     emptyOutDir: true,
@@ -19,3 +27,4 @@ export default defineConfig({
     open: false
   }
 });
+

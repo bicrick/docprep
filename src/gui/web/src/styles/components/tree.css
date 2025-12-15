@@ -3,7 +3,6 @@
    ============================================ */
 
 .finder-list {
-    font-family: var(--font-sans);
     font-size: 0.8rem;
     line-height: 1.4;
     flex: 1;
@@ -14,14 +13,14 @@
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    padding: 0.3rem 0.5rem;
-    border-radius: var(--radius-sm);
-    color: var(--text-primary);
-    transition: background var(--duration-fast) var(--ease-out);
+    padding: 0.35rem 0.5rem;
+    border-radius: 0.375rem;
+    color: hsl(var(--foreground));
+    transition: background 0.15s ease-out;
 }
 
 .finder-row:hover {
-    background: var(--bg-card);
+    background: hsl(var(--accent) / 0.5);
 }
 
 .finder-row.folder {
@@ -30,6 +29,7 @@
 
 .finder-row.folder .icon-folder {
     color: #f5a623;
+    fill: #f5a623;
 }
 
 .finder-row span {
@@ -38,7 +38,11 @@
     text-overflow: ellipsis;
 }
 
-/* Indentation */
+/* Indentation levels */
+.finder-row.indent-0 {
+    padding-left: 0.5rem;
+}
+
 .finder-row.indent-1 {
     padding-left: 1.5rem;
 }
@@ -58,3 +62,11 @@
     flex-shrink: 0;
 }
 
+/* File rows that aren't folders - slightly muted text */
+.finder-row:not(.folder) {
+    color: hsl(var(--muted-foreground));
+}
+
+.finder-row:not(.folder):hover {
+    color: hsl(var(--foreground));
+}

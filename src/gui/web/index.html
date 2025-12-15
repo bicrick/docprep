@@ -18,6 +18,12 @@
                 background-color: #1e3a5a;
             }
         }
+        .dark {
+            background-color: #1e3a5a;
+        }
+        .light {
+            background-color: #ffffff;
+        }
     </style>
     <script>
         // Apply theme immediately to prevent flash
@@ -38,7 +44,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
 </head>
 <body>
-    <div class="app"></div>
-    <script type="module" src="./src/main.js"></script>
+    <div id="root"></div>
+    <script type="module" src="./src/main.tsx"></script>
 </body>
 </html>

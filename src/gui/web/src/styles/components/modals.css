@@ -78,7 +78,7 @@
 }
 
 .modal-title {
-    font-family: var(--font-serif);
+    font-family: var(--font-sans);
     font-weight: 600;
     font-size: 1.75rem;
     color: var(--text-primary);
@@ -131,6 +131,7 @@
     font-style: italic;
     margin-bottom: var(--space-lg) !important;
 }
+
 
 
 

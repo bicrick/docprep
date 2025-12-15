@@ -1,0 +1,289 @@
+/* Google Fonts - Fraunces (warm rounded serif) + Inter (clean sans) */
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Light Mode - White background, navy text */
+    --background: 0 0% 100%;
+    --foreground: 210 50% 24%;
+    
+    --card: 213 33% 95%;
+    --card-foreground: 210 50% 24%;
+    
+    --popover: 0 0% 100%;
+    --popover-foreground: 210 50% 24%;
+    
+    --primary: 210 50% 24%;
+    --primary-foreground: 0 0% 100%;
+    
+    --secondary: 213 33% 95%;
+    --secondary-foreground: 210 50% 24%;
+    
+    --muted: 213 33% 95%;
+    --muted-foreground: 210 20% 46%;
+    
+    --accent: 213 33% 93%;
+    --accent-foreground: 210 50% 24%;
+    
+    --destructive: 0 40% 38%;
+    --destructive-foreground: 0 0% 100%;
+    
+    --success: 160 35% 26%;
+    --success-foreground: 0 0% 100%;
+    
+    --warning: 48 60% 35%;
+    --warning-foreground: 0 0% 100%;
+    
+    --border: 213 20% 88%;
+    --input: 213 20% 88%;
+    --ring: 210 50% 24%;
+    
+    --radius: 0.75rem;
+  }
+
+  .dark {
+    /* Dark Mode - Navy background, white text */
+    --background: 210 50% 24%;
+    --foreground: 0 0% 100%;
+    
+    --card: 210 40% 31%;
+    --card-foreground: 0 0% 100%;
+    
+    --popover: 210 40% 31%;
+    --popover-foreground: 0 0% 100%;
+    
+    --primary: 0 0% 100%;
+    --primary-foreground: 210 50% 24%;
+    
+    --secondary: 210 35% 35%;
+    --secondary-foreground: 0 0% 100%;
+    
+    --muted: 210 35% 35%;
+    --muted-foreground: 210 30% 72%;
+    
+    --accent: 210 35% 40%;
+    --accent-foreground: 0 0% 100%;
+    
+    --destructive: 0 50% 70%;
+    --destructive-foreground: 210 50% 24%;
+    
+    --success: 160 30% 62%;
+    --success-foreground: 210 50% 24%;
+    
+    --warning: 42 50% 51%;
+    --warning-foreground: 210 50% 24%;
+    
+    --border: 210 30% 42%;
+    --input: 210 30% 42%;
+    --ring: 0 0% 100%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+  
+  html, body, #root {
+    @apply h-full m-0 p-0;
+  }
+}
+
+/* Custom animations for slides */
+@layer utilities {
+  /* Forward navigation: new slide comes from right, old slide exits left */
+  .slide-enter-forward {
+    animation: slideInFromRight 0.5s cubic-bezier(0.33, 1, 0.68, 1) forwards;
+  }
+  
+  .slide-exit-forward {
+    animation: slideOutToLeft 0.5s cubic-bezier(0.33, 1, 0.68, 1) forwards;
+  }
+  
+  /* Backward navigation: new slide comes from left, old slide exits right */
+  .slide-enter-backward {
+    animation: slideInFromLeft 0.5s cubic-bezier(0.33, 1, 0.68, 1) forwards;
+  }
+  
+  .slide-exit-backward {
+    animation: slideOutToRight 0.5s cubic-bezier(0.33, 1, 0.68, 1) forwards;
+  }
+}
+
+@keyframes slideInFromRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideOutToLeft {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+}
+
+@keyframes slideInFromLeft {
+  from {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideOutToRight {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+/* Polka dot background styles */
+.polka-dots {
+  position: fixed;
+  top: -5%;
+  left: -5%;
+  width: 110%;
+  height: 110%;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: opacity 1s ease-out;
+}
+
+.polka-dots.visible {
+  @apply opacity-100;
+}
+
+.polka-dot {
+  @apply absolute rounded-full;
+  /* Each dot has its own animation using CSS custom properties */
+  --float-x: 0px;
+  --float-y: 0px;
+  --duration: 20s;
+  --delay: 0s;
+  animation: dotFloatIndividual var(--duration) ease-in-out var(--delay) infinite;
+  will-change: transform;
+}
+
+/* Individual dot floating animation - uses custom properties for unique paths */
+@keyframes dotFloatIndividual {
+  0%, 100% {
+    transform: translate(calc(-50% + 0px), calc(-50% + 0px));
+  }
+  20% {
+    transform: translate(calc(-50% + var(--float-x)), calc(-50% + calc(var(--float-y) * 0.3)));
+  }
+  40% {
+    transform: translate(calc(-50% + calc(var(--float-x) * 0.5)), calc(-50% + var(--float-y)));
+  }
+  60% {
+    transform: translate(calc(-50% + calc(var(--float-x) * -0.7)), calc(-50% + calc(var(--float-y) * 0.6)));
+  }
+  80% {
+    transform: translate(calc(-50% + calc(var(--float-x) * -0.3)), calc(-50% + calc(var(--float-y) * -0.4)));
+  }
+}
+
+/* Scale pulse overlay for organic feel */
+.polka-dot::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: inherit;
+  animation: dotPulse var(--pulse-duration, 8s) ease-in-out var(--pulse-delay, 0s) infinite;
+  opacity: 0;
+}
+
+@keyframes dotPulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.02);
+    opacity: 0.3;
+  }
+}
+
+/* Spinner animation */
+@keyframes spinner {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spinner {
+  animation: spinner 1s linear infinite;
+}
+
+/* Intro slide animations */
+.animate-fade-in {
+  animation: fadeIn 0.5s cubic-bezier(0.33, 1, 0.68, 1) forwards;
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.35s cubic-bezier(0.33, 1, 0.68, 1) forwards;
+}
+
+.animate-slide-in-right {
+  animation: slideInRight 0.5s cubic-bezier(0.33, 1, 0.68, 1) forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
