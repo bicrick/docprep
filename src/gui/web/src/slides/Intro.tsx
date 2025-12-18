@@ -179,7 +179,7 @@ export function Intro() {
         DocPrep extracts clean, structured data from your documents
       </p>
 
-      <div className="flex items-center justify-center gap-8 w-full max-w-[800px]">
+      <div className="flex items-start justify-center gap-8 w-full max-w-[800px]">
         <TreePanel files={sourceFiles} animate={false} />
         
         <div 
