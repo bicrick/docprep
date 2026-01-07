@@ -22,8 +22,9 @@ from pathlib import Path
 block_cipher = None
 
 datas = [
-    # Web assets for pywebview UI
-    ('../src/gui/web', 'gui/web'),
+    # Web assets for pywebview UI (only built dist folder, not node_modules)
+    ('../src/gui/web/dist', 'gui/web/dist'),
+    ('../src/gui/web/assets', 'gui/web/assets'),
 ]
 
 a = Analysis(
