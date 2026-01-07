@@ -58,8 +58,28 @@ Run the app:
 python src/main.py
 ```
 
-## Build macOS app
+## Build & Release macOS App
+
+### Prerequisites
+
+- Developer ID Application certificate installed
+- Notarization credentials stored: `xcrun notarytool store-credentials "docprep-notarize"`
+- `create-dmg` installed: `brew install create-dmg`
+
+### Build, Sign & Notarize
 
 ```bash
-cd /Users/b407404/Desktop/Misc/docprep-app/build_scripts && pyinstaller --clean -y build_mac.spec
+source /opt/homebrew/Caskroom/miniconda/base/etc/profile.d/conda.sh
+conda activate docprep
+cd build_scripts
+./build_signed_mac.sh 1.0.0
+```
+
+### Upload to R2
+
+```bash
+wrangler r2 object put docprep-releases/releases/docprep-1.0.0.dmg \
+  --file dist/docprep-1.0.0.dmg \
+  --content-type "application/octet-stream" \
+  --remote
 ```
