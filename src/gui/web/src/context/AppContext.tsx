@@ -328,7 +328,7 @@ export function AppProvider({ children }: AppProviderProps) {
     };
   }, []);
 
-  const goToSlide = useCallback((slide: SlideId, direction: SlideDirection = 'forward') => {
+  const goToSlide = useCallback((slide: SlideId, direction?: SlideDirection) => {
     dispatch({ type: 'GO_TO_SLIDE', slide, direction });
   }, []);
 
