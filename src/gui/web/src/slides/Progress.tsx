@@ -4,7 +4,6 @@ import { Button } from '@/components/ui/button';
 import { Progress as ProgressBar } from '@/components/ui/progress';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { Loader2 } from 'lucide-react';
 
 export function Progress() {
   const { state, goToSlide } = useApp();
@@ -27,9 +26,6 @@ export function Progress() {
     <div className="flex flex-col items-center justify-center h-full px-8">
       <Card className="w-[32rem] shadow-lg">
         <CardHeader className="text-center space-y-2 pb-6">
-          <div className="flex items-center justify-center gap-3">
-            <Loader2 className="h-6 w-6 animate-spin text-primary" />
-          </div>
           <CardTitle className="text-2xl">Extracting documents</CardTitle>
         </CardHeader>
         
