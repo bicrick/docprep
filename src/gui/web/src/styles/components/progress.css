@@ -102,13 +102,9 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-}
-
-.current-substep.typing {
+}.current-substep.typing {
     animation: typeIn 0.3s ease forwards;
-}
-
-@keyframes typeIn {
+}@keyframes typeIn {
     from { 
         opacity: 0; 
         transform: translateY(-4px); 
@@ -118,4 +114,3 @@
         transform: translateY(0); 
     }
 }
-

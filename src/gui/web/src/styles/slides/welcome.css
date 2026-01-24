@@ -64,9 +64,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-}
-
-/* Ready state - show text and arrow, hide spinner */
+}/* Ready state - show text and arrow, hide spinner */
 #btnGetStarted.btn-auth-ready .btn-text,
 #btnGetStarted.btn-auth-ready > svg {
     display: inline;
@@ -74,10 +72,7 @@
 
 #btnGetStarted.btn-auth-ready .btn-spinner {
     display: none;
-}
-
-@keyframes spin {
+}@keyframes spin {
     from { transform: rotate(0deg); }
     to { transform: rotate(360deg); }
 }
-

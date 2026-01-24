@@ -20,15 +20,19 @@ import { PrivacyPolicy, TermsOfService } from '@/components/LegalModals';
 
 export function SignIn() {
   const { goToSlide } = useApp();
-  const { signInWithGoogle, getErrorMessage } = useAuth();
+  const { signInWithGoogle, getErrorMessage, oauthError, clearOAuthError } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showPrivacy, setShowPrivacy] = useState(false);
   const [showTerms, setShowTerms] = useState(false);
 
+  // Display OAuth errors from callback flow
+  const displayError = error || oauthError;
+
   const handleGoogleSignIn = async () => {
     setIsLoading(true);
     setError(null);
+    clearOAuthError(); // Clear any previous OAuth errors
 
     try {
       await signInWithGoogle();
@@ -92,8 +96,8 @@ export function SignIn() {
             Login with Email
           </Button>
 
-          {error && (
-            <p className="text-sm text-destructive text-center">{error}</p>
+          {displayError && (
+            <p className="text-sm text-destructive text-center">{displayError}</p>
           )}
 
           <p className="text-sm text-muted-foreground text-center">

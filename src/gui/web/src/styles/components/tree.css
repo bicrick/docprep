@@ -65,8 +65,6 @@
 /* File rows that aren't folders - slightly muted text */
 .finder-row:not(.folder) {
     color: hsl(var(--muted-foreground));
-}
-
-.finder-row:not(.folder):hover {
+}.finder-row:not(.folder):hover {
     color: hsl(var(--foreground));
 }

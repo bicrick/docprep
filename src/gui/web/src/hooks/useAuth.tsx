@@ -22,6 +22,8 @@ interface AuthContextType {
   userInfo: UserDisplayInfo | null;
   isLoading: boolean;
   isSignedIn: boolean;
+  oauthError: string | null;
+  clearOAuthError: () => void;
   signInWithGoogle: () => Promise<FirebaseUser | null>;
   signInWithEmail: (email: string, password: string) => Promise<FirebaseUser>;
   createAccount: (email: string, password: string, displayName?: string) => Promise<FirebaseUser>;
@@ -41,6 +43,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<FirebaseUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isInitialized, setIsInitialized] = useState(false);
+  const [oauthError, setOAuthError] = useState<string | null>(null);
 
   // Initialize Firebase and listen for auth changes
   useEffect(() => {
@@ -67,15 +70,22 @@ export function AuthProvider({ children }: AuthProviderProps) {
     if (!isInitialized) return;
 
     window.googleSignInSuccess = async (tokens) => {
+      console.log('Google sign-in callback received, attempting Firebase sign-in...');
+      setOAuthError(null); // Clear any previous errors
       try {
-        await signInWithGoogleCredential(tokens.idToken, tokens.accessToken || null);
+        const signedInUser = await signInWithGoogleCredential(tokens.idToken, tokens.accessToken || null);
+        console.log('Firebase sign-in successful:', signedInUser?.email);
+        // Auth state listener will handle navigation
       } catch (error) {
         console.error('Google sign-in callback error:', error);
+        const errorMsg = getAuthErrorMessage(error as Error);
+        setOAuthError(errorMsg);
       }
     };
 
     window.googleSignInError = (errorMessage) => {
       console.error('Google sign-in error:', errorMessage);
+      setOAuthError(errorMessage || 'Google sign-in failed');
     };
 
     return () => {
@@ -135,11 +145,17 @@ export function AuthProvider({ children }: AuthProviderProps) {
     return getAuthErrorMessage(error);
   }, []);
 
+  const clearOAuthError = useCallback(() => {
+    setOAuthError(null);
+  }, []);
+
   const value: AuthContextType = {
     user,
     userInfo: getUserDisplayInfo(user),
     isLoading,
     isSignedIn: checkIsSignedIn(),
+    oauthError,
+    clearOAuthError,
     signInWithGoogle,
     signInWithEmail,
     createAccount,

@@ -58,6 +58,9 @@ function Slide({ id, isActive, isExiting, direction }: SlideProps) {
 // Slides that require authentication to proceed past
 const PRE_AUTH_SLIDES: SlideId[] = ['welcome', 'intro', 'tutorial', 'signin', 'email-signin', 'onboarding'];
 
+// Slides that require authentication to be on
+const POST_AUTH_SLIDES: SlideId[] = ['drop', 'ready', 'progress', 'complete'];
+
 export function SlideContainer() {
   const { state, goToSlide } = useApp();
   const { user, isLoading } = useAuth();
@@ -69,6 +72,12 @@ export function SlideContainer() {
     // If user is signed in and on any pre-auth slide, go to drop zone
     if (user && PRE_AUTH_SLIDES.includes(state.currentSlide)) {
       goToSlide('drop');
+    }
+    
+    // If user is NOT signed in but on a post-auth slide, go to welcome
+    // This handles cases where logout navigation failed or state got out of sync
+    if (!user && POST_AUTH_SLIDES.includes(state.currentSlide)) {
+      goToSlide('welcome');
     }
   }, [user, isLoading, state.currentSlide, goToSlide]);
 

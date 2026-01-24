@@ -22,7 +22,7 @@ import { PrivacyPolicy, TermsOfService } from '@/components/LegalModals';
 
 export function Onboarding() {
   const { goToSlide } = useApp();
-  const { signInWithGoogle, createAccount, fetchSignInMethods, getErrorMessage } = useAuth();
+  const { signInWithGoogle, createAccount, fetchSignInMethods, getErrorMessage, oauthError, clearOAuthError } = useAuth();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -31,6 +31,9 @@ export function Onboarding() {
   const [error, setError] = useState<string | null>(null);
   const [showPrivacy, setShowPrivacy] = useState(false);
   const [showTerms, setShowTerms] = useState(false);
+
+  // Display OAuth errors from callback flow
+  const displayError = error || oauthError;
 
   useEffect(() => {
     const pendingEmail = sessionStorage.getItem('pendingEmail');
@@ -43,6 +46,7 @@ export function Onboarding() {
   const handleGoogleSignUp = async () => {
     setIsLoading(true);
     setError(null);
+    clearOAuthError(); // Clear any previous OAuth errors
 
     try {
       await signInWithGoogle();
@@ -199,7 +203,7 @@ export function Onboarding() {
               </div>
             </div>
 
-            {error && <p className="text-sm text-destructive">{error}</p>}
+            {displayError && <p className="text-sm text-destructive">{displayError}</p>}
 
             <Button type="submit" className="w-full h-11" disabled={isLoading}>
               {isLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : 'Create Account'}

@@ -494,12 +494,8 @@
 .editor-option-check svg {
     width: 14px;
     height: 14px;
-}
-
-.editor-option.selected .editor-option-check {
+}.editor-option.selected .editor-option-check {
     opacity: 1;
-}
-
-.editor-option.selected {
+}.editor-option.selected {
     background: var(--bg-card);
 }

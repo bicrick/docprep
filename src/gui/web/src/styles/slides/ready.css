@@ -384,13 +384,9 @@ button.folder-box:hover .folder-box-edit {
     color: var(--text-muted);
     border-radius: var(--radius-sm);
     margin-left: auto;
-}
-
-/* ============================================
+}/* ============================================
    Safe Notice
-   ============================================ */
-
-.slide-ready .safe-notice {
+   ============================================ */.slide-ready .safe-notice {
     text-align: center;
     font-size: 0.7rem;
     color: var(--text-tertiary);

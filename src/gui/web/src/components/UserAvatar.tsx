@@ -23,9 +23,12 @@ export function UserAvatar() {
   const handleSignOut = async () => {
     try {
       await signOut();
-      goToSlide('welcome');
     } catch (error) {
       console.error('Sign out error:', error);
+    } finally {
+      // Always navigate to welcome, even if signOut fails
+      // This ensures user isn't stuck on a post-auth slide
+      goToSlide('welcome');
     }
   };
 
