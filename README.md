@@ -1,85 +1,57 @@
-# DocPrep
+![docprep](HEADER.png)
 
-Document extraction tool with web UI.
+# Welcome to docprep
 
-## Development Setup
+A desktop application that extracts clean text from Microsoft Office documents and PDFs while preserving your file tree structure.
 
-### 1. Create Conda Environment
+## Purpose
 
-```bash
-conda create -n data-extraction-tool python=3.11
-conda activate data-extraction-tool
-```
+Corporate documents are bloated with formatting, animations, and metadata that make them difficult for AI tools to process. A PowerPoint presentation can exceed 1GB when the actual content is less than 100KB. Docprep solves this by extracting plain text from Office files while mirroring your directory structure, making documents AI-ready and enabling semantic indexing in tools like Cursor.
 
-### 2. Install Python Dependencies
+All processing happens locally on your machine - no data is ever uploaded or sent anywhere.
 
-```bash
-pip install -r requirements.txt
-```
+## Architecture
 
-### 3. Install Frontend Dependencies
+Docprep is built as a cross-platform desktop application:
 
-```bash
-cd src/gui/web
-npm install
-cd ../../..
-```
+- **Backend**: Python with PyWebView
+  - Document extraction using specialized libraries for each format (PDF, Excel, Word, PowerPoint)
+  - Local file processing - no network requests
+  - File tree mirroring to preserve structure
 
-## Running the App
+- **Frontend**: React + TypeScript
+  - UI built with shadcn components
+  - Vite for development and bundling
+  - Tailwind CSS for styling
 
-### Development Mode (with hot reload)
+The Python backend handles all document extraction and communicates with the React frontend through PyWebView's JavaScript bridge.
 
-Terminal 1 - Start Vite dev server:
+## Tech Stack
 
-```bash
-cd src/gui/web
-npm run dev
-```
+**Backend**
+- Python 3.11
+- PyWebView (desktop wrapper)
+- PyMuPDF (PDF extraction)
+- python-pptx (PowerPoint)
+- python-docx (Word)
+- openpyxl (Excel)
 
-Terminal 2 - Run Python app in dev mode:
+**Frontend**
+- React 18 + TypeScript
+- Vite
+- shadcn/ui components
+- Tailwind CSS
 
-```bash
-python src/main.py --dev
-```
+**Build & Distribution**
+- PyInstaller (bundling)
+- DMG creation for macOS
+- Code signing & notarization
+- Inno Setup for Windows
 
-### Production Mode (with built files)
+## Status
 
-Build the frontend:
+This project is now obsolete following the release of Claude Cowork in January 2026, which includes native Office document extraction. The repository has been made public as part of my portfolio.
 
-```bash
-cd src/gui/web
-npm run build
-cd ../../..
-```
+---
 
-Run the app:
-
-```bash
-python src/main.py
-```
-
-## Build & Release macOS App
-
-### Prerequisites
-
-- Developer ID Application certificate installed
-- Notarization credentials stored: `xcrun notarytool store-credentials "docprep-notarize"`
-- `create-dmg` installed: `brew install create-dmg`
-
-### Build, Sign & Notarize
-
-```bash
-source /opt/homebrew/Caskroom/miniconda/base/etc/profile.d/conda.sh
-conda activate docprep
-cd build_scripts
-./build_signed_mac.sh 1.0.0
-```
-
-### Upload to R2
-
-```bash
-wrangler r2 object put docprep-releases/releases/docprep-1.0.0.dmg \
-  --file dist/docprep-1.0.0.dmg \
-  --content-type "application/octet-stream" \
-  --remote
-```
+For development setup and build instructions, see [docs/development.md](docs/development.md).
