@@ -1,10 +1,10 @@
-<div align="center">
-  <img src="assets/logo.png" alt="docprep logo" width="150"/>
-</div>
-
 ![docprep](assets/HEADER.png)
 
 # Welcome to docprep - [Visit site](https://docprep.site/)
+
+<div align="center">
+  <img src="assets/logo.png" alt="docprep logo" width="220"/>
+</div>
 
 A desktop application that extracts clean text from Microsoft Office documents and PDFs while preserving your file tree structure.
 
