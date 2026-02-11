@@ -2,6 +2,8 @@
 
 # Welcome to docprep
 
+**[Visit site](https://docprep.site/)**
+
 A desktop application that extracts clean text from Microsoft Office documents and PDFs while preserving your file tree structure.
 
 ## Purpose
