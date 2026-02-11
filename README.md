@@ -1,4 +1,4 @@
-![docprep](HEADER.png)
+![docprep](assets/HEADER.png)
 
 # Welcome to docprep
 
