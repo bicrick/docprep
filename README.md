@@ -1,3 +1,7 @@
+<div align="center">
+  <img src="assets/logo.png" alt="docprep logo" width="150"/>
+</div>
+
 ![docprep](assets/HEADER.png)
 
 # Welcome to docprep - [Visit site](https://docprep.site/)
