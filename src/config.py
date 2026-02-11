@@ -59,8 +59,9 @@ UPDATE_URL = "https://pub-7075773554534e1ea27cd98fe79bcfca.r2.dev/updates.json"
 # Google OAuth for desktop app sign-in
 # Create at: https://console.cloud.google.com/apis/credentials
 # Type: "Desktop app" (auto-allows localhost redirects)
-GOOGLE_OAUTH_CLIENT_ID = "125874830244-olvcm0573alftvspdc8eaflmbp6mgrpi.apps.googleusercontent.com"  # Set your OAuth Client ID here
-GOOGLE_OAUTH_CLIENT_SECRET = "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"
+# Note: OAuth credentials have been removed as this project is no longer active
+GOOGLE_OAUTH_CLIENT_ID = ""
+GOOGLE_OAUTH_CLIENT_SECRET = ""
 # File naming
 SANITIZE_FILENAMES = True
 MAX_FILENAME_LENGTH = 200
